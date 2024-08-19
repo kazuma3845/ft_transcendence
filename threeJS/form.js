@@ -7,7 +7,7 @@ export default class Form {
         this.sphereGeometry = new THREE.SphereGeometry( dimension.sphereRayon, 320, 320);
         this.sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xf99ff });
         this.sphere = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial);
-        this.sphere.position.set(0, 0, dimension.sphereRayon);
+        this.sphere.position.set(-(dimension.areneX / 2 - dimension.LLeftX - dimension.sphereRayon), 0, dimension.sphereRayon);
 
         //--------------------arene------------------------------------------
         this.AreneGeomerty = new THREE.BoxGeometry(dimension.areneX, dimension.areneY, dimension.areneZ);
