@@ -1,10 +1,10 @@
-import dim from './2player.js';
+import dim from './dim.js';
 
 export default class Pong {
     constructor(form) {
         const dimension = new dim();
         this.form = form;
-        this.vitesseY = 3;
+        this.vitesseY = 5;
         this.sphereRayon = dimension.sphereRayon;
         this.arenaWidth = dimension.areneX - (2 * dimension.LRborderX);
         this.arenaHeight = dimension.areneY - (2 * dimension.NSborderY);
@@ -39,6 +39,7 @@ export default class Pong {
                 this.form.LRight.position.y -= this.vitesseY;
             }
         }
+
         if (this.keysPressed['ArrowUp']) {
             if (this.form.LRight.position.y + halfRaquetteHeight < halfArenaHeight) {
                 this.form.LRight.position.y += this.vitesseY;
@@ -72,6 +73,9 @@ export default class Pong {
             }
             return;
         }
+
+        this.form.sphere.rotation.x += this.ballSpeedY * 0.1;
+        this.form.sphere.rotation.y += this.ballSpeedX * 0.1;
 
         this.form.sphere.position.x += this.ballSpeedX;
         this.form.sphere.position.y += this.ballSpeedY;

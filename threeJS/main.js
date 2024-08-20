@@ -29,7 +29,9 @@ camera.position.z = 150;
 camera.position.y = -200;
 camera.rotateX(45);
 
+
 function animate() {
+	queueMicrotask
     requestAnimationFrame(animate);
 	pong.updateBallPosition();
 	renderer.render( scene, camera );

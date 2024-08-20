@@ -1,30 +1,34 @@
 import * as THREE from 'three';
-import dim from './2player.js';
+import dim from './dim.js';
 export default class Form {
     constructor() {
         const dimension = new dim();
         //------------------sphere-----------------------------------------
         this.sphereGeometry = new THREE.SphereGeometry( dimension.sphereRayon, 320, 320);
-        this.sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xf99ff });
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('../texture/ball.jpg');
+        this.sphereMaterial = new THREE.MeshBasicMaterial({ map: texture });
         this.sphere = new THREE.Mesh(this.sphereGeometry, this.sphereMaterial);
         this.sphere.position.set(-(dimension.areneX / 2 - dimension.LLeftX - dimension.sphereRayon), 0, dimension.sphereRayon);
 
         //--------------------arene------------------------------------------
         this.AreneGeomerty = new THREE.BoxGeometry(dimension.areneX, dimension.areneY, dimension.areneZ);
-        this.AreneMaterial = new THREE.MeshBasicMaterial({ color: 0xB72FED });
+        const ArenetextureLoader = new THREE.TextureLoader();
+        const Arenetexture = ArenetextureLoader.load('../texture/black-hole.jpg');
+        this.AreneMaterial = new THREE.MeshBasicMaterial({ map: Arenetexture });
         this.Arene = new THREE.Mesh(this.AreneGeomerty, this.AreneMaterial);
         this.Arene.position.set(0, 0, -dimension.areneZ / 2);
 
 
         //--------------------line right---------------------------------------
         this.LRightGeometry = new THREE.BoxGeometry(dimension.LRightX, dimension.LRightY, dimension.LRightZ);
-        this.LRightMaterial = new THREE.MeshBasicMaterial({ color: 0xfff });
+        this.LRightMaterial = new THREE.MeshBasicMaterial({ color: 0xb5b2b1 });
         this.LRight = new THREE.Mesh(this.LRightGeometry, this.LRightMaterial);
         this.LRight.position.set(dimension.areneX / 2 - dimension.LRightX, 0, dimension.LRightZ / 2);
 
         //--------------------line left---------------------------------------
         this.LLeftGeometry = new THREE.BoxGeometry(dimension.LLeftX, dimension.LLeftY, dimension.LLeftZ);
-        this.LLeftMaterial = new THREE.MeshBasicMaterial({ color: 0xfff });
+        this.LLeftMaterial = new THREE.MeshBasicMaterial({ color: 0xb5b2b1 });
         this.LLeft = new THREE.Mesh(this.LLeftGeometry, this.LLeftMaterial);
         this.LLeft.position.set(-(dimension.areneX / 2 - dimension.LLeftX), 0, dimension.LLeftZ / 2);
 

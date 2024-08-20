@@ -17,10 +17,10 @@ export default class dimention {
 		this.LLeftZ = 10;
 
 		this.LRborderX = 2;
-		this.LRborderY = 200;
+		this.LRborderY = this.areneY - (this.LRborderX * 2);
 		this.LRborderZ = 2;
 
-		this.NSborderX = 304;
+		this.NSborderX = this.areneX;
 		this.NSborderY = 2;
 		this.NSborderZ = 2;
 
