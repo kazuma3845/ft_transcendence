@@ -1,0 +1,36 @@
+body {
+	font-family: "Roboto Mono", monospace;
+	font-optical-sizing: auto;
+	font-weight: 300;
+	font-style: normal;
+	font-size: 18px;
+}
+
+body {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+ul li:last-child {
+    margin-bottom: 0;
+}
+
+.bungee-shade-regular {
+	font-family: "Bungee Shade", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+	font-size: 72px;
+}
+
+.centered-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 20px;
+    box-sizing: border-box;
+}
