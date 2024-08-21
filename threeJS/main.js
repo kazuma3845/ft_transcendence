@@ -13,10 +13,10 @@ document.body.appendChild( renderer.domElement );
 const form = new Form();
 const pong = new Pong(form);
 
-scene.add( form.sphere );
+scene.add( form.ball );
 scene.add( form.Arene );
-scene.add( form.LRight );
-scene.add( form.LLeft );
+scene.add( form.paddleRight );
+scene.add( form.paddleLeft );
 scene.add( form.Lborder );
 scene.add( form.Rborder );
 scene.add( form.Sborder );
@@ -26,8 +26,8 @@ scene.add( form.line );
 //--------------------affichage---------------------------------------
 
 camera.position.z = 150;
-camera.position.y = -200;
-camera.rotateX(45);
+// camera.position.y = -200;
+// camera.rotateX(45);
 
 
 function animate() {
