@@ -9,7 +9,7 @@ export default class Form {
         this.ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
         this.ball = new THREE.Mesh(this.ballGeometry, this.ballMaterial);
 
-        this.ball.position.set(-(val.paddle_pos[0] - val.ballRayon), 0, val.ballRayon);
+        this.ball.position.set(-(val.paddle_pos[0] - val.ballRayon - (val.paddle_size[0] / 2)), 0, val.ballRayon);
 
         //--------------------arene------------------------------------------
         this.AreneGeomerty = new THREE.BoxGeometry(val.arene_size[0], val.arene_size[1], val.arene_size[2]);
@@ -38,13 +38,13 @@ export default class Form {
         this.LborderGeometry = new THREE.BoxGeometry(val.LRborder_size[0], val.LRborder_size[1], val.LRborder_size[2]);
         this.LbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         this.Lborder = new THREE.Mesh(this.LborderGeometry, this.LbordertMaterial);
-        this.Lborder.position.set(-(val.arene_size[0] / 2 - val.LRborder_size[0] /2), 0, val.LRborder_size[2] /2);
+        this.Lborder.position.set(-(val.arene_size[0] / 2 - val.LRborder_size[0] /2), 0, val.LRborder_size[2] / 2);
 
 
         this.RborderGeometry = new THREE.BoxGeometry(val.LRborder_size[0], val.LRborder_size[1], val.LRborder_size[2]);
         this.RbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         this.Rborder = new THREE.Mesh(this.RborderGeometry, this.RbordertMaterial);
-        this.Rborder.position.set(val.arene_size[0] / 2 - val.LRborder_size[0] /2, 0, val.LRborder_size[2] /2);
+        this.Rborder.position.set(val.arene_size[0] / 2 - val.LRborder_size[0] /2, 0, val.LRborder_size[2] / 2);
 
         this.SborderGeometry = new THREE.BoxGeometry(val.NSborder_size[0], val.NSborder_size[1], val.NSborder_size[2]);
         this.SbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });

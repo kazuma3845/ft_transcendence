@@ -1,8 +1,6 @@
 {
     "ballRayon": 6,
-    "ball_pos": [null, null, 0],
 	"ball_speed": 0.02,
-	"ball_angle": null,
 
     "arene_size": [304, 204, 10],
 
