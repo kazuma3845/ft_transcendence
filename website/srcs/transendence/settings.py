@@ -125,6 +125,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'transendence', 'static'),
     os.path.join(BASE_DIR, 'game', 'static'),
+    os.path.join(BASE_DIR, 'users', 'static'),
 ]
 
 STATIC_URL = 'static/'
