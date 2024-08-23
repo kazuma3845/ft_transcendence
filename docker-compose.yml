@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: your_database_name
+      POSTGRES_USER: your_database_user
+      POSTGRES_PASSWORD: your_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - django_network
+
+  web:
+    build:
+      context: ./website  # Le contexte de build est maintenant ./srcs
+      dockerfile: ./Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./website/srcs:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DB_NAME=your_database_name
+      - DB_USER=your_database_user
+      - DB_PASSWORD=your_password
+      - DB_HOST=db
+      - DB_PORT=5432
+    networks:
+      - django_network
+
+networks:
+  django_network:
+
+volumes:
+  postgres_data:
