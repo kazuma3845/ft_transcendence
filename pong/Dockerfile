@@ -5,7 +5,7 @@ FROM node:18
 WORKDIR /threeJS
 
 # Copier les fichiers de configuration dans le conteneur
-COPY /threeJS/package.json /threeJS/package-lock.json* ./
+COPY package.json package-lock.json* ./
 
 # Installer les dépendances
 RUN npm install

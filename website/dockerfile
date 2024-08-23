@@ -28,5 +28,7 @@ COPY . /app/
 # Exposer le port sur lequel l'application s'exécutera
 EXPOSE 8000
 
+RUN python srcs/manage.py migrate
+
 # Commande pour démarrer l'application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

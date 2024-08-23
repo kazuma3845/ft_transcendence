@@ -1,1 +1,1 @@
-all = docker-compose up -d
+all = docker compose up

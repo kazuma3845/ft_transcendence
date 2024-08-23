@@ -9,7 +9,5 @@
 	"paddle_move_speed": 4,
 
     "LRborder_size": [2, 200, 2],
-    "NSborder_size": [304, 2, 2],
-
-	"bot_side": "right"
+    "NSborder_size": [304, 2, 2]
 }
