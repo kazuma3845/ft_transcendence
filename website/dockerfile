@@ -18,15 +18,20 @@ WORKDIR /app
 
 # Copier le fichier de dépendances dans le conteneur
 COPY ../../requirements.txt /app/
+COPY ../../entrypoint.sh /app/
 
 # Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
+RUN chmod +x /app/entryscript.sh
 
 # Copier tout le contenu du projet dans le conteneur
 COPY . /app/
 
 # Exposer le port sur lequel l'application s'exécutera
 EXPOSE 8000
+
+# Utiliser le script d'entrée pour démarrer l'application
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Commande pour démarrer l'application
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
