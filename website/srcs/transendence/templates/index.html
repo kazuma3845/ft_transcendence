@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block content %}
+<div class="centered-container">
+	<h1 class="bungee-shade-regular">Bienvenue sur Transcendence</h1>
+	<ul>
+		<li><a href="{% url 'game:index' %}">Jouer à Pong</a></li>
+		<li><a href="{% url 'users:index' %}">Gestion des Utilisateurs</a></li>
+		<li><a href="{% url 'leaderboards:index' %}">Classements</a></li>
+	</ul>
+</div>
+{% endblock %}

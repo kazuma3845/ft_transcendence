@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mon site{% endblock %}</title>
+	{% load static %}
+	<link rel="stylesheet" href="{% static 'css/main.css' %}">
+	<link rel="icon" href="{% static 'favicon/favicon.ico' %}" type="image/x-icon">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">    {% block extra_head %}{% endblock %}
+</head>
+<body>
+	{% block header_fix %}
+	<header class="header">
+
+		<div class="logo bungee-shade-regular">
+			<a href="{% url 'home' %}">Transcendence</a>
+		</div>
+		{% if not user.is_authenticated %}
+			<a href="{% url 'users:login' %}" class="a-button">Connexion</a>
+		{% else %}
+			<p style="color: white;">Bienvenue, <span style="color: white; font-weight: 800;" >{{ user.email }}</span></p>
+			<form method="POST" action="{% url 'logout' %}">
+				{% csrf_token %}
+				<button type="submit" class="a-button grey">Déconnexion</button>
+			</form>
+		{% endif%}
+	</header>
+	{% endblock %}
+	{% block content %}{% endblock %}
+	<footer class="footer">
+		<p>By Kazuma, Neah & Martzoni</p>
+	</footer>
+</body>
+</html>
