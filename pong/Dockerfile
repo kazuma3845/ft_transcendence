@@ -2,7 +2,7 @@
 FROM node:18
 
 # Définir le répertoire de travail
-WORKDIR /threeJS
+WORKDIR /app
 
 # Copier les fichiers de configuration dans le conteneur
 COPY package.json package-lock.json* ./
