@@ -1,20 +1,32 @@
-# Utiliser l'image Python comme base
+# Utiliser une image de base Python
 FROM python:3.9
 
-# Définir le répertoire de travail
+# Installer les dépendances système nécessaires pour compiler les paquets Python
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    gcc \
+    python3-dev \
+    musl-dev \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier les fichiers de requirements
+# Copier le fichier de dépendances dans le conteneur
 COPY requirements.txt /app/
 
-# Installer les dépendances
+# Installer les dépendances Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le reste du code de l'application
-COPY srcs /app/srcs
+# Copier tout le contenu du projet dans le conteneur
+COPY srcs /app/
 
-# Exposer le port 8000
+# Exposer le port sur lequel l'application s'exécutera
 EXPOSE 8000
 
-# Commande pour démarrer Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "srcs.transendence.wsgi:application"]
+# Commande pour démarrer l'application
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
