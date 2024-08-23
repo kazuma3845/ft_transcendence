@@ -4,14 +4,12 @@ from prediction import predictFinalBallPosition
 from fine_tuning import moderateFinalPosition
 from config import *
 
-DEBUG = False
-
 if DEBUG: # Afficher les catégories de debug activées.
     log("Debug mode is enabled.", "warning")
     for category, active in DEBUG_CATEGORIES.items():
         status = "active" if active else "inactive"
         log(f"Debug category '{category}': {status}", "info")
-else: 
+else:
     log("Debug mode is disabled.","warning")
         
 app = Flask(__name__)

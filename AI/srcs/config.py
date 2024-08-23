@@ -1,7 +1,7 @@
 # config.py
 
 # Variable de configuration
-DEBUG = True
+DEBUG = False
 
 DEBUG_CATEGORIES = {
     "HIT": False,        # Activer/Désactiver les messages liés aux "hits"
