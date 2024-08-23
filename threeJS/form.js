@@ -4,18 +4,20 @@ export default class Form {
     constructor() {
         //------------------ball-----------------------------------------
         this.ballGeometry = new THREE.SphereGeometry( val.ballRayon, 15, 15);
-        const textureLoader = new THREE.TextureLoader();
-        const texture = textureLoader.load('../texture/ball.jpg');
-        this.ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
+        // const textureLoader = new THREE.TextureLoader();
+        // const texture = textureLoader.load('../texture/ball.jpg');
+        // this.ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
+        this.ballMaterial = new THREE.MeshBasicMaterial({ color: 0xfff });
         this.ball = new THREE.Mesh(this.ballGeometry, this.ballMaterial);
 
         this.ball.position.set(-(val.paddle_pos[0] - val.ballRayon - (val.paddle_size[0] / 2)), 0, val.ballRayon);
 
         //--------------------arene------------------------------------------
         this.AreneGeomerty = new THREE.BoxGeometry(val.arene_size[0], val.arene_size[1], val.arene_size[2]);
-        const ArenetextureLoader = new THREE.TextureLoader();
-        const Arenetexture = ArenetextureLoader.load('../texture/black-hole.jpg');
-        this.AreneMaterial = new THREE.MeshBasicMaterial({ map: Arenetexture });
+        // const ArenetextureLoader = new THREE.TextureLoader();
+        // const Arenetexture = ArenetextureLoader.load('../texture/black-hole.jpg');
+        // this.AreneMaterial = new THREE.MeshBasicMaterial({ map: Arenetexture });
+        this.AreneMaterial = new THREE.MeshBasicMaterial({ color: 0xffff });
         this.Arene = new THREE.Mesh(this.AreneGeomerty, this.AreneMaterial);
         this.Arene.position.set(0, 0, -val.arene_size[2] / 2);
 

@@ -26,8 +26,8 @@ scene.add( form.line );
 //--------------------affichage---------------------------------------
 
 camera.position.z = 150;
-// camera.position.y = -200;
-// camera.rotateX(45);
+camera.position.y = -200;
+camera.rotateX(45);
 
 
 function animate() {

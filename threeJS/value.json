@@ -1,6 +1,6 @@
 {
     "ballRayon": 6,
-	"ball_speed": 0.01,
+	"ball_speed": 0.005,
 
     "arene_size": [304, 204, 10],
 
