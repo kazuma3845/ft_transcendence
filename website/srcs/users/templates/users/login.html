@@ -14,16 +14,21 @@
 
 		<form method="POST">
 			{% csrf_token %}
+		<input type="hidden" name="next" value="{{ next }}">
 
 		<div class="form-group">
-			<label for="email">Adresse e-mail:</label>
-			<input type="email" id="email" name="email" value="{{ form.email.value|default_if_none:'' }}">
+			<label for="username">Adresse e-mail:</label>
+			<input type="username" id="username" name="username" value="{{ form.username.value|default_if_none:'' }}">
 		</div>
 
 		<div class="form-group">
 			<label for="password">Mot de passe:</label>
 			<input type="password" id="password" name="password">
 		</div>
+
+			{% if error %}
+				<p class="error">{{ error }}</p>
+			{% endif %}
 
 			<button class="standard-button" type="submit">Se connecter</button>
 		</form>

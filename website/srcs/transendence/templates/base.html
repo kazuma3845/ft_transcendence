@@ -24,7 +24,7 @@
 			<p style="color: white;">Bienvenue, <span style="color: white; font-weight: 800;" >{{ user.email }}</span></p>
 			<form method="POST" action="{% url 'logout' %}">
 				{% csrf_token %}
-				<button type="submit" class="a-button">Déconnexion</button>
+				<button type="submit" class="a-button grey">Déconnexion</button>
 			</form>
 		{% endif%}
 	</header>
