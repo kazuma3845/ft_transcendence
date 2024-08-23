@@ -3,7 +3,7 @@ import val from './value.json';
 export default class Form {
     constructor() {
         //------------------ball-----------------------------------------
-        this.ballGeometry = new THREE.SphereGeometry( val.ballRayon, 320, 320);
+        this.ballGeometry = new THREE.SphereGeometry( val.ballRayon, 15, 15);
         const textureLoader = new THREE.TextureLoader();
         const texture = textureLoader.load('../texture/ball.jpg');
         this.ballMaterial = new THREE.MeshBasicMaterial({ map: texture });

@@ -33,7 +33,7 @@ export default class Pong {
         const halfRaquetteHeight = val.paddle_size[1] / 2;
     
         if (this.keysPressed['ArrowDown']) {
-            if (this.form.paddleRight.position.y - halfRaquetteHeight > -halfArenaHeight) {
+            if ((this.form.paddleRight.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleRight.position.y -= moveSpeed;
             }
             else {
@@ -42,7 +42,7 @@ export default class Pong {
         }
     
         if (this.keysPressed['ArrowUp']) {
-            if (this.form.paddleRight.position.y + halfRaquetteHeight < halfArenaHeight) {
+            if ((this.form.paddleRight.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
                 this.form.paddleRight.position.y += moveSpeed;
             }
             else {
@@ -51,7 +51,7 @@ export default class Pong {
         }
     
         if (this.keysPressed['s']) {
-            if (this.form.paddleLeft.position.y - halfRaquetteHeight > -halfArenaHeight) {
+            if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleLeft.position.y -= moveSpeed;
             }
             else {
@@ -60,7 +60,7 @@ export default class Pong {
         }
     
         if (this.keysPressed['w']) {
-            if (this.form.paddleLeft.position.y + halfRaquetteHeight < halfArenaHeight) {
+            if ((this.form.paddleLeft.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
                 this.form.paddleLeft.position.y += moveSpeed;
             }
             else {
@@ -86,7 +86,6 @@ export default class Pong {
             }
             return;
         }
-
         this.form.ball.rotation.x += this.ballSpeedY * 0.1;
         this.form.ball.rotation.y += this.ballSpeedX * 0.1;
 
@@ -151,16 +150,16 @@ export default class Pong {
             this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
         }
 
-        fetch('/update-value', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(val),
-        })
-        .then(response => response.text())
-        .then(data => console.log(data))
-        .catch(error => console.error('Erreur:', error));
+        // fetch('/update-value', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(val),
+        // })
+        // .then(response => response.text())
+        // .then(data => console.log(data))
+        // .catch(error => console.error('Erreur:', error));
         
     }
 
