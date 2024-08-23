@@ -2,13 +2,16 @@
 FROM node:18
 
 # Définir le répertoire de travail
-WORKDIR /Users/kazuma3845/Desktop/transcendence/threeJS
+WORKDIR /threeJS
 
-# Copier les fichiers de l'application dans le conteneur
-COPY . .
+# Copier les fichiers de configuration dans le conteneur
+COPY /threeJS/package.json /threeJS/package-lock.json* ./
 
-# Installer les dépendances (si vous avez un fichier package.json)
+# Installer les dépendances
 RUN npm install
+
+# Copier tous les fichiers de l'application dans le conteneur
+COPY . .
 
 # Installer un serveur simple pour servir des fichiers statiques (comme http-server)
 RUN npm install -g http-server
