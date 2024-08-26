@@ -4,6 +4,6 @@ WORKDIR /app
 COPY utils/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY srcs/ .
-EXPOSE 8080
+EXPOSE 8081
 
-CMD ["sh", "-c", "python main.py & exec /bin/bash"] 
+CMD ["python3", "main.py"]

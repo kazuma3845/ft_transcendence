@@ -31,14 +31,19 @@ services:
     networks:
       - django_network
 
+  bot: 
+    build:
+      context: ./AI
+      dockerfile: Dockerfile
+    networks:
+      - django_network
+
   pong:
     build:
       context: ./pong  # Le contexte de build est maintenant ./srcs
       dockerfile: ./Dockerfile
     volumes:
       - ./pong:/app
-    ports:
-      - "8080:8080"
     networks:
       - django_network
 
