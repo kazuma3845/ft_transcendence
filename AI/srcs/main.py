@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from game_state import GameState
-from prediction import predictFinalBallPosition
+from prediction import *
 from fine_tuning import moderateFinalPosition
 from config import *
 
@@ -20,7 +20,7 @@ app = Flask(__name__)
 #     "ball_angle": 90,
 #     "field_height": 100,
 #     "field_length": 200,
-#     "paddle_position": 0,
+#     "paddle_position": [0, 0]
 #     "paddle_size": 10,
 #     "paddle_move_speed": 5,
 #     "side": "left",
@@ -33,13 +33,15 @@ def receive_data():
     try:
         data = request.get_json()
         state = GameState()
-        state.updateData(data)
-        final_position = predictFinalBallPosition(state)
-        adjusted_position = moderateFinalPosition(state, final_position)
+        state.updateData(data) #Update l'état du jeu
+        final_position = predictFinalBallPosition(state) #On calcule la position finale
+        moderated_position = moderateFinalPosition(state, final_position) #On modere la pos en fonction des ponderateurs
+        corrected_position = correctPosition(state, moderated_position) #On corrige en fonction des infos de la game
+        inputNeeded = calculateInputNeeded(state, corrected_position) #Calcule le nombre d'inputs pour atteindre la destination
         return jsonify({
             "status": "success",
             "message": "Data received",
-            "position": adjusted_position
+            "position": inputNeeded
         }), 200
     except Exception as e:
         return jsonify({
