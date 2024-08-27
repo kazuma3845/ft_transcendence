@@ -15,7 +15,7 @@ export default class Pong {
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
         window.addEventListener('keydown', this.handleKeyPress.bind(this));
 
-        this.animate();
+        // this.animate();
     }
 
     handleKeyDown(event) {
@@ -27,45 +27,48 @@ export default class Pong {
     }
 
     deplacerRaquette(deltaTime) {
+
         const speedFactor = deltaTime / 16.67;
         const moveSpeed = this.paddle_move_speed * speedFactor;
         const halfArenaHeight = this.arenaHeight / 2;
         const halfRaquetteHeight = this.form.paddle_size[1] / 2;
-    
+
         if (this.keysPressed['ArrowDown']) {
+            console.log('ArrowDown pressed');
             if ((this.form.paddleRight.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleRight.position.y -= moveSpeed;
-            }
-            else {
+            } else {
                 this.form.paddleRight.position.y = -(halfArenaHeight - halfRaquetteHeight);
             }
         }
-    
+
         if (this.keysPressed['ArrowUp']) {
+            console.log('ArrowUp pressed');
             if ((this.form.paddleRight.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
                 this.form.paddleRight.position.y += moveSpeed;
-            }
-            else {
+            } else {
                 this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight;
             }
         }
     
         if (this.keysPressed['s']) {
+            console.log('s pressed');
             if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleLeft.position.y -= moveSpeed;
-            }
-            else {
+            } else {
                 this.form.paddleLeft.position.y = -(halfArenaHeight - halfRaquetteHeight);
             }
+            console.log('Updated paddle positions:', this.form.paddleLeft.position.y);
         }
-    
+
         if (this.keysPressed['w']) {
+            console.log('w pressed');
             if ((this.form.paddleLeft.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
                 this.form.paddleLeft.position.y += moveSpeed;
-            }
-            else {
+            } else {
                 this.form.paddleLeft.position.y = halfArenaHeight - halfRaquetteHeight;
             }
+            console.log('Updated paddle positions:', this.form.paddleLeft.position.y);
         }
     }
     
@@ -89,13 +92,8 @@ export default class Pong {
     //     // this.form.ball.rotation.x += this.ballSpeedY * 0.1;
     //     // this.form.ball.rotation.y += this.ballSpeedX * 0.1;
 
-    //     // val.ball_angle = Math.atan2(this.ballSpeedY, this.ballSpeedX);
-
     //     this.form.ball.position.x += this.ballSpeedX;
     //     this.form.ball.position.y += this.ballSpeedY;
-
-    //     // val.ball_pos[0] = this.form.ball.position.x;
-    //     // val.ball_pos[1] = this.form.ball.position.y;
 
     //     const halfArenaWidth = this.arenaWidth / 2;
     //     const halfArenaHeight = this.arenaHeight / 2;
@@ -149,18 +147,6 @@ export default class Pong {
         //     this.ballSpeedX = (this.ballSpeedX / speed) * this.initialSpeed;
         //     this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
         // }
-
-        // fetch('/update-value', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(val),
-        // })
-        // .then(response => response.text())
-        // .then(data => console.log(data))
-        // .catch(error => console.error('Erreur:', error));
-        
     // }
 
     animate(timestamp) {
@@ -172,7 +158,9 @@ export default class Pong {
         this.lastTime = timestamp;
     
         this.deplacerRaquette(deltaTime);
+        // this.updateBallPosition();
         requestAnimationFrame(this.animate.bind(this));
     }
+    
     
 }
