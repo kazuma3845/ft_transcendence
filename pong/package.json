@@ -1,5 +1,12 @@
 {
-  "devDependencies": {
-    "vite": "^5.4.2"
+  "name": "threedemo",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "es-module-shims": "^1.10.0",
+    "express": "^4.19.2",
+    "three": "^0.143.0"
   }
 }

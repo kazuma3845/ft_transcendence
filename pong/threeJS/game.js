@@ -33,7 +33,7 @@ camera.rotateX(45);
 function animate() {
 	queueMicrotask
     requestAnimationFrame(animate);
-	pong.updateBallPosition();
+	// pong.updateBallPosition();
 	renderer.render( scene, camera );
 
 }

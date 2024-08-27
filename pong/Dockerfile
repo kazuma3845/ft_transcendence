@@ -1,23 +1,17 @@
-# Utiliser une image Node.js comme base
+# Utiliser l'image Node.js officielle comme base
 FROM node:18
 
-# Définir le répertoire de travail
+# Créer un répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers de configuration dans le conteneur
-COPY package.json package-lock.json* ./
+# Copier les fichiers de l'application dans le conteneur
+COPY . .
 
 # Installer les dépendances
 RUN npm install
 
-# Copier tous les fichiers de l'application dans le conteneur
-COPY . .
-
-# Installer un serveur simple pour servir des fichiers statiques (comme http-server)
-RUN npm install -g http-server
-
-# Exposer le port 8080
+# Exposer le port que le serveur utilisera
 EXPOSE 8080
 
-# Lancer le serveur
-CMD ["http-server", ".", "-p", "8080"]
+# Commande pour démarrer le serveur Express
+CMD ["node", "server.js"]
