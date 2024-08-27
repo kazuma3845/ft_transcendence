@@ -1,5 +1,5 @@
 {
-  "name": "threedemo",
+  "name": "pong",
   "version": "1.0.0",
   "scripts": {
     "dev": "vite"
@@ -8,5 +8,8 @@
     "es-module-shims": "^1.10.0",
     "express": "^4.19.2",
     "three": "^0.143.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.2"
   }
 }
