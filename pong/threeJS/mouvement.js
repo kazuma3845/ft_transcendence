@@ -66,7 +66,6 @@ export default class Pong {
         }
     }
 
-
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
             this.ballPaused = false;
