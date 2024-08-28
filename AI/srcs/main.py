@@ -41,7 +41,7 @@ def receive_data():
         return jsonify({
             "status": "success",
             "message": "Data received",
-            "position": inputNeeded
+            "input": inputNeeded
         }), 200
     except Exception as e:
         return jsonify({
