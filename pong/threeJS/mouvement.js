@@ -1,5 +1,7 @@
+
 export default class Pong {
-    constructor(form) {
+    constructor(form, bot) {
+        this.bot = bot;
         this.form = form;
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
@@ -129,7 +131,7 @@ export default class Pong {
             const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
             const angleDegrees = angleRadians * (180 / Math.PI);
             this.ball_angle = 90 - angleDegrees;
-            this.handleBallHit();
+            this.bot.handleBallHit();
         }
         
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
@@ -145,71 +147,5 @@ export default class Pong {
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
         this.ballSpeedX = (this.ballSpeedX / speed) * this.initialSpeed;
         this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
-    
-
-    }
-
-    handleBallHit() {
-        const currentTime = Date.now();
-        const timeSinceLastExec = currentTime - this.lastExecTime;
-
-        if (timeSinceLastExec >= 1000) {
-            this.sendDataToBot(this);
-        } else {
-            setTimeout(() => {
-                this.sendDataToBot(this);
-            }, 1000 - timeSinceLastExec);
-        }
-    }
-
-    sendDataToBot() {
-        const data = {
-            ball_position: [this.form.ball.position.x, this.form.ball.position.y],
-            ball_speed: this.initialSpeed,
-            ball_angle: this.ball_angle,
-            field_height: this.arenaHeight,
-            field_length: this.arenaWidth,
-            paddle_position: [this.form.paddleRight.position.x, this.form.paddleRight.position.y],
-            paddle_size: this.form.paddle_size[1],
-            paddle_move_speed: this.paddle_move_speed,
-            side: "right", // ou "left" selon la logique
-            score: [0, 250], // Mettre à jour avec le score actuel
-            ballPaused: this.ballPaused,
-            bot_lvl: this.botLVL,
-        };
-        console.log("Sending data:", JSON.stringify(data));
-        fetch('http://localhost:8081/api/receive-data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            this.processBotResponse(data);
-        })
-        .catch(error => console.error('Erreur:', error));
-    }
-    
-    processBotResponse(data) {
-        console.log("Réponse reçue:", data);
-        this.input = data.input;
-        // this.updateBotPosition(data.input);
-    }
-
-    updateBotPosition() {
-        console.log("Déplacer le bot de:", this.input);
-        // Reset the key presses
-        this.keysPressed['o'] = false;
-        this.keysPressed['k'] = false;
-
-        if (this.input > 0) {
-            this.keysPressed['o'] = true;
-            this.input--;
-        } else if (this.input < 0) {
-            this.keysPressed['k'] = true;
-            this.input++;
-        }
     }
 }

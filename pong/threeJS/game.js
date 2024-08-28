@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import Form from './form.js';
 import Pong from './mouvement.js';
+import Bot from './bot.js';
+
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -10,7 +12,10 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
-const pong = new Pong(form);
+const pong = new Pong(form, null); // Initialisation de Pong avec form et bot null
+const bot = new Bot(pong, form); // Initialisation de Bot avec pong et form
+pong.bot = bot; // Lier bot à pong
+
 
 scene.add(form.ball);
 scene.add(form.Arene);
@@ -38,7 +43,7 @@ function animate(timestamp) {
 
 	pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
-    pong.updateBotPosition();
+    bot.updateBotPosition();
     renderer.render(scene, camera);
 }
 
