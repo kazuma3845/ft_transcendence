@@ -3,7 +3,7 @@ export default class Pong {
         this.form = form;
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
-        this.initialSpeed = 4;
+        this.initialSpeed = 6;
         this.ballSpeedX = this.initialSpeed;
         this.ballSpeedY = 0;
         this.ballPaused = true;
@@ -11,7 +11,7 @@ export default class Pong {
         this.paddle_move_speed = 4;
         this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
         // this.botActivated = True;
-        this.botLVL = 0.5;
+        this.botLVL = 0.1;
 
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -125,7 +125,10 @@ export default class Pong {
             const normalizedImpactY = impactY / halfRaquetteHeight;
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
-            this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
+            this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);        
+            const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
+            const angleDegrees = angleRadians * (180 / Math.PI);
+            this.ball_angle = 90 - angleDegrees;
             this.handleBallHit();
         }
         
@@ -141,11 +144,9 @@ export default class Pong {
     
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
         this.ballSpeedX = (this.ballSpeedX / speed) * this.initialSpeed;
-        this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;   
+        this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
+    
 
-        const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
-        const angleDegrees = angleRadians * (180 / Math.PI);
-        this.ball_angle = 90 - angleDegrees;
     }
 
     handleBallHit() {
@@ -172,7 +173,7 @@ export default class Pong {
             paddle_size: this.form.paddle_size[1],
             paddle_move_speed: this.paddle_move_speed,
             side: "right", // ou "left" selon la logique
-            score: [5, 0], // Mettre à jour avec le score actuel
+            score: [0, 250], // Mettre à jour avec le score actuel
             ballPaused: this.ballPaused,
             bot_lvl: this.botLVL,
         };
@@ -193,10 +194,22 @@ export default class Pong {
     
     processBotResponse(data) {
         console.log("Réponse reçue:", data);
-        this.updateBotPosition(data.input);
+        this.input = data.input;
+        // this.updateBotPosition(data.input);
     }
 
-    updateBotPosition(input) {
-        console.log("Déplacer le bot de:", input);
+    updateBotPosition() {
+        console.log("Déplacer le bot de:", this.input);
+        // Reset the key presses
+        this.keysPressed['o'] = false;
+        this.keysPressed['k'] = false;
+
+        if (this.input > 0) {
+            this.keysPressed['o'] = true;
+            this.input--;
+        } else if (this.input < 0) {
+            this.keysPressed['k'] = true;
+            this.input++;
+        }
     }
 }
