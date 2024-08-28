@@ -15,6 +15,7 @@ else:
         
 app = Flask(__name__)
 CORS(app) 
+
 # state_data = {
 #     "ball_position": [0, 0],
 #     "ball_speed": 20,
