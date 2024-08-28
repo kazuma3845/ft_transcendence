@@ -4,7 +4,7 @@ export default class Form {
     constructor() {
       this.ballRayon = 6;
       this.arene_size = [304, 204, 10];
-      this.paddle_size = [5, 50, 10];
+      this.paddle_size = [5, 40, 10];
       this.paddle_pos = 140
       this.LRborder_size = [2, 200, 2];
       this.NSborder_size = [304, 2, 2];
