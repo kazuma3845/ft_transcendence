@@ -1,9 +1,10 @@
 # config.py
 
 # Variable de configuration
-DEBUG = False
+DEBUG = True
 
 DEBUG_CATEGORIES = {
+    "REQUEST": True,
     "HIT": False,        # Activer/Désactiver les messages liés aux "hits"
     "REBOUND": False,    # Activer/Désactiver les messages liés aux rebonds
     "FINAL_POS": False,  # Activer/Désactiver les messages liés à la position finale

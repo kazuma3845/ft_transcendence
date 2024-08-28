@@ -9,7 +9,10 @@ export default class Pong {
         this.ballPaused = true;
         this.keysPressed = {};
         this.paddle_move_speed = 4;
-        this.lastExecTime = 1;
+        this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
+        // this.botActivated = True;
+        this.botLVL = 0.5;
+
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -62,6 +65,7 @@ export default class Pong {
             }
         }
     }
+
 
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
@@ -138,8 +142,8 @@ export default class Pong {
     
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
         this.ballSpeedX = (this.ballSpeedX / speed) * this.initialSpeed;
-        this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
-    
+        this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;   
+
         const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
         const angleDegrees = angleRadians * (180 / Math.PI);
         this.ball_angle = 90 - angleDegrees;
@@ -158,24 +162,23 @@ export default class Pong {
         }
     }
 
-    sendDataToAPI() {
-        //! A CORRIGER LES DATA SONT PAS BONNES
+    sendDataToBot() {
         const data = {
             ball_position: [this.form.ball.position.x, this.form.ball.position.y],
-            ball_speed: Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY),
-            ball_angle: Math.atan2(this.ballSpeedY, this.ballSpeedX),
+            ball_speed: this.initialSpeed,
+            ball_angle: this.ball_angle,
             field_height: this.arenaHeight,
             field_length: this.arenaWidth,
-            paddle_position: [this.form.paddleLeft.position.y, this.form.paddleRight.position.y],
-            paddle_size: val.paddle_size[1],
-            paddle_move_speed: val.paddle_move_speed,
+            paddle_position: [this.form.paddleRight.position.x, this.form.paddleRight.position.y],
+            paddle_size: this.form.paddle_size[1],
+            paddle_move_speed: this.paddle_move_speed,
             side: "right", // ou "left" selon la logique
             score: [5, 0], // Mettre à jour avec le score actuel
             ballPaused: this.ballPaused,
-            bot_lvl: 1
+            bot_lvl: this.botLVL,
         };
-
-        fetch('http://bot:8081/api/receive-data', {
+        console.log("Sending data:", JSON.stringify(data));
+        fetch('http://localhost:8081/api/receive-data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

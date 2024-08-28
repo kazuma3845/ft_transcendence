@@ -1,6 +1,6 @@
-docker run -d -p 8080:8080 bot
+docker run -d -p 8081:8081 bot
 
-curl -X POST http://localhost:8080/api/receive-data \
+curl -X POST http://localhost:8081/api/receive-data \
 -H "Content-Type: application/json" \
 -d '{
   "ball_position": [50, 50],
