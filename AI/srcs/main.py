@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from game_state import GameState
 from prediction import *
 from fine_tuning import moderateFinalPosition
@@ -13,7 +14,7 @@ else:
     log("Debug mode is disabled.","warning")
         
 app = Flask(__name__)
-
+CORS(app) 
 # state_data = {
 #     "ball_position": [0, 0],
 #     "ball_speed": 20,
@@ -31,7 +32,8 @@ app = Flask(__name__)
 @app.route('/api/receive-data', methods=['POST'])
 def receive_data():
     try:
-        data = request.get_json()
+        data = request.get_json()        
+        print(f"Received data: {data}") 
         state = GameState()
         state.updateData(data) #Update l'état du jeu
         final_position = predictFinalBallPosition(state) #On calcule la position finale
