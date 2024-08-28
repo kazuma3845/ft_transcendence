@@ -1,23 +1,17 @@
-# Utiliser une image Node.js comme base
+# Utiliser l'image Node.js officielle comme base
 FROM node:18
 
-# Définir le répertoire de travail
-WORKDIR /threeJS
+# Créer un répertoire de travail
+WORKDIR /app
 
-# Copier les fichiers de configuration dans le conteneur
-COPY /threeJS/package.json /threeJS/package-lock.json* ./
+# Copier les fichiers de l'application dans le conteneur
+COPY . .
 
 # Installer les dépendances
 RUN npm install
 
-# Copier tous les fichiers de l'application dans le conteneur
-COPY . .
+# Exposer le port que le serveur utilisera
+EXPOSE 8080
 
-# Installer un serveur simple pour servir des fichiers statiques (comme http-server)
-RUN npm install -g http-server
-
-# Exposer le port 8080
-EXPOSE 8082
-
-# Lancer le serveur
-CMD ["http-server", ".", "-p", "8082"]
+# Commande pour démarrer le serveur Express
+CMD ["node", "server.js"]

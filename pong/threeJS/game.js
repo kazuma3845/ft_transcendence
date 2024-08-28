@@ -35,5 +35,4 @@ function animate() {
     requestAnimationFrame(animate);
 	pong.updateBallPosition();
 	renderer.render( scene, camera );
-
 }
