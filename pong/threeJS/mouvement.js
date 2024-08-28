@@ -32,7 +32,7 @@ export default class Pong {
         const halfArenaHeight = this.arenaHeight / 2;
         const halfRaquetteHeight = this.form.paddle_size[1] / 2;
 
-        if (this.keysPressed['ArrowDown']) {
+        if (this.keysPressed['k']) {
             console.log('ArrowDown pressed');
             if ((this.form.paddleRight.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleRight.position.y -= moveSpeed;
@@ -41,7 +41,7 @@ export default class Pong {
             }
         }
 
-        if (this.keysPressed['ArrowUp']) {
+        if (this.keysPressed['o']) {
             console.log('ArrowUp pressed');
             if ((this.form.paddleRight.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
                 this.form.paddleRight.position.y += moveSpeed;
