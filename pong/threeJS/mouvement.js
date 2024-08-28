@@ -126,7 +126,7 @@ export default class Pong {
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
-
+            this.handleBallHit();
         }
         
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
