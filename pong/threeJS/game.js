@@ -12,9 +12,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
-const pong = new Pong(form, null); // Initialisation de Pong avec form et bot null
-const bot = new Bot(pong, form); // Initialisation de Bot avec pong et form
-pong.bot = bot; // Lier bot à pong
+const pong = new Pong(form, null);
+const bot = new Bot(pong, form);
+pong.bot = bot;
 
 
 scene.add(form.ball);
