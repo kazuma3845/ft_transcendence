@@ -23,6 +23,9 @@ scene.add(form.Nborder);
 scene.add(form.line);
 
 camera.position.z = 150;
+camera.position.y = -200;
+camera.rotateX(45)
+
 
 let lastTime;
 
