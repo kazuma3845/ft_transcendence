@@ -5,13 +5,14 @@ export default class Pong {
         this.form = form;
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
-        this.initialSpeed = 6;
+        this.initialSpeed = 5;
         this.ballSpeedX = this.initialSpeed;
         this.ballSpeedY = 0;
         this.ballPaused = true;
         this.keysPressed = {};
-        this.paddle_move_speed = 4;
+        this.paddle_move_speed = 3;
         this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
+        this.ball_angle = 90;
         // this.botActivated = True;
         this.botLVL = 0.1;
 
@@ -71,6 +72,8 @@ export default class Pong {
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
             this.ballPaused = false;
+        if (this.form.ball.position.x < 0)
+            this.bot.handleBallHit();
         }
     }
 
@@ -142,6 +145,7 @@ export default class Pong {
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = -Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
+            this.bot.replaceBot();
         }
     
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);

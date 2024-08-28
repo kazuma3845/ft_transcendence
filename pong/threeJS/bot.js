@@ -28,7 +28,7 @@ export default class Bot {
             paddle_size: this.form.paddle_size[1],
             paddle_move_speed: this.pong.paddle_move_speed,
             side: "right", // ou "left" selon la logique
-            score: [1, 0], // Mettre à jour avec le score actuel
+            score: [0, 0], // Mettre à jour avec le score actuel
             ballPaused: this.pong.ballPaused,
             bot_lvl: this.pong.botLVL,
         };
@@ -52,9 +52,14 @@ export default class Bot {
         this.input = data.input;
     }
 
+	replaceBot() {
+		let raw_input = this.form.paddleRight.position.y / this.pong.paddle_move_speed;
+		console.log(raw_input);
+		this.input = Math.round(raw_input) * -1;
+	}
+
     updateBotPosition() {
-        console.log("Déplacer le bot de:", this.input);
-        // Reset the key presses
+        // console.log("Déplacer le bot de:", this.input);
         this.pong.keysPressed['o'] = false;
         this.pong.keysPressed['k'] = false;
 
