@@ -11,7 +11,7 @@ function router() {
             break;
         // Ajoute ici d'autres cas pour d'autres vues
         default:
-			document.getElementById('app').innerHTML = '<div class="parent_center"><div class="box"><iframe src="https://google.ch/" title="Browser Pong"></iframe></div></div>';
+			document.getElementById('app').innerHTML = '<div class="parent_center"><div class="box"><iframe src="http://127.0.0.1:8080/" title="Browser Pong"></iframe></div></div>';
             // loadHomePage();  // Par défaut, charge la page d'accueil ou vide le conteneur
             break;
     }
