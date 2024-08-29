@@ -29,8 +29,8 @@ export default class Bot {
             paddle_move_speed: this.pong.paddle_move_speed,
             side: "right", // ou "left" selon la logique
             score: [0, 0], // Mettre à jour avec le score actuel
-            ballPaused: this.pong.ballPaused,
-            bot_lvl: this.pong.botLVL,
+            ballPaused: this.pong.ballPaused, 
+            bot_lvl: 0.5, // ! MOD THIS TO ADJUST BOT LVL
         };
         console.log("Sending data:", JSON.stringify(data));
         fetch('http://localhost:8081/api/receive-data', {

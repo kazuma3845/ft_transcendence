@@ -14,7 +14,7 @@ export default class Pong {
         this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
         this.ball_angle = 90;
         // this.botActivated = True;
-        this.botLVL = 0.1;
+        // this.botLVL = 0.1;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
