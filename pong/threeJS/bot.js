@@ -28,7 +28,7 @@ export default class Bot {
             paddle_size: this.form.paddle_size[1],
             paddle_move_speed: this.pong.paddle_move_speed,
             side: "right", // ou "left" selon la logique
-            score: [0, 0], // Mettre à jour avec le score actuel
+            score: this.pong.score,
             ballPaused: this.pong.ballPaused,
             bot_lvl: this.pong.botLVL,
         };

@@ -10,10 +10,10 @@ export default class Form {
       this.NSborder_size = [304, 2, 2];
 
         //------------------ball-----------------------------------------
-        const ballGeometry = new THREE.SphereGeometry( this.ballRayon, 15, 15);
+        const ballGeometry = new THREE.SphereGeometry( this.ballRayon, 30, 30);
         // const textureLoader = new THREE.TextureLoader();
         // const texture = textureLoader.load('../../resources/texture/ball.jpg');
-        // this.ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
+        // const ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
         const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xfff });
         this.ball = new THREE.Mesh(ballGeometry, ballMaterial);
 

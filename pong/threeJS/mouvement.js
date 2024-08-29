@@ -11,10 +11,12 @@ export default class Pong {
         this.ballPaused = true;
         this.keysPressed = {};
         this.paddle_move_speed = 3;
-        this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
+        this.lastExecTime = 1;
         this.ball_angle = 90;
         // this.botActivated = True;
-        this.botLVL = 0.5;
+        this.botLVL = 1;
+
+        this.score = [0, 0];
 
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -87,8 +89,8 @@ export default class Pong {
             }
             return;
         }
-    
-        const speedFactor = deltaTime / 16.67; // 16.67 ms corresponds to 60 FPS
+
+        const speedFactor = deltaTime / 16.67;
         const adjustedSpeedX = this.ballSpeedX * speedFactor;
         const adjustedSpeedY = this.ballSpeedY * speedFactor;
     
@@ -106,6 +108,7 @@ export default class Pong {
             this.form.ball.position.y = this.form.paddleRight.position.y;
             this.ballSpeedX = -this.initialSpeed;
             this.ballPaused = true;
+            this.score[0] += 1;
         }
     
         if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth) {
@@ -113,6 +116,7 @@ export default class Pong {
             this.form.ball.position.y = this.form.paddleLeft.position.y;
             this.ballSpeedX = this.initialSpeed;
             this.ballPaused = true;
+            this.score[1] += 1;
         }
         
         if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight || (this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight) {
