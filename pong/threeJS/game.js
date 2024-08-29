@@ -13,7 +13,7 @@ document.body.appendChild(renderer.domElement);
 const form = new Form();
 const pong = new Pong(form, null);
 const bot = new Bot(pong, form);
-let win_score = 7;  // Le score de victoire initial
+let win_score = 3;
 pong.bot = bot;
 
 scene.add(form.ball);
@@ -28,7 +28,7 @@ scene.add(form.line);
 
 camera.position.z = 150;
 camera.position.y = -200;
-camera.rotateX(45);
+camera.rotateX(45 * Math.PI / 180);
 
 let lastTime;
 
@@ -69,11 +69,10 @@ function showWinScreen(message, score1, score2) {
 function startGame() {
     const startScreen = document.getElementById('startScreen');
     startScreen.style.display = 'none';
-
+    // sendDataForID();
     renderer.setAnimationLoop(animate);
 }
 
-// Fonction pour afficher l'écran des paramètres
 function showSettings() {
     const startScreen = document.getElementById('startScreen');
     const settingsScreen = document.getElementById('settingsScreen');
@@ -82,19 +81,34 @@ function showSettings() {
     settingsScreen.style.display = 'flex';
 }
 
-// Fonction pour revenir à l'écran de départ depuis les paramètres
 function backToStart() {
     const startScreen = document.getElementById('startScreen');
     const settingsScreen = document.getElementById('settingsScreen');
 
     const winScoreInput = document.getElementById('winScoreInput');
-    win_score = parseInt(winScoreInput.value) || 7;  // Mettre à jour le score de victoire
+    win_score = parseInt(winScoreInput.value) || 7;
 
     settingsScreen.style.display = 'none';
     startScreen.style.display = 'flex';
 }
 
-// Attacher les événements aux boutons
+function sendDataForID() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('http://localhost:8000/api/game/sessions/start_single/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        this.id = data.id;
+    })
+    .catch(error => console.error('Erreur:', error));
+}
+
 document.getElementById('startButton').addEventListener('click', startGame);
 document.getElementById('settingsButton').addEventListener('click', showSettings);
 document.getElementById('backButton').addEventListener('click', backToStart);

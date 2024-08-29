@@ -109,6 +109,7 @@ export default class Pong {
             this.ballSpeedX = -this.initialSpeed;
             this.ballPaused = true;
             this.score[0] += 1;
+            // this.sendDataToScore();
         }
     
         if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth) {
@@ -117,6 +118,7 @@ export default class Pong {
             this.ballSpeedX = this.initialSpeed;
             this.ballPaused = true;
             this.score[1] += 1;
+            // this.sendDataToScore();
         }
         
         if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight || (this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight) {
@@ -155,5 +157,22 @@ export default class Pong {
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
         this.ballSpeedX = (this.ballSpeedX / speed) * this.initialSpeed;
         this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
+    }
+
+    sendDataToScore() {
+        const data = {
+            player1_points: this.score[0],
+            player2_points: this.score[1],
+        };
+        console.log("Sending data:", JSON.stringify(data));
+
+        fetch(`http://localhost:8000/api/game/sessions/${this.pong.id}/update_score/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .catch(error => console.error('Erreur:', error));
     }
 }
