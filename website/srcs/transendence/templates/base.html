@@ -20,25 +20,10 @@
 		<div class="logo bungee-shade-regular">
 			<a href="#">Transcendence</a>
 		</div>
-		{% comment %} <nav>
-			<a href="#" onclick="loadUserProfiles(); return false;">Users</a>
-			<a href="#" onclick="loadGames(); return false;">Games</a>
-			<a href="#" onclick="loadLeaderboards(); return false;">Leaderboards</a>
-		</nav> {% endcomment %}
 		<div id="nav-main-button" style="min-width: 70vw; display: contents;">
 		</div>
-		{% comment %} {% if not user.is_authenticated %}
-			<button id="signup-button" class="a-button">Inscription</button>
-		{% else %}
-		<p style="color: white;">Bienvenue, <span style="color: white; font-weight: 800;" >{{ user.email }}</span></p>
-		<form method="POST" action="{% url 'logout' %}">
-				{% csrf_token %}
-				<button type="submit" class="a-button grey">Déconnexion</button>
-			</form>
-		{% endif%} {% endcomment %}
 	</header>
 	{% endblock %}
-	{% comment %} {% block content %}{% endblock %} {% endcomment %}
 	<main id="app">
         <!-- Le contenu dynamique sera injecté ici -->
     </main>
@@ -50,5 +35,6 @@
 	<script src="{% static 'js/router.js' %}"></script>
 	<script src="{% static 'users/js/signup.js' %}"></script>
 	<script src="{% static 'users/js/login.js' %}"></script>
+	<script src="{% static 'game/js/game.js' %}"></script>
 </body>
 </html>

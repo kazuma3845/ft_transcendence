@@ -9,9 +9,12 @@ function router() {
         case '#login':
             loadLoginForm();
             break;
+        case '#game':
+            loadGame();
+            break;
         // Ajoute ici d'autres cas pour d'autres vues
         default:
-			document.getElementById('app').innerHTML = '<div class="parent_center"><div class="box"><iframe src="http://127.0.0.1:8080/" title="Browser Pong"></iframe></div></div>';
+            loadHome();
             // loadHomePage();  // Par défaut, charge la page d'accueil ou vide le conteneur
             break;
     }

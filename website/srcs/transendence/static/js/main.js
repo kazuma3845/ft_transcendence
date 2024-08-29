@@ -2,20 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-function loadUserProfiles() {
-	fetch('/api/users/profiles/')
-		.then(response => response.json())
-		.then(data => {
-			let userList = document.getElementById('user-list');
-			userList.innerHTML = '';
-
-			data.forEach(profile => {
-				let listItem = document.createElement('li');
-				listItem.textContent = `${profile.user.username} - ${profile.bio}`;
-				userList.appendChild(listItem);
-			});
-		})
-		.catch(error => console.error('Error fetching user profiles:', error));
+function loadHome() {
+    fetch('/static/html/home.html')
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('app').innerHTML = html;
+        // attachSignupFormSubmitListener();
+    });
 }
 
 // Charger les parties de jeu
