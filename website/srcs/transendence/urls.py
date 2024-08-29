@@ -16,14 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.views import LogoutView
+# from django.contrib.auth.views import LogoutView
 from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('', views.index, name='home'),
-    path('users/', include('users.urls')),
-    path('game/', include('game.urls')),
-    path('leaderboards/', include('leaderboards.urls')),
-    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
+    path('api/users/', include('users.urls')),        # API pour l'app users
+    path('api/game/', include('game.urls')),          # API pour l'app game
+    path('api/leaderboards/', include('leaderboards.urls')),
+    # path('users/', include('users.urls')),
+    # path('game/', include('game.urls')),
+    # path('leaderboards/', include('leaderboards.urls')),
+    # path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
 ]
