@@ -14,7 +14,7 @@ export default class Pong {
         this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
         this.ball_angle = 90;
         // this.botActivated = True;
-        // this.botLVL = 0.1;
+        this.botLVL = 0.1;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -83,6 +83,7 @@ export default class Pong {
             }
             if (this.form.ball.position.x > 0) {
                 this.form.ball.position.y = this.form.paddleRight.position.y;
+                this.bot.startGame();
             }
             return;
         }
@@ -133,7 +134,10 @@ export default class Pong {
             const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
             const angleDegrees = angleRadians * (180 / Math.PI);
             this.ball_angle = 90 - angleDegrees;
-            this.bot.handleBallHit();
+            if (!this.ballPaused)
+                this.bot.handleBallHit();
+            else 
+                this.bot.replaceBot();
         }
         
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
@@ -144,7 +148,8 @@ export default class Pong {
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = -Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
-            this.bot.replaceBot();
+            if (!this.ballPaused)
+                this.bot.replaceBot();
         }
     
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);

@@ -21,7 +21,7 @@ def moderateFinalPosition(state, final_position):
 
     # 6. Latence du bot : légère augmentation pour rendre le bot encore plus battable
     max_latency = 0.75 - 0.5 * adjusted_difficulty
-    min_latency = max(0.35, max_latency - 0.35)
+    min_latency = max(0.2, max_latency - 0.2)
     latency = random.uniform(min_latency, max_latency)
 
     # 7. Ajustement aléatoire basé sur la difficulté, la différence de scores, et les rebonds
