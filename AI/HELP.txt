@@ -1,0 +1,18 @@
+docker run -d -p 8081:8081 bot
+
+curl -X POST http://localhost:8081/api/receive-data \
+-H "Content-Type: application/json" \
+-d '{
+  "ball_position": [50, 50],
+  "ball_speed": 15,
+  "ball_angle": 45,
+  "field_height": 100,
+  "field_length": 200,
+  "paddle_position": 30,
+  "paddle_size": 15,
+  "paddle_move_speed": 7,
+  "side": "right",
+  "score": [5, 3],
+  "ballPaused": false,
+  "bot_lvl": 0.8
+}'
