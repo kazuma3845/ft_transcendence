@@ -5,18 +5,16 @@ export default class Pong {
         this.form = form;
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
-        this.initialSpeed = 5;
+        this.initialSpeed = 6;
         this.ballSpeedX = this.initialSpeed;
         this.ballSpeedY = 0;
         this.ballPaused = true;
         this.keysPressed = {};
-        this.paddle_move_speed = 3;
-        this.lastExecTime = 1;
+        this.paddle_move_speed = 4;
+        this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
         this.ball_angle = 90;
-        this.id = 0;
         // this.botActivated = True;
         this.botLVL = 1;
-
         this.score = [0, 0];
 
 
@@ -87,6 +85,7 @@ export default class Pong {
             }
             if (this.form.ball.position.x > 0) {
                 this.form.ball.position.y = this.form.paddleRight.position.y;
+                this.bot.startGame();
             }
             return;
         }
@@ -141,7 +140,10 @@ export default class Pong {
             const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
             const angleDegrees = angleRadians * (180 / Math.PI);
             this.ball_angle = 90 - angleDegrees;
-            this.bot.handleBallHit();
+            if (!this.ballPaused)
+                this.bot.handleBallHit();
+            else 
+                this.bot.replaceBot();
         }
 
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
@@ -152,7 +154,8 @@ export default class Pong {
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = -Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
-            this.bot.replaceBot();
+            if (!this.ballPaused)
+                this.bot.replaceBot();
         }
 
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);

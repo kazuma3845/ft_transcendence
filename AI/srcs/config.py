@@ -4,13 +4,13 @@
 DEBUG = True
 
 DEBUG_CATEGORIES = {
-    "REQUEST": True,
+    "REQUEST": False,
     "HIT": False,        # Activer/Désactiver les messages liés aux "hits"
     "REBOUND": False,    # Activer/Désactiver les messages liés aux rebonds
     "FINAL_POS": False,  # Activer/Désactiver les messages liés à la position finale
-    "PONDERATORS": False,
+    "PONDERATORS": True,
     "CORRECTION": False,
-    "INPUT": True,
+    "INPUT": False,
 }
 
 # Codes de style ANSI
