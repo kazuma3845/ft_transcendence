@@ -6,3 +6,4 @@ psycopg2>=2.8
 djangorestframework
 channels==4.1.0
 channels_redis
+django-cors-headers

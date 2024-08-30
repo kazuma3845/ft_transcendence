@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-c*j8g&nc=%j!j(%8$5(h-2b$yqs=x7#@n-^x3-z=-_#eg^ka0*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'game',
     'leaderboards',
 	'channels',
+	'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'transendence.urls'
@@ -136,6 +138,16 @@ USE_I18N = True
 
 USE_TZ = True
 
+#ajouter des adresses accessibles
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8080",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

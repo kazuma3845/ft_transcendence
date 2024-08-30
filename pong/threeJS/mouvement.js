@@ -13,6 +13,7 @@ export default class Pong {
         this.paddle_move_speed = 3;
         this.lastExecTime = 1;
         this.ball_angle = 90;
+        this.id = 0;
         // this.botActivated = True;
         this.botLVL = 1;
 
@@ -53,7 +54,7 @@ export default class Pong {
                 this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight;
             }
         }
-    
+
         if (this.keysPressed['s']) {
             if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleLeft.position.y -= moveSpeed;
@@ -93,42 +94,42 @@ export default class Pong {
         const speedFactor = deltaTime / 16.67;
         const adjustedSpeedX = this.ballSpeedX * speedFactor;
         const adjustedSpeedY = this.ballSpeedY * speedFactor;
-    
+
         this.form.ball.rotation.x += adjustedSpeedY * 0.1;
         this.form.ball.rotation.y += adjustedSpeedX * 0.1;
-    
+
         this.form.ball.position.x += adjustedSpeedX;
         this.form.ball.position.y += adjustedSpeedY;
-    
+
         const halfArenaWidth = this.arenaWidth / 2;
         const halfArenaHeight = this.arenaHeight / 2;
-    
+
         if ((this.form.ball.position.x + this.form.ballRayon) >= halfArenaWidth) {
             this.form.ball.position.x = this.form.paddleRight.position.x - this.form.paddle_size[0] / 2 - this.form.ballRayon;
             this.form.ball.position.y = this.form.paddleRight.position.y;
             this.ballSpeedX = -this.initialSpeed;
             this.ballPaused = true;
             this.score[0] += 1;
-            // this.sendDataToScore();
+            this.sendDataToScore();
         }
-    
+
         if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth) {
             this.form.ball.position.x = this.form.paddleLeft.position.x + this.form.paddle_size[0] / 2 + this.form.ballRayon;
             this.form.ball.position.y = this.form.paddleLeft.position.y;
             this.ballSpeedX = this.initialSpeed;
             this.ballPaused = true;
             this.score[1] += 1;
-            // this.sendDataToScore();
+            this.sendDataToScore();
         }
-        
+
         if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight || (this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight) {
             this.ballSpeedY = -this.ballSpeedY;
         }
-        
+
         //-----------------paddle----------------------------
         const halfRaquetteHeight = this.form.paddle_size[1] / 2;
         const halfRaquetteWidth = this.form.paddle_size[0] / 2;
-                
+
         if (this.form.ball.position.x - this.form.ballRayon <= this.form.paddleLeft.position.x + halfRaquetteWidth &&
             this.form.ball.position.y >= this.form.paddleLeft.position.y - halfRaquetteHeight &&
             this.form.ball.position.y <= this.form.paddleLeft.position.y + halfRaquetteHeight) {
@@ -136,13 +137,13 @@ export default class Pong {
             const normalizedImpactY = impactY / halfRaquetteHeight;
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
-            this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);        
+            this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
             const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
             const angleDegrees = angleRadians * (180 / Math.PI);
             this.ball_angle = 90 - angleDegrees;
             this.bot.handleBallHit();
         }
-        
+
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
             this.form.ball.position.y >= this.form.paddleRight.position.y - halfRaquetteHeight &&
             this.form.ball.position.y <= this.form.paddleRight.position.y + halfRaquetteHeight) {
@@ -153,7 +154,7 @@ export default class Pong {
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
             this.bot.replaceBot();
         }
-    
+
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
         this.ballSpeedX = (this.ballSpeedX / speed) * this.initialSpeed;
         this.ballSpeedY = (this.ballSpeedY / speed) * this.initialSpeed;
@@ -166,13 +167,49 @@ export default class Pong {
         };
         console.log("Sending data:", JSON.stringify(data));
 
-        fetch(`http://localhost:8000/api/game/sessions/${this.pong.id}/update_score/`, {
+        fetch(`http://127.0.0.1:8000/api/game/sessions/${this.id}/update_score/`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCookie('csrftoken'),
             },
             body: JSON.stringify(data)
         })
         .catch(error => console.error('Erreur:', error));
+    }
+
+    sendDataForID() {
+        // const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': this.getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            this.id = data.id;
+        })
+        .catch(error => console.error('Erreur:', error));
+    }
+
+    getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Vérifie si ce cookie commence par le nom donné
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 }
