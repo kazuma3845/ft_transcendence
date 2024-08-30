@@ -32,6 +32,24 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['post'], url_path='update_score')
+    def update_score(self, request, pk=None):
+        session = self.get_object()
+        player1_points = request.data.get('player1_points')
+        player2_points = request.data.get('player2_points')
+
+        if player1_points is not None:
+            session.player1_points = int(player1_points)
+
+        if player2_points is not None:
+            session.player2_points = int(player2_points)
+
+        session.save()
+        return Response({
+            'player1_points': session.player1_points,
+            'player2_points': session.player2_points
+        }, status=status.HTTP_200_OK)
+
 class GameMoveViewSet(viewsets.ModelViewSet):
     queryset = GameMove.objects.all()
     serializer_class = GameMoveSerializer

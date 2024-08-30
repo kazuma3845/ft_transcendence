@@ -8,7 +8,7 @@ class GameSessionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameSession
-        fields = ['id', 'player1', 'player2', 'start_time', 'end_time', 'winner']
+        fields = ['id', 'player1', 'player2', 'start_time',  'end_time', 'player1_points', 'player2_points', 'winner']
 
 class GameMoveSerializer(serializers.ModelSerializer):
     player = serializers.StringRelatedField()
