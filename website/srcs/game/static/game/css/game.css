@@ -1,5 +1,5 @@
 .box {
-	/* width: 1200px; */
+	width: 1200px;
 	height: calc(100vh - 180px);
 	background-color: black;
 	display: flex;

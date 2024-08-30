@@ -37,13 +37,13 @@ services:
     networks:
       - django_network
 
-  bot: 
+  bot:
     build:
       context: ./AI
       dockerfile: Dockerfile
     networks:
       - django_network
-    ports: 
+    ports:
       - "8081:8081"
 
   pong:

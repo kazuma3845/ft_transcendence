@@ -39,3 +39,6 @@ python3 manage.py makemigrations users
 
 # Collecte tous les fichiers statiques des applications Django dans un seul répertoire, généralement pour la mise en production
 python3 manage.py collectstatic
+
+# créer un admin
+python manage.py createsuperuser
