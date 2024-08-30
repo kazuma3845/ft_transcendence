@@ -5,16 +5,16 @@ export default class Pong {
         this.form = form;
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
-        this.initialSpeed = 5;
+        this.initialSpeed = 6;
         this.ballSpeedX = this.initialSpeed;
         this.ballSpeedY = 0;
         this.ballPaused = true;
         this.keysPressed = {};
-        this.paddle_move_speed = 3;
+        this.paddle_move_speed = 4;
         this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
         this.ball_angle = 90;
         // this.botActivated = True;
-        this.botLVL = 0.1;
+        this.botLVL = 1;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
