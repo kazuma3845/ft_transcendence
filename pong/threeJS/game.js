@@ -27,9 +27,40 @@ scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
 
-camera.position.z = 150;
-camera.position.y = -150;
-camera.rotateX(45 * Math.PI / 180);
+
+// Définir les positions de la caméra
+const cameraPositions = {
+    default: { x: 0, y: 0, z: 150 },
+    top: { x: 0, y: -150, z: 150, rotationX: 45 * Math.PI / 180 },
+    behindPaddle: { x: -200, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180}
+};
+
+// Fonction pour mettre à jour la position de la caméra
+function updateCameraPosition(position) {
+    camera.position.set(position.x, position.y, position.z);
+    camera.rotation.x = position.rotationX || 0;
+    camera.rotation.y = position.rotationY || 0;
+    camera.rotation.z = position.rotationZ || 0;
+}
+
+// Initialiser la caméra à la position par défaut
+updateCameraPosition(cameraPositions.default);
+
+// Exemple de basculement entre les vues de la caméra
+document.addEventListener('keydown', (event) => {
+    switch (event.key) {
+        case '1':
+            updateCameraPosition(cameraPositions.default);
+            break;
+        case '2':
+            updateCameraPosition(cameraPositions.top);
+            break;
+        case '3':
+            updateCameraPosition(cameraPositions.behindPaddle);
+            break;
+    }
+});
+
 
 let lastTime;
 
