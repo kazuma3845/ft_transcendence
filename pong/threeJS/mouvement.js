@@ -11,11 +11,12 @@ export default class Pong {
         this.ballPaused = true;
         this.keysPressed = {};
         this.paddle_move_speed = 4;
-        this.lastExecTime = 1; // Temps de la dernière exécution du script (1 pour lancer des le debut)
+        this.lastExecTime = 1;
         this.ball_angle = 90;
-        // this.botActivated = True;
+        this.botActivated = true;
         this.botLVL = 1;
         this.score = [0, 0];
+        this.rebond = 0;
 
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -73,8 +74,10 @@ export default class Pong {
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
             this.ballPaused = false;
-        if (this.form.ball.position.x < 0)
-            this.bot.handleBallHit();
+        if (this.botActivated) {
+            if (this.form.ball.position.x < 0)
+                this.bot.handleBallHit();
+        }
         }
     }
 
@@ -85,7 +88,9 @@ export default class Pong {
             }
             if (this.form.ball.position.x > 0) {
                 this.form.ball.position.y = this.form.paddleRight.position.y;
-                this.bot.startGame();
+                if (this.botActivated) {
+                    this.bot.startGame();
+                }
             }
             return;
         }
@@ -100,29 +105,39 @@ export default class Pong {
         this.form.ball.position.x += adjustedSpeedX;
         this.form.ball.position.y += adjustedSpeedY;
 
+        console.log("y: ", this.form.ball.position.y);
+
         const halfArenaWidth = this.arenaWidth / 2;
         const halfArenaHeight = this.arenaHeight / 2;
 
-        if ((this.form.ball.position.x + this.form.ballRayon) >= halfArenaWidth) {
+        if ((this.form.ball.position.x + this.form.ballRayon) >= halfArenaWidth && this.rebond != 3) {
             this.form.ball.position.x = this.form.paddleRight.position.x - this.form.paddle_size[0] / 2 - this.form.ballRayon;
             this.form.ball.position.y = this.form.paddleRight.position.y;
             this.ballSpeedX = -this.initialSpeed;
             this.ballPaused = true;
             this.score[0] += 1;
+            this.rebond = 3;
             this.sendDataToScore();
         }
 
-        if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth) {
+        if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth && this.rebond != 1) {
             this.form.ball.position.x = this.form.paddleLeft.position.x + this.form.paddle_size[0] / 2 + this.form.ballRayon;
             this.form.ball.position.y = this.form.paddleLeft.position.y;
             this.ballSpeedX = this.initialSpeed;
             this.ballPaused = true;
             this.score[1] += 1;
+            this.rebond = 1;
             this.sendDataToScore();
         }
 
-        if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight || (this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight) {
+        if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight && this.rebond != 2) {
             this.ballSpeedY = -this.ballSpeedY;
+            this.rebond = 2;
+        }
+
+        if ((this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight && this.rebond != 4) {
+            this.ballSpeedY = -this.ballSpeedY;
+            this.rebond = 4;
         }
 
         //-----------------paddle----------------------------
@@ -137,13 +152,16 @@ export default class Pong {
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
-            const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
-            const angleDegrees = angleRadians * (180 / Math.PI);
-            this.ball_angle = 90 - angleDegrees;
-            if (!this.ballPaused)
-                this.bot.handleBallHit();
-            else 
-                this.bot.replaceBot();
+            if (this.botActivated) {
+                const angleRadians = Math.atan2(this.ballSpeedY, this.ballSpeedX);
+                const angleDegrees = angleRadians * (180 / Math.PI);
+                this.ball_angle = 90 - angleDegrees;
+                if (!this.ballPaused)
+                    this.bot.handleBallHit();
+               else 
+                    this.bot.replaceBot();
+            }
+            this.rebond = 1;
         }
 
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
@@ -154,8 +172,11 @@ export default class Pong {
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = -Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
-            if (!this.ballPaused)
-                this.bot.replaceBot();
+            if (this.botActivated) {
+                if (!this.ballPaused)
+                    this.bot.replaceBot();
+            }
+            this.rebond = 3;
         }
 
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
@@ -183,8 +204,6 @@ export default class Pong {
     }
 
     sendDataForID() {
-        // const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
         fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
             method: 'POST',
             credentials: 'include',
@@ -206,7 +225,6 @@ export default class Pong {
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i].trim();
-                // Vérifie si ce cookie commence par le nom donné
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;

@@ -5,7 +5,7 @@ export default class Form {
       this.ballRayon = 6;
       this.arene_size = [304, 204, 10];
       this.paddle_size = [5, 40, 10];
-      this.paddle_pos = 140
+      this.paddle_pos = 140;
       this.LRborder_size = [2, 200, 2];
       this.NSborder_size = [304, 2, 2];
 
@@ -14,23 +14,20 @@ export default class Form {
         // const textureLoader = new THREE.TextureLoader();
         // const texture = textureLoader.load('../../resources/texture/ball.jpg');
         // const ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
-        const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xfff });
+        const ballMaterial = new THREE.MeshBasicMaterial({ color: 0x898989 });
         this.ball = new THREE.Mesh(ballGeometry, ballMaterial);
 
         this.ball.position.set(-(this.paddle_pos - this.ballRayon - (this.paddle_size[0] / 2)), 0, this.ballRayon);
 
     //     //--------------------arene------------------------------------------
         const AreneGeomerty = new THREE.BoxGeometry(this.arene_size[0], this.arene_size[1], this.arene_size[2]);
-        // const ArenetextureLoader = new THREE.TextureLoader();
-        // const Arenetexture = ArenetextureLoader.load('../texture/black-hole.jpg');
-        // this.AreneMaterial = new THREE.MeshBasicMaterial({ map: Arenetexture });
-        const AreneMaterial = new THREE.MeshBasicMaterial({ color: 0xffff });
+        const AreneMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
         this.Arene = new THREE.Mesh(AreneGeomerty, AreneMaterial);
         this.Arene.position.set(0, 0, -this.arene_size[2] / 2);
 
         //--------------------paddle right---------------------------------------
         const paddleRightGeometry = new THREE.BoxGeometry(this.paddle_size[0], this.paddle_size[1], this.paddle_size[2]);
-        const paddleRightMaterial = new THREE.MeshBasicMaterial({ color: 0xb5b2b1 });
+        const paddleRightMaterial = new THREE.MeshBasicMaterial({ color: 0x343434 });
         this.paddleRight = new THREE.Mesh(paddleRightGeometry, paddleRightMaterial);
           // this.paddle_pos= this.arene_size[0] / 2 - this.paddleX -10;
 
@@ -38,7 +35,7 @@ export default class Form {
 
         //--------------------paddle left---------------------------------------
         const paddleLeftGeometry = new THREE.BoxGeometry(this.paddle_size[0], this.paddle_size[1], this.paddle_size[2]);
-        const paddleLeftMaterial = new THREE.MeshBasicMaterial({ color: 0xb5b2b1 });
+        const paddleLeftMaterial = new THREE.MeshBasicMaterial({ color: 0x343434 });
         this.paddleLeft = new THREE.Mesh(paddleLeftGeometry, paddleLeftMaterial);
         // this.paddle_pos= -(this.arene_size[0] / 2 - this.paddleX -10);
         this.paddleLeft.position.set(-this.paddle_pos, 0, this.paddle_size[2] / 2);
@@ -56,12 +53,12 @@ export default class Form {
         this.Rborder.position.set(this.arene_size[0] / 2 - this.LRborder_size[0] /2, 0, this.LRborder_size[2] / 2);
 
         const SborderGeometry = new THREE.BoxGeometry(this.NSborder_size[0], this.NSborder_size[1], this.NSborder_size[2]);
-        const SbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const SbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xe8e8e8 });
         this.Sborder = new THREE.Mesh(SborderGeometry, SbordertMaterial);
         this.Sborder.position.set(0, -(this.arene_size[1] / 2 - this.NSborder_size[1] /2), this.NSborder_size[2] /2);
 
         const NborderGeometry = new THREE.BoxGeometry(this.NSborder_size[0], this.NSborder_size[1], this.NSborder_size[2]);
-        const NbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const NbordertMaterial = new THREE.MeshBasicMaterial({ color: 0xe8e8e8 });
         this.Nborder = new THREE.Mesh(NborderGeometry, NbordertMaterial);
         this.Nborder.position.set(0, this.arene_size[1] / 2 - this.NSborder_size[1] /2, this.NSborder_size[2] / 2);
 
@@ -73,5 +70,10 @@ export default class Form {
         this.points.push(new THREE.Vector3(0, -(this.arene_size[1] /2), 1));
         const geometry = new THREE.BufferGeometry().setFromPoints(this.points);
         this.line = new THREE.Line(geometry, material);
+
+        const PlaneGeometry = new THREE.PlaneGeometry(10000, 10000);
+        const PlanMaterial = new THREE.MeshBasicMaterial({ color: 0xfeb47b });
+        this.Plan = new THREE.Mesh(PlaneGeometry, PlanMaterial);
+        this.Plan.position.z = -20;
     }
 }

@@ -4,10 +4,11 @@ import Pong from './mouvement.js';
 import Bot from './bot.js';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, (window.innerWidth / 100 * 90) / (window.innerHeight / 100 * 90), 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000, 0);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
@@ -17,7 +18,7 @@ let win_score = 3;
 pong.bot = bot;
 
 scene.add(form.ball);
-scene.add(form.Arene);
+// scene.add(form.Arene);
 scene.add(form.paddleRight);
 scene.add(form.paddleLeft);
 scene.add(form.Lborder);
@@ -25,9 +26,10 @@ scene.add(form.Rborder);
 scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
+// scene.add(form.Plan);
 
 camera.position.z = 150;
-camera.position.y = -200;
+camera.position.y = -150;
 camera.rotateX(45 * Math.PI / 180);
 
 let lastTime;
@@ -42,7 +44,8 @@ function animate(timestamp) {
 
     pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
-    bot.updateBotPosition();
+    if (pong.botActivated)
+        bot.updateBotPosition();
     renderer.render(scene, camera);
 
     checkWinCondition();
@@ -91,41 +94,6 @@ function backToStart() {
     settingsScreen.style.display = 'none';
     startScreen.style.display = 'flex';
 }
-
-// function sendDataForID() {
-//     // const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-//     fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
-//         method: 'POST',
-//         credentials: 'include',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRFToken': getCookie('csrftoken'),
-//         },
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         this.id = data.id;
-//         pong.id = this.id;
-//     })
-//     .catch(error => console.error('Erreur:', error));
-// }
-
-// function getCookie(name) {
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         const cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             const cookie = cookies[i].trim();
-//             // Vérifie si ce cookie commence par le nom donné
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
 
 document.getElementById('startButton').addEventListener('click', startGame);
 document.getElementById('settingsButton').addEventListener('click', showSettings);
