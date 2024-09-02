@@ -9,21 +9,21 @@ Module BOT:
   ✔ Faire revenir le bot au centre @done(24-09-02 17:00)
   ✔ Faire en sorte que le bot relance la balle @done(24-09-02 17:01)
   ✔ Bot relance la balle plus ou moins vite en fonction du niveau @done(24-09-02 17:01)
-  ☐ Faire en sorte que le bot se replace plus ou moins bien et rapidement ?
+  ☐ Faire en sorte que le bot se replace plus ou moins bien et rapidement
   ✔ Ajuster le niveau de difficulte du bot @done(24-09-02 11:16)
-  ☐ Faire en sorte que le bot reçoive plusieurs inputs
+  ☐ Faire en sorte que le bot reçoive plusieurs inputs @3h
   L'idee est de faire en sorte que les bots au plus bas niveaux suivent tres brievement la balle lorsqu'il y a un rebond, au lieu 
   d'aller directement a l'endroit final
-  ☐ Fix le probleme sur les ordinateurs des autres @high
+  ☐ Fix le probleme sur les ordinateurs des autres @high 
     On dirait que sur les ordinateurs des autres le bot ne fonctionne pas correctement, il semble se deplacer moins que prevu malgre qu'il affiche le bon nombre
     d'inputs realises dans le console.log. 
-    UPDATE ; Tom a decouvert que sur sont navigateur, les inputs deplacent 2x moins que la vitesse de deplacement. Donc les calculs sont bons
+    UPDATE ; Tom a decouvert que sur son navigateur, les inputs deplacent 2x moins que la vitesse de deplacement. Donc les calculs sont bons
     mais la distance parcourue par un input est divisée.
 
 
 Module Blockchain:
   ✔ Se renseigner sur les requirements @done(24-09-02 11:27)
-  ☐ Installer tous les requirements
+  ☐ Installer tous les requirements @today
   Metamask, Truffle/Hardat, Web3, Solidity extensions, 
   ☐ Deployer environnement de test
   ☐ Recevoir les data de l'API
