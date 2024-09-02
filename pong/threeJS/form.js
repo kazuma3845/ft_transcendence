@@ -27,7 +27,7 @@ export default class Form {
 
         //--------------------paddle right---------------------------------------
         const paddleRightGeometry = new THREE.BoxGeometry(this.paddle_size[0], this.paddle_size[1], this.paddle_size[2]);
-        const paddleRightMaterial = new THREE.MeshBasicMaterial({ color: 0x343434 });
+        const paddleRightMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
         this.paddleRight = new THREE.Mesh(paddleRightGeometry, paddleRightMaterial);
           // this.paddle_pos= this.arene_size[0] / 2 - this.paddleX -10;
 
@@ -35,7 +35,7 @@ export default class Form {
 
         //--------------------paddle left---------------------------------------
         const paddleLeftGeometry = new THREE.BoxGeometry(this.paddle_size[0], this.paddle_size[1], this.paddle_size[2]);
-        const paddleLeftMaterial = new THREE.MeshBasicMaterial({ color: 0x343434 });
+        const paddleLeftMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
         this.paddleLeft = new THREE.Mesh(paddleLeftGeometry, paddleLeftMaterial);
         // this.paddle_pos= -(this.arene_size[0] / 2 - this.paddleX -10);
         this.paddleLeft.position.set(-this.paddle_pos, 0, this.paddle_size[2] / 2);
@@ -64,16 +64,12 @@ export default class Form {
 
 
         //-------------------axe------------------------------------------
-        const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+        const material = new THREE.LineBasicMaterial({ color: 0x000000 });
         this. points = [];
         this.points.push(new THREE.Vector3(0, this.arene_size[1] / 2, 1));
         this.points.push(new THREE.Vector3(0, -(this.arene_size[1] /2), 1));
         const geometry = new THREE.BufferGeometry().setFromPoints(this.points);
         this.line = new THREE.Line(geometry, material);
 
-        const PlaneGeometry = new THREE.PlaneGeometry(10000, 10000);
-        const PlanMaterial = new THREE.MeshBasicMaterial({ color: 0xfeb47b });
-        this.Plan = new THREE.Mesh(PlaneGeometry, PlanMaterial);
-        this.Plan.position.z = -20;
     }
 }

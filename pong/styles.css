@@ -1,0 +1,28 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Empêche les barres de défilement */
+}
+
+canvas {
+    display: block; /* Évite les marges par défaut du canvas */
+}
+
+#startScreen, #winScreen, #settingsScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 10;
+}
+
+#winScreen, #settingsScreen {
+    display: none; /* Cachés par défaut */
+}

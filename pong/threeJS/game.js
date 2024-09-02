@@ -6,9 +6,9 @@ import Bot from './bot.js';
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer({ alpha: true });
+const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x000000, 0);
+renderer.setClearColor(0xfeb47b);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
@@ -18,7 +18,7 @@ let win_score = 3;
 pong.bot = bot;
 
 scene.add(form.ball);
-// scene.add(form.Arene);
+scene.add(form.Arene);
 scene.add(form.paddleRight);
 scene.add(form.paddleLeft);
 scene.add(form.Lborder);
@@ -26,7 +26,6 @@ scene.add(form.Rborder);
 scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
-// scene.add(form.Plan);
 
 camera.position.z = 150;
 camera.position.y = -150;
