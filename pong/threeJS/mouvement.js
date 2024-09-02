@@ -179,7 +179,7 @@ export default class Pong {
             },
             body: JSON.stringify(data)
         })
-        .catch(error => console.error('Erreur:', error));
+        .catch(error => console.error('Erreur:', error)); 
     }
 
     sendDataForID() {

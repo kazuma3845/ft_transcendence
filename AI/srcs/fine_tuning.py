@@ -33,7 +33,7 @@ def moderateFinalPosition(state, final_position):
         score_factor = 0.1 * score_diff  # Chaque point d'avance du bot augmente l'aléatoire
     else:
         # Si le bot est en retard ou à égalité, moins d'aléatoire
-        score_factor = 0.05 * score_diff  # Réduction d'aléatoire plus modérée si en retard
+        score_factor = 0.01 * score_diff  # Réduction d'aléatoire plus modérée si en retard
 
     bounce_factor = 0.15 * state.bounces  # Chaque rebond ajoute à l'aléatoire
 

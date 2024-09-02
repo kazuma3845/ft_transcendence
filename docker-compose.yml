@@ -20,7 +20,6 @@ services:
     build:
       context: ./website  # Le contexte de build est maintenant ./srcs
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./website/srcs:/app/srcs
     ports:
