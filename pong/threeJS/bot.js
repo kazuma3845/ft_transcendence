@@ -53,13 +53,13 @@ export default class Bot {
 
   processBotResponse(data) {
     console.log("Réponse reçue:", data);
-    this.input = data.input;
+    this.input = (data.input * 2);
   }
 
   replaceBot() {
     let raw_input =
       this.form.paddleRight.position.y / this.pong.paddle_move_speed;
-    this.input = Math.round(raw_input) * -1;
+    this.input = (Math.round(raw_input) * -1) * 2;
     console.log("Mouvements pour se replacer au centre :", this.input);
   }
 
