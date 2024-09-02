@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import GameSession, GameMove
 from .serializers import GameSessionSerializer, GameMoveSerializer
 from rest_framework import status
+from django.utils.dateparse import parse_datetime
 
 @login_required
 def index(request):
@@ -37,12 +38,22 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         session = self.get_object()
         player1_points = request.data.get('player1_points')
         player2_points = request.data.get('player2_points')
+        end_time = request.data.get('end_time')
 
         if player1_points is not None:
             session.player1_points = int(player1_points)
 
         if player2_points is not None:
             session.player2_points = int(player2_points)
+
+        if end_time is not None:
+            parsed_end_time = parse_datetime(end_time)
+            if parsed_end_time:
+                session.end_time = parsed_end_time
+            else:
+                return Response({
+                    'error': 'Invalid date format for end_time.'
+                }, status=status.HTTP_400_BAD_REQUEST)
 
         session.save()
         return Response({

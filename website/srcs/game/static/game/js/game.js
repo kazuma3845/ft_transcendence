@@ -94,7 +94,7 @@ function attachSingleGameListener() {
 }
 
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game/${sessionId}/`);
+    const socket = new WebSocket(`ws://${window.location.host}/ws/game/sessions/${sessionId}/`);
 
     socket.onopen = function(e) {
         console.log('WebSocket connected.');
