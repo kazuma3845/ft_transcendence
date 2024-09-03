@@ -15,22 +15,28 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <!-- Écran de départ -->
     <div id="startScreen">
       <h1>PCL (Pong Champions League)</h1>
       <button id="startButton">START</button>
       <button id="settingsButton">SETTINGS</button>
     </div>
 
-    <!-- Écran de paramètres -->
     <div id="settingsScreen">
       <h1>Game Settings</h1>
-      <label for="winScoreInput">Win Score:</label>
-      <input type="number" id="winScoreInput" min="1" value="3">
+      <label for="winScoreSelect">Win Score:</label>
+      <select id="winScoreSelect">
+        <option value="1">1</option>
+        <option value="3">3</option>
+        <option value="5">5</option>
+        <option value="7">7</option>
+      </select>
+      <label for="SpeedBall">Speed ball:</label>
+      <input type="number" id="SpeedBall" min="1" value="6" max="10">
+      <label for="SpeedPadle">Speed padle:</label>
+      <input type="number" id="SpeedPadle" min="1" value="4" max="10">
       <button id="backButton">BACK</button>
     </div>
 
-    <!-- Écran de victoire -->
     <div id="winScreen">
       <h1 id="winMessage"></h1>
       <button onclick="location.reload()">Play Again</button>

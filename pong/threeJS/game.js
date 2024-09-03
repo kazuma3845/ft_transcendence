@@ -15,6 +15,7 @@ const form = new Form();
 const pong = new Pong(form, null);
 const bot = new Bot(pong, form);
 let win_score = 3;
+
 pong.bot = bot;
 
 scene.add(form.ball);
@@ -27,15 +28,12 @@ scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
 
-
-// Définir les positions de la caméra
 const cameraPositions = {
     default: { x: 0, y: 0, z: 150 },
     top: { x: 0, y: -150, z: 150, rotationX: 45 * Math.PI / 180 },
     behindPaddle: { x: -200, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180}
 };
 
-// Fonction pour mettre à jour la position de la caméra
 function updateCameraPosition(position) {
     camera.position.set(position.x, position.y, position.z);
     camera.rotation.x = position.rotationX || 0;
@@ -43,10 +41,8 @@ function updateCameraPosition(position) {
     camera.rotation.z = position.rotationZ || 0;
 }
 
-// Initialiser la caméra à la position par défaut
 updateCameraPosition(cameraPositions.default);
 
-// Exemple de basculement entre les vues de la caméra
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case '1':
@@ -60,7 +56,6 @@ document.addEventListener('keydown', (event) => {
             break;
     }
 });
-
 
 let lastTime;
 
@@ -118,8 +113,14 @@ function backToStart() {
     const startScreen = document.getElementById('startScreen');
     const settingsScreen = document.getElementById('settingsScreen');
 
-    const winScoreInput = document.getElementById('winScoreInput');
-    win_score = parseInt(winScoreInput.value) || 7;
+    const winScoreSelect = document.getElementById('winScoreSelect');
+    win_score = parseInt(winScoreSelect.value);
+
+    const SpeedBall = document.getElementById('SpeedBall');
+    pong.initialSpeed = parseInt(SpeedBall.value);
+
+    const SpeedPadle = document.getElementById('SpeedPadle');
+    pong.paddle_move_speed = parseInt(SpeedPadle.value);
 
     settingsScreen.style.display = 'none';
     startScreen.style.display = 'flex';

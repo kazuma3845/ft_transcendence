@@ -44,7 +44,6 @@ export default class Pong {
             } else {
                 this.form.paddleRight.position.y = -(halfArenaHeight - halfRaquetteHeight);
             }
-            console.log("padle: ", this.form.paddleRight.position.y);
         }
 
         if (this.keysPressed['o']) {
@@ -53,7 +52,6 @@ export default class Pong {
             } else {
                 this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight;
             }
-            console.log("padle: ", this.form.paddleRight.position.y);
         }
 
         if (this.keysPressed['s']) {
@@ -62,8 +60,6 @@ export default class Pong {
             } else {
                 this.form.paddleLeft.position.y = -(halfArenaHeight - halfRaquetteHeight);
             }
-            console.log("padle left: ", this.form.paddleLeft.position.y);
-
         }
 
         if (this.keysPressed['w']) {
@@ -72,7 +68,6 @@ export default class Pong {
             } else {
                 this.form.paddleLeft.position.y = halfArenaHeight - halfRaquetteHeight;
             }
-            console.log("padle left: ", this.form.paddleLeft.position.y);
         }
     }
 
