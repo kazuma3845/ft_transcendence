@@ -23,7 +23,7 @@ function loadGame() {
     .then(html => {
         document.getElementById('app').innerHTML = html;
         // attachLoginFormSubmitListener();
-		attachSingleGameListener();
+		// attachSingleGameListener();
     });
 }
 
@@ -102,8 +102,19 @@ function startWebSocket(sessionId) {
 
     socket.onmessage = function(e) {
         console.log('Message received:', e.data);
-        const data = JSON.parse(e.data);
-        updateScoreDisplay(data.player1_points, data.player2_points);
+        try {
+            const data = JSON.parse(e.data);
+            console.log('Parsed data:', data.type);
+            if (data.type === 'game_score') {
+                updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
+            }
+            if (data.type === 'display_player1') {
+                console.log('->> displayPlayer1');
+                displayPlayer1(data.player1);
+            }
+        } catch (error) {
+            console.error('Error parsing message:', error);
+        }
     };
 
     socket.onclose = function(e) {
@@ -114,8 +125,58 @@ function startWebSocket(sessionId) {
         console.error('WebSocket error:', e);
     };
 
-    function updateScoreDisplay(player1Points, player2Points) {
-        document.getElementById('player1Score').textContent = player1Points;
-        document.getElementById('player2Score').textContent = player2Points;
+    function updateScoreDisplay(username, player1Points, player2Points) {
+        console.log('Updating scores:', player1Points, player2Points);
+        const player1Elem = document.getElementById('player1');
+        const player1ScoreElem = document.getElementById('player1Score');
+        const player2ScoreElem = document.getElementById('player2Score');
+
+        if (player1ScoreElem && player2ScoreElem && player1Elem) {
+            player1Elem.textContent = username;
+            player1ScoreElem.textContent = player1Points;
+            player2ScoreElem.textContent = player2Points;
+        } else {
+            console.error('Score elements not found in the DOM');
+        }
     }
+
+    function displayPlayer1(username) {
+        const player1Elem = document.getElementById('player1');
+
+        if (player1Elem) {
+            player1Elem.textContent = username;
+        } else {
+            console.log('---->> : ', username);
+            console.error('Score elements not found in the DOM');
+        }
+    }
+}
+
+function createGameSession() {
+    fetch('/api/game/sessions/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
+        },
+        body: JSON.stringify({
+            // Vous pouvez passer des données supplémentaires ici si nécessaire
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();  // Convertir la réponse en JSON
+    })
+    .then(data => {
+        console.log('Game session created:', data);
+        const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
+        if (sessionId) {
+            startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
+        }
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
 }

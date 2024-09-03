@@ -19,6 +19,7 @@ input {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-direction: column;
 }
 
 .centered_container_white {

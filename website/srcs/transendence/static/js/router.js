@@ -11,9 +11,7 @@ function router() {
             break;
         case '#game':
             loadGame();
-            break;
-        case '#pong':
-            loadPong();
+            createGameSession();
             break;
         // Ajoute ici d'autres cas pour d'autres vues
         default:
