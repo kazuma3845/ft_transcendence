@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Form from './form.js';
 import Pong from './mouvement.js';
 import Bot from './bot.js';
+import Power from './power.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -14,9 +15,10 @@ document.body.appendChild(renderer.domElement);
 const form = new Form();
 const pong = new Pong(form, null);
 const bot = new Bot(pong, form);
-let win_score = 3;
-
 pong.bot = bot;
+const power = new Power(form, pong);
+let win_score = 3;
+let bonus = true;
 
 scene.add(form.ball);
 scene.add(form.Arene);
@@ -27,9 +29,12 @@ scene.add(form.Rborder);
 scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
+if (bonus)
+    scene.add(power.bonus);
+
 
 const cameraPositions = {
-    default: { x: 0, y: 0, z: 150 },
+    default: { x: 0, y: 0, z: 180 },
     top: { x: 0, y: -150, z: 150, rotationX: 45 * Math.PI / 180 },
     behindPaddle: { x: -200, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180}
 };
@@ -66,9 +71,11 @@ function animate(timestamp) {
 
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
-
+    
     pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
+    if (bonus)
+        power.activePower();
     if (pong.botActivated)
         bot.updateBotPosition();
     renderer.render(scene, camera);
@@ -101,31 +108,4 @@ function startGame() {
     renderer.setAnimationLoop(animate);
 }
 
-function showSettings() {
-    const startScreen = document.getElementById('startScreen');
-    const settingsScreen = document.getElementById('settingsScreen');
-
-    startScreen.style.display = 'none';
-    settingsScreen.style.display = 'flex';
-}
-
-function backToStart() {
-    const startScreen = document.getElementById('startScreen');
-    const settingsScreen = document.getElementById('settingsScreen');
-
-    const winScoreSelect = document.getElementById('winScoreSelect');
-    win_score = parseInt(winScoreSelect.value);
-
-    const SpeedBall = document.getElementById('SpeedBall');
-    pong.initialSpeed = parseInt(SpeedBall.value);
-
-    const SpeedPadle = document.getElementById('SpeedPadle');
-    pong.paddle_move_speed = parseInt(SpeedPadle.value);
-
-    settingsScreen.style.display = 'none';
-    startScreen.style.display = 'flex';
-}
-
 document.getElementById('startButton').addEventListener('click', startGame);
-document.getElementById('settingsButton').addEventListener('click', showSettings);
-document.getElementById('backButton').addEventListener('click', backToStart);

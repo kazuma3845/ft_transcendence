@@ -35,22 +35,27 @@ export default class Pong {
     deplacerRaquette(deltaTime) {
         const speedFactor = deltaTime / 16.67;
         const moveSpeed = this.paddle_move_speed * speedFactor;
+
+        this.trueSpeed = Math.round(moveSpeed);
+
         const halfArenaHeight = this.arenaHeight / 2;
-        const halfRaquetteHeight = this.form.paddle_size[1] / 2;
+        const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
+        const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
+
 
         if (this.keysPressed['k']) {
-            if ((this.form.paddleRight.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
+            if ((this.form.paddleRight.position.y - halfRaquetteHeight2 - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleRight.position.y -= moveSpeed;
             } else {
-                this.form.paddleRight.position.y = -(halfArenaHeight - halfRaquetteHeight);
+                this.form.paddleRight.position.y = -(halfArenaHeight - halfRaquetteHeight2);
             }
         }
 
         if (this.keysPressed['o']) {
-            if ((this.form.paddleRight.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
+            if ((this.form.paddleRight.position.y + halfRaquetteHeight2 + moveSpeed) < halfArenaHeight) {
                 this.form.paddleRight.position.y += moveSpeed;
             } else {
-                this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight;
+                this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight2;
             }
         }
 
@@ -102,45 +107,48 @@ export default class Pong {
         this.form.ball.rotation.x += adjustedSpeedY * 0.1;
         this.form.ball.rotation.y += adjustedSpeedX * 0.1;
 
+        this.coordBefore = this.form.ball.position.x;
         this.form.ball.position.x += adjustedSpeedX;
         this.form.ball.position.y += adjustedSpeedY;
 
         const halfArenaWidth = this.arenaWidth / 2;
         const halfArenaHeight = this.arenaHeight / 2;
 
-        if ((this.form.ball.position.x + this.form.ballRayon) >= halfArenaWidth && this.rebond != 3) {
-            this.form.ball.position.x = this.form.paddleRight.position.x - this.form.paddle_size[0] / 2 - this.form.ballRayon;
+        if ((this.form.ball.position.x + this.form.ballRayon) >= halfArenaWidth) {
+            this.form.ball.position.x = this.form.paddleRight.position.x - this.form.paddle_right_size[0] / 2 - this.form.ballRayon;
             this.form.ball.position.y = this.form.paddleRight.position.y;
             this.ballSpeedX = -this.initialSpeed;
             this.ballPaused = true;
             this.score[0] += 1;
-            this.rebond = 3;
+            this.rebond = 0;
             this.sendDataToScore();
         }
 
-        if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth && this.rebond != 1) {
-            this.form.ball.position.x = this.form.paddleLeft.position.x + this.form.paddle_size[0] / 2 + this.form.ballRayon;
+        if ((this.form.ball.position.x - this.form.ballRayon) <= -halfArenaWidth) {
+            this.form.ball.position.x = this.form.paddleLeft.position.x + this.form.paddle_left_size[0] / 2 + this.form.ballRayon;
             this.form.ball.position.y = this.form.paddleLeft.position.y;
             this.ballSpeedX = this.initialSpeed;
             this.ballPaused = true;
             this.score[1] += 1;
-            this.rebond = 1;
+            this.rebond = 0;
             this.sendDataToScore();
         }
 
-        if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight && this.rebond != 2) {
+        if ((this.form.ball.position.y + this.form.ballRayon) >= halfArenaHeight && this.rebond != 1) {
+            this.ballSpeedY = -this.ballSpeedY;
+            this.rebond = 1;
+        }
+
+        if ((this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight && this.rebond != 2) {
             this.ballSpeedY = -this.ballSpeedY;
             this.rebond = 2;
         }
 
-        if ((this.form.ball.position.y - this.form.ballRayon) <= -halfArenaHeight && this.rebond != 4) {
-            this.ballSpeedY = -this.ballSpeedY;
-            this.rebond = 4;
-        }
-
         //-----------------paddle----------------------------
-        const halfRaquetteHeight = this.form.paddle_size[1] / 2;
-        const halfRaquetteWidth = this.form.paddle_size[0] / 2;
+        const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
+        const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
+
+        const halfRaquetteWidth = this.form.paddle_left_size[0] / 2;
 
         if (this.form.ball.position.x - this.form.ballRayon <= this.form.paddleLeft.position.x + halfRaquetteWidth &&
             this.form.ball.position.y >= this.form.paddleLeft.position.y - halfRaquetteHeight &&
@@ -159,14 +167,14 @@ export default class Pong {
                else 
                     this.bot.replaceBot();
             }
-            this.rebond = 1;
+            this.rebond = 0;
         }
 
         if (this.form.ball.position.x + this.form.ballRayon >= this.form.paddleRight.position.x - halfRaquetteWidth &&
-            this.form.ball.position.y >= this.form.paddleRight.position.y - halfRaquetteHeight &&
-            this.form.ball.position.y <= this.form.paddleRight.position.y + halfRaquetteHeight) {
+            this.form.ball.position.y >= this.form.paddleRight.position.y - halfRaquetteHeight2 &&
+            this.form.ball.position.y <= this.form.paddleRight.position.y + halfRaquetteHeight2) {
             const impactY = this.form.ball.position.y - this.form.paddleRight.position.y;
-            const normalizedImpactY = impactY / halfRaquetteHeight;
+            const normalizedImpactY = impactY / halfRaquetteHeight2;
             const bounceAngle = normalizedImpactY * (Math.PI / 4);
             this.ballSpeedX = -Math.abs(this.ballSpeedX) * Math.cos(bounceAngle);
             this.ballSpeedY = Math.abs(this.ballSpeedX) * Math.sin(bounceAngle);
@@ -174,7 +182,7 @@ export default class Pong {
                 if (!this.ballPaused)
                     this.bot.replaceBot();
             }
-            this.rebond = 3;
+            this.rebond = 0;
         }
 
         const speed = Math.sqrt(this.ballSpeedX * this.ballSpeedX + this.ballSpeedY * this.ballSpeedY);
@@ -187,7 +195,7 @@ export default class Pong {
             player1_points: this.score[0],
             player2_points: this.score[1],
         };
-        console.log("Sending data:", JSON.stringify(data));
+        // console.log("Sending data:", JSON.stringify(data));
 
         fetch(`http://127.0.0.1:8000/api/game/sessions/${this.id}/update_score/`, {
             method: 'POST',
