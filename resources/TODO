@@ -22,14 +22,19 @@ Module BOT:
 
 
 Module Blockchain:
+  Le smartcontract est appele uniquement a la fin d'une game pour enregistrer des score
+  Il pourra retourner les scores a partir d'une gameSessionID qui est elle generee par Django
+  Les sessions non completees ne sont pas enregistrees et donc non displayed dans l'historique 
   ✔ Se renseigner sur les requirements @done(24-09-02 11:27)
   ☐ Installer tous les requirements @today
-  Metamask, Truffle/Hardat, Web3, Solidity extensions, 
+  ☐ Construire le container
+  Pour le moment bug au moment de deployer le contract
   ☐ Deployer environnement de test
-  ☐ Recevoir les data de l'API
-  ☐ Enregistrer les scores via smart-contract
+  ☐ Updater Django avec les requirements
   ☐ Renvoyer les scores via blockchain
-  Il faudrait que l'API puisse prendre en entree un input tournoi ou ID de joueur et renvoyer en fonction l'historique du tournoi ou de
+  ☐ Enregistrer les scores via smart-contract
+  ☐ Updater le docker-compose
+  ✘ Recevoir les data de l'API @cancelled(24-09-03 17:06)
 
 Requirements:
   ☐ Single-Page application
@@ -60,7 +65,7 @@ Requirements:
         ☐ Live chat @2h
         ☐ Remote players @2h
       AI/Algo:
-        ☐ AI opponent @2h
+        ✔ AI opponent @2h @done(24-09-03 17:11)
       Graphics:
         ☐ 3D pong using ThreeJS @2h 
     MINOR:

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'leaderboards',
 	'channels',
 	'corsheaders',
+    'blockchain',
 ]
 
 MIDDLEWARE = [
