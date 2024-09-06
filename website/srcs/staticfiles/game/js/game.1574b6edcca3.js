@@ -42,40 +42,44 @@ function attachGameFormSubmitListener() {
                 document.getElementById('error-message').style.display = 'block';
             } else {
                 loadGame();  // Charger la session de jeu si elle est créée avec succès
+                const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
+                if (sessionId) {
+                    startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
+                }
             }
         })
         .catch(error => console.error('Erreur:', error));
     });
 }
 
-function createGameSession() {
-    fetch('/api/game/sessions/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
-        },
-        body: JSON.stringify({
-            // Vous pouvez passer des données supplémentaires ici si nécessaire
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();  // Convertir la réponse en JSON
-    })
-    .then(data => {
-        console.log('Game session created:', data);
-        const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
-        if (sessionId) {
-            startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
-        }
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-}
+// function createGameSession() {
+//     fetch('/api/game/sessions/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
+//         },
+//         body: JSON.stringify({
+//             // Vous pouvez passer des données supplémentaires ici si nécessaire
+//         })
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();  // Convertir la réponse en JSON
+//     })
+//     .then(data => {
+//         console.log('Game session created:', data);
+//         const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
+//         if (sessionId) {
+//             startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
+//         }
+//     })
+//     .catch(error => {
+//         console.error('There was a problem with the fetch operation:', error);
+//     });
+// }
 
 
 function loadGame() {
@@ -83,6 +87,7 @@ function loadGame() {
     .then(response => response.text())
     .then(html => {
         document.getElementById('app').innerHTML = html;
+        // startWebSocket(sessionId);
         // attachLoginFormSubmitListener();
 		// attachSingleGameListener();
     });
@@ -171,7 +176,7 @@ function startWebSocket(sessionId) {
             }
             if (data.type === 'display_player1') {
                 console.log('->> displayPlayer1');
-                displayPlayer1(data.player1);
+                displayPlayer1(data.player1, "coucou");
             }
         } catch (error) {
             console.error('Error parsing message:', error);
@@ -201,11 +206,13 @@ function startWebSocket(sessionId) {
         }
     }
 
-    function displayPlayer1(username) {
+    function displayPlayer1(username, username2) {
         const player1Elem = document.getElementById('player1');
+        const player2Elem = document.getElementById('player2');
 
         if (player1Elem) {
             player1Elem.textContent = username;
+            player2Elem.textContent = username2;
         } else {
             console.log('---->> : ', username);
             console.error('Score elements not found in the DOM');
@@ -231,3 +238,38 @@ function loadGameSessions() {
         })
         .catch(error => console.error('Error fetching game sessions:', error));
 }
+
+function updateValue(id, value) {
+    document.getElementById(id).textContent = value;
+}
+
+function updateCheckboxValue(id, isChecked) {
+    document.getElementById(id).textContent = isChecked ? 'On' : 'Off';
+}
+
+const allowedValues = [1, 3, 5, 7, 9, 11];
+
+function updateWinNumber() {
+    const rangeInput = document.getElementById('actual_win_number');
+    const displayValue = document.getElementById('actual_win_number_value');
+    const hiddenInput = document.getElementById('win_number');
+
+    // Map the range slider position (1 to 5) to the allowed values
+    const selectedValue = allowedValues[rangeInput.value - 1];
+
+    // Update the display value
+    displayValue.textContent = selectedValue;
+
+    hiddenInput.value = selectedValue;
+}
+
+// Set initial value on load
+window.onload = function() {
+    // Vérifier si l'élément avec l'ID "game-form" est présent dans le DOM
+    const gameForm = document.getElementById('game-form');
+
+    if (gameForm) {
+        // Si l'élément existe, appelez la fonction updateWinNumber
+        updateWinNumber();
+    }
+};

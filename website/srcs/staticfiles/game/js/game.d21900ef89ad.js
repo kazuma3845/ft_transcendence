@@ -174,9 +174,8 @@ function startWebSocket(sessionId) {
             if (data.type === 'game_score') {
                 updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
             }
-            if (data.type === 'display_player1') {
-                console.log('->> displayPlayer1');
-                displayPlayer1(data.player1, data.player2);
+            if (data.type === 'display_player') {
+                displayPlayer(data.player1, data.player2);
             }
         } catch (error) {
             console.error('Error parsing message:', error);
@@ -206,15 +205,15 @@ function startWebSocket(sessionId) {
         }
     }
 
-    function displayPlayer1(username, username2) {
+    function displayPlayer(username1, username2) {
         const player1Elem = document.getElementById('player1');
         const player2Elem = document.getElementById('player2');
 
         if (player1Elem) {
-            player1Elem.textContent = username;
+            player1Elem.textContent = username1;
             player2Elem.textContent = username2;
         } else {
-            console.log('---->> : ', username);
+            console.log('---->> : ', username1);
             console.error('Score elements not found in the DOM');
         }
     }
@@ -265,11 +264,5 @@ function updateWinNumber() {
 
 // Set initial value on load
 window.onload = function() {
-    // Vérifier si l'élément avec l'ID "game-form" est présent dans le DOM
-    const gameForm = document.getElementById('game-form');
-
-    if (gameForm) {
-        // Si l'élément existe, appelez la fonction updateWinNumber
-        updateWinNumber();
-    }
+    updateWinNumber();
 };

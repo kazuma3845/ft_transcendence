@@ -52,34 +52,34 @@ function attachGameFormSubmitListener() {
     });
 }
 
-function createGameSession() {
-    fetch('/api/game/sessions/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
-        },
-        body: JSON.stringify({
-            // Vous pouvez passer des données supplémentaires ici si nécessaire
-        })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();  // Convertir la réponse en JSON
-    })
-    .then(data => {
-        console.log('Game session created:', data);
-        const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
-        if (sessionId) {
-            startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
-        }
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-}
+// function createGameSession() {
+//     fetch('/api/game/sessions/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
+//         },
+//         body: JSON.stringify({
+//             // Vous pouvez passer des données supplémentaires ici si nécessaire
+//         })
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Network response was not ok');
+//         }
+//         return response.json();  // Convertir la réponse en JSON
+//     })
+//     .then(data => {
+//         console.log('Game session created:', data);
+//         const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
+//         if (sessionId) {
+//             startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
+//         }
+//     })
+//     .catch(error => {
+//         console.error('There was a problem with the fetch operation:', error);
+//     });
+// }
 
 
 function loadGame() {
@@ -236,3 +236,32 @@ function loadGameSessions() {
         })
         .catch(error => console.error('Error fetching game sessions:', error));
 }
+
+function updateValue(id, value) {
+    document.getElementById(id).textContent = value;
+}
+
+function updateCheckboxValue(id, isChecked) {
+    document.getElementById(id).textContent = isChecked ? 'On' : 'Off';
+}
+
+const allowedValues = [1, 3, 5, 7, 9, 11];
+
+function updateWinNumber() {
+    const rangeInput = document.getElementById('actual_win_number');
+    const displayValue = document.getElementById('actual_win_number_value');
+    const hiddenInput = document.getElementById('win_number');
+
+    // Map the range slider position (1 to 5) to the allowed values
+    const selectedValue = allowedValues[rangeInput.value - 1];
+
+    // Update the display value
+    displayValue.textContent = selectedValue;
+
+    hiddenInput.value = selectedValue;
+}
+
+// Set initial value on load
+window.onload = function() {
+    updateWinNumber();
+};

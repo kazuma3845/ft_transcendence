@@ -57,11 +57,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def display_player1(self, event):
         player1 = event['player1']
+        player2 = event['player2']
 
         # Envoyer les scores aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'display_player1',
-            'player1': player1
+            'player1': player1,
+            'player2': player2
         }))
 
 # class GameConsumer(AsyncWebsocketConsumer):
