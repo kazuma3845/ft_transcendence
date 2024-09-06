@@ -28,7 +28,8 @@ services:
     build:
       context: ./website
       dockerfile: Dockerfile
-    command: daphne -b 0.0.0.0 -p 8000 transendence.asgi:application
+    entrypoint: /app/entrypoint.sh
+    command: daphne -b 0.0.0.0 -p 8000 transendence.asgi:application -v 2
     volumes:
       - ./website/srcs:/app/srcs
     ports:

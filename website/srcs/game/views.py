@@ -8,7 +8,7 @@ from .models import GameSession, GameMove
 from .serializers import GameSessionSerializer, GameMoveSerializer
 from rest_framework import status
 from django.utils.dateparse import parse_datetime
-
+from django.utils import timezone
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -21,29 +21,29 @@ class GameSessionViewSet(viewsets.ModelViewSet):
     serializer_class = GameSessionSerializer
     permission_classes = [IsAuthenticated]
 
+
     def create(self, request, *args, **kwargs):
+        # Initialiser le serializer avec les données de la requête
+        serializer = self.get_serializer(data=request.data)
+
+        # Valider les données
+        serializer.is_valid(raise_exception=True)
+
         # Récupérer l'utilisateur connecté
         player1 = request.user
 
-        # Créer une nouvelle session de jeu
+        # Créer une nouvelle session de jeu avec les données validées
         session = GameSession.objects.create(
             player1=player1,
+            move_speed_ball=serializer.validated_data.get('move_speed_ball', 6),
+            move_speed_paddle=serializer.validated_data.get('move_speed_paddle', 4),
+            power=serializer.validated_data.get('power', False),
+            bot=serializer.validated_data.get('bot', False),
+            bot_difficulty=serializer.validated_data.get('bot_difficulty', 5),
         )
 
-        # Option 1 : Retourner une réponse vide avec un statut 201
-        serializer = GameSessionSerializer(session)
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'game_{session.id}',
-            {
-                'type': 'display_player1',
-                'player1': session.player1.username,
-            }
-        )
-
-        # Retourner l'objet sérialisé avec un statut 201
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Retourner la session sérialisée
+        return Response(GameSessionSerializer(session).data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['post', 'get'], url_path='start_single')
     def start_single_game(self, request):
@@ -53,9 +53,20 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Chercher la session de jeu la plus récente où l'utilisateur est player1
         session = GameSession.objects.filter(player1=player1).order_by('-id').first()
 
+        session.start_time = timezone.now();
+
         if not session:
             # Si aucune session n'est trouvée, retourner une réponse vide ou un message d'erreur
             return Response({"detail": "No active game session found."}, status=status.HTTP_404_NOT_FOUND)
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'game_{session.id}',
+            {
+                'type': 'display_player1',
+                'player1': session.player1.username,
+            }
+        )
 
         # Sérialiser la session pour renvoyer les informations au frontend
         serializer = GameSessionSerializer(session)
