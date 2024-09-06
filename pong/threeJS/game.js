@@ -17,8 +17,6 @@ const pong = new Pong(form, null);
 const bot = new Bot(pong, form);
 pong.bot = bot;
 const power = new Power(form, pong);
-let win_score = 3;
-let bonus = true;
 
 scene.add(form.ball);
 scene.add(form.Arene);
@@ -29,7 +27,7 @@ scene.add(form.Rborder);
 scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
-if (bonus)
+if (pong.power)
     scene.add(power.bonus);
 
 
@@ -74,7 +72,7 @@ function animate(timestamp) {
     
     pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
-    if (bonus)
+    if (pong.power)
         power.activePower();
     if (pong.botActivated)
         bot.updateBotPosition();
@@ -85,17 +83,17 @@ function animate(timestamp) {
 
 function checkWinCondition() {
     if (pong.score[0] === win_score) {
-        showWinScreen('Left Player Wins! ', pong.score[0], pong.score[1]);
+        showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1]);
     }
     if (pong.score[1] === win_score) {
-        showWinScreen('Right Player Wins! ', pong.score[0], pong.score[1]);
+        showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1]);
     }
 }
 
-function showWinScreen(message, score1, score2) {
+function showWinScreen(player, message, score1, score2) {
     const winScreen = document.getElementById('winScreen');
     const winMessage = document.getElementById('winMessage');
-    winMessage.textContent = `${message} Final Score: ${score1} - ${score2}`;
+    winMessage.textContent = `${player} ${message} Final Score: ${score1} - ${score2}`;
 
     winScreen.style.display = 'flex';
     renderer.setAnimationLoop(null);
