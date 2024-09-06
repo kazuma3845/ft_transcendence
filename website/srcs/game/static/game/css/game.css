@@ -1,6 +1,6 @@
 .box {
 	width: 1200px;
-	height: calc(100vh - 180px);
+	height: calc(100vh - 300px);
 	background-color: black;
 	display: flex;
 	justify-content: center;
@@ -16,4 +16,30 @@ iframe {
 	width: 100%;
 	height: 100%;
 	border: none;
+}
+
+.scoreboard {
+    display: flex;
+	margin-top: 27px !important;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+    width: 600px; /* Ajustez cette largeur selon vos besoins */
+    margin: 0 auto;
+}
+
+.scoreboard p {
+    margin: 0;
+    font-size: 24px;
+}
+
+.scoreboard span {
+    font-weight: bold;
+    font-size: 36px;
+}
+
+input#power, input#bot {
+    height: 16px;
+    width: 16px;
+	margin-bottom: 24px;
 }

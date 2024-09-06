@@ -55,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 	'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'transendence.urls'
@@ -75,16 +77,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'transendence.wsgi.application'
-
 # Websocket
 ASGI_APPLICATION = 'transendence.asgi.application'
+
+WSGI_APPLICATION = 'transendence.wsgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],  # Adresse du serveur Redis
+            "hosts": [(os.getenv('REDIS_HOST', 'redis'), 6379)],  # Utilisation du nom de service Redis
         },
     },
 }
@@ -168,6 +170,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_URL = 'static/'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -164,7 +164,7 @@ export default class Pong {
                 this.ball_angle = 90 - angleDegrees;
                 if (!this.ballPaused)
                     this.bot.handleBallHit();
-               else 
+               else
                     this.bot.replaceBot();
             }
             this.rebond = 0;

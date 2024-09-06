@@ -16,11 +16,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine  # Utilisation d'une image légère de Redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - django_network
+
   web:
     build:
-      context: ./website  # Le contexte de build est maintenant ./srcs
+      context: ./website
       dockerfile: Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    entrypoint: /app/entrypoint.sh
+    command: daphne -b 0.0.0.0 -p 8000 transendence.asgi:application -v 2
     volumes:
       - ./website/srcs:/app/srcs
     ports:
@@ -28,12 +37,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:  # Dépendance à Redis ajoutée
+        condition: service_started
     environment:
       - DB_NAME=your_database_name
       - DB_USER=your_database_user
       - DB_PASSWORD=your_password
       - DB_HOST=db
       - DB_PORT=5432
+      - REDIS_HOST=redis  # Ajout de l'environnement pour Redis
     networks:
       - django_network
 

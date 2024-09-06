@@ -2,25 +2,30 @@
 function router() {
     const hash = window.location.hash;  // Récupère le fragment d'URL
 
-    switch(hash) {
-        case '#signup':
-            loadSignupForm();
-            break;
-        case '#login':
-            loadLoginForm();
-            break;
-        case '#game':
-            loadGame();
-            break;
-        case '#pong':
-            loadPong();
-            break;
-        // Ajoute ici d'autres cas pour d'autres vues
-        default:
-            loadHome();
-            // loadHomePage();  // Par défaut, charge la page d'accueil ou vide le conteneur
-            break;
-    }
+    checkAuthentication()
+        .then(isAuthenticated => {
+            switch(hash) {
+                case '#signup':
+                    loadSignupForm();
+                    break;
+                case '#login':
+                    loadLoginForm();
+                    break;
+                case '#game':
+                    if (isAuthenticated) {
+                        loadGameForm();
+                    } else {
+                        loadLoginForm();  // Rediriger vers la page de connexion si non authentifié
+                    }
+                    break;
+                default:
+                    loadHome();
+                    break;
+            }
+        })
+        .catch(error => {
+            console.error('Error in router:', error);  // Log des erreurs dans router
+        });
 }
 
 // Fonction à appeler lorsqu'une navigation par l'utilisateur est détectée

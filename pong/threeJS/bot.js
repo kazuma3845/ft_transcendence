@@ -83,10 +83,10 @@ export default class Bot {
         const paddleY = this.form.paddleRight.position.y;
         const distanceToTop = halfArenaHeight - paddleY;
         const distanceToBottom = -halfArenaHeight - paddleY;
-        
+
         if (paddleY < 0) // Je genere un chiffre random en fonction de la distance la plus eloignee
             this.input = Math.round(Math.random() * distanceToTop / this.pong.paddle_move_speed);
-         else 
+         else
             this.input = Math.round(Math.random() * distanceToBottom / this.pong.paddle_move_speed);
         this.bot_in_place = true;
     }
