@@ -82,10 +82,10 @@ function animate(timestamp) {
 }
 
 function checkWinCondition() {
-    if (pong.score[0] === win_score) {
+    if (pong.score[0] === pong.winScore) {
         showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1]);
     }
-    if (pong.score[1] === win_score) {
+    if (pong.score[1] === pong.winScore) {
         showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1]);
     }
 }

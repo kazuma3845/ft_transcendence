@@ -11,14 +11,11 @@ export default class Pong {
         this.ballSpeedY = 0;
         this.ballPaused = true;
         this.keysPressed = {};
-        this.paddle_move_speed = 4;
         this.lastExecTime = 1;
         this.ball_angle = 90;
-        this.botActivated = true;
-        this.botLVL = 1;
         this.score = [0, 0];
         this.rebond = 0;
-
+        this.power = true;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
