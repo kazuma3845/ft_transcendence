@@ -15,7 +15,7 @@ export default class Pong {
         this.ball_angle = 90;
         this.score = [0, 0];
         this.rebond = 0;
-        this.power = true;
+        // this.power = true;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
