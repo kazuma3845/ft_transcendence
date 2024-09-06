@@ -3,7 +3,7 @@ from .models import GameSession, GameMove
 
 class GameSessionSerializer(serializers.ModelSerializer):
     player1 = serializers.StringRelatedField()  # Affiche le nom d'utilisateur au lieu de l'ID
-    player2 = serializers.StringRelatedField()
+    player2 = serializers.SerializerMethodField()
     winner = serializers.StringRelatedField()
     move_speed_ball = serializers.IntegerField(
         default=6,
@@ -31,6 +31,12 @@ class GameSessionSerializer(serializers.ModelSerializer):
         max_value=10,
         style={'input_type': 'range'}
     )
+
+    def get_player2(self, obj):
+        # Si player2 est None ou vide, on retourne 'Bot'
+        if obj.player2:
+            return str(obj.player2)  # Retourne le nom d'utilisateur du joueur 2
+        return "Bot"  # Si player2 est vide, retourne 'Bot'
 
     class Meta:
         model = GameSession

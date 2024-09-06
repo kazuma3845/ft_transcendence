@@ -37,3 +37,9 @@ iframe {
     font-weight: bold;
     font-size: 36px;
 }
+
+input#power, input#bot {
+    height: 16px;
+    width: 16px;
+	margin-bottom: 24px;
+}

@@ -14,7 +14,6 @@ function router() {
                 case '#game':
                     if (isAuthenticated) {
                         loadGameForm();
-                        // createGameSession();
                     } else {
                         loadLoginForm();  // Rediriger vers la page de connexion si non authentifié
                     }

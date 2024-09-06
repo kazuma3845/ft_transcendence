@@ -40,6 +40,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             power=serializer.validated_data.get('power', False),
             bot=serializer.validated_data.get('bot', False),
             bot_difficulty=serializer.validated_data.get('bot_difficulty', 5),
+            win_number=serializer.validated_data.get('win_number', 5),
         )
 
         # Retourner la session sérialisée
@@ -65,6 +66,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             {
                 'type': 'display_player1',
                 'player1': session.player1.username,
+                'player2': 'Bot',
             }
         )
 
