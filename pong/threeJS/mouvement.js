@@ -222,7 +222,7 @@ export default class Pong {
             this.id = data.id;
             this.playerLeft = data.leftPlayer;
             this.playerRight = data.rightPlayer;
-            this.winScore = data.winScore;
+            this.winScore = data.win_number;
             this.initialSpeed = data.move_speed_ball;
             this.paddle_move_speed = data.move_speed_paddle;
             this.power = data.power;
