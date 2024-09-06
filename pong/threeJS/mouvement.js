@@ -3,6 +3,7 @@ export default class Pong {
     constructor(form, bot) {
         this.bot = bot;
         this.form = form;
+
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
         this.initialSpeed = 6;
@@ -195,8 +196,6 @@ export default class Pong {
             player1_points: this.score[0],
             player2_points: this.score[1],
         };
-        // console.log("Sending data:", JSON.stringify(data));
-
         fetch(`http://127.0.0.1:8000/api/game/sessions/${this.id}/update_score/`, {
             method: 'POST',
             credentials: 'include',
@@ -221,6 +220,14 @@ export default class Pong {
         .then(response => response.json())
         .then(data => {
             this.id = data.id;
+            this.playerLeft = data.leftPlayer;
+            this.playerRight = data.rightPlayer;
+            this.winScore = data.win_number;
+            this.initialSpeed = data.move_speed_ball;
+            this.paddle_move_speed = data.move_speed_paddle;
+            this.power = data.power;
+            this.botActivated = data.bot;
+            this.botLVL = (data.bot_difficulty / 10);
         })
         .catch(error => console.error('Erreur:', error));
     }
