@@ -28,9 +28,6 @@ scene.add(form.Rborder);
 scene.add(form.Sborder);
 scene.add(form.Nborder);
 scene.add(form.line);
-if (pong.power)
-    scene.add(power.bonus);
-
 
 const cameraPositions = {
     default: { x: 0, y: 0, z: 180 },
@@ -62,6 +59,7 @@ document.addEventListener('keydown', (event) => {
 });
 
 let lastTime;
+let i = 0;
 
 function animate(timestamp) {
     if (!lastTime) {
@@ -72,8 +70,11 @@ function animate(timestamp) {
     lastTime = timestamp;
     pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
-    if (pong.power)
+    if (pong.power) {
+        if (i++ == 0)
+            scene.add(power.bonus);
         power.activePower();
+    }
     if (pong.botActivated)
         bot.updateBotPosition();
     renderer.render(scene, camera);
