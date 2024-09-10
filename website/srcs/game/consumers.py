@@ -18,6 +18,22 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.accept()
         print(f"WebSocket connection accepted for session {self.session_id}")
 
+        # Diffuser un message aux membres du groupe pour indiquer qu'un nouveau joueur a rejoint
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'player_joined',
+                'message': f"New player has joined the game!"
+            }
+        )
+
+    async def player_joined(self, event):
+        message = event['message']
+
+        # Envoyer le message à WebSocket
+        await self.send(text_data=json.dumps({
+            'message': message
+        }))
 
     async def disconnect(self, close_code):
         # Quitter la salle de jeu

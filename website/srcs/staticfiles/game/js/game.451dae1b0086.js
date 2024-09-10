@@ -44,7 +44,7 @@ function attachGameFormSubmitListener() {
                 loadGame();  // Charger la session de jeu si elle est créée avec succès
                 const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
                 if (sessionId) {
-                    startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
+                    // startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
                 }
             }
         })

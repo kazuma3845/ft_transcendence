@@ -146,7 +146,7 @@ function updateScore(sessionId, player1Points, player2Points) {
         return response.json();
     })
     .then(data => {
-        console.log('Updated Scores:', data);
+        // console.log('Updated Scores:', data);
         // Mettez à jour l'affichage du score dans l'interface utilisateur si nécessaire
     })
     .catch(error => console.error('Error:', error));

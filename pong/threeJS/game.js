@@ -3,6 +3,7 @@ import Form from './form.js';
 import Pong from './mouvement.js';
 import Bot from './bot.js';
 import Power from './power.js';
+import WebSocketModule from './WebSocketModule.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -69,7 +70,6 @@ function animate(timestamp) {
 
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
-    
     pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
     if (pong.power)
@@ -103,6 +103,7 @@ function startGame() {
     const startScreen = document.getElementById('startScreen');
     startScreen.style.display = 'none';
     pong.sendDataForID();
+    WebSocketModule.startWebSocket(pong.id);
     renderer.setAnimationLoop(animate);
 }
 

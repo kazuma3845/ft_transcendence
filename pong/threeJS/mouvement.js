@@ -217,8 +217,8 @@ export default class Pong {
         .then(response => response.json())
         .then(data => {
             this.id = data.id;
-            this.playerLeft = data.leftPlayer;
-            this.playerRight = data.rightPlayer;
+            this.playerLeft = data.player1;
+            this.playerRight = data.player2;
             this.winScore = data.win_number;
             this.initialSpeed = data.move_speed_ball;
             this.paddle_move_speed = data.move_speed_paddle;
