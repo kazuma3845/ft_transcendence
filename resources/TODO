@@ -57,8 +57,8 @@ Requirements:
   Liste des modules choisis:
     MAJOR:
       Web:
-        ☐ Django as backend @2h 
-        ☐ Tournament score in blockchain @2h
+        ✔ Django as backend @2h @done(24-09-04 18:10)
+        ☐ Tournament score in blockchain @2h @today
       User Management:
         ☐ Authentification, user management, utilisateurs de tournois @2h
       Gameplay and user experience:
@@ -67,11 +67,11 @@ Requirements:
       AI/Algo:
         ✔ AI opponent @2h @done(24-09-03 17:11)
       Graphics:
-        ☐ 3D pong using ThreeJS @2h 
+        ✔ 3D pong using ThreeJS @2h @done(24-09-04 18:10)
     MINOR:
       Web: 
         ☐ Framework fronted @1h
-        ☐ Database for the backend @1h
+        ✔ Database for the backend @1h @done(24-09-04 18:10)
       Gameplay and user experience:
         ☐ Game Customization Options @1h
       AI/Algo:

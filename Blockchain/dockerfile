@@ -1,14 +1,14 @@
 FROM node:14
 
-RUN npm install -g ganache-cli
-RUN npm install -g solc
-RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip3 install web3 py-solc-x
-COPY srcs/PongScores.sol /app/contracts/PongScores.sol
-COPY utils/deploy.py /app/deploy.py
+RUN apt-get update && \
+    apt-get install -y curl software-properties-common python3 python3-pip && \
+    npm install -g ganache-cli
 
-# Exposer le port 8545 pour Ganache
+RUN npm install --force web3
+RUN npm install react-native-get-random-values
+
+
+COPY srcs/ /app/sources/
 EXPOSE 8545
 
-# Commande pour lancer Ganache puis déployer le contrat
-CMD ["sh", "-c", "ganache-cli --host 0.0.0.0 --port 8545 & sleep 5 && python3 /app/deploy.py"]
+ CMD ["sh", "-c", "ganache-cli --host 0.0.0.0 --port 8545 & sleep 2 && node /app/sources/deploy.js"]

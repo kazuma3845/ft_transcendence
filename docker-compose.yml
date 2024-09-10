@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: database
     image: postgres:13
     restart: always
     environment:
@@ -17,6 +18,8 @@ services:
       retries: 5
 
   web:
+    container_name: django
+    image: django:transcendance
     build:
       context: ./website  # Le contexte de build est maintenant ./srcs
       dockerfile: Dockerfile
@@ -37,6 +40,8 @@ services:
       - django_network
 
   bot:
+    container_name: bot
+    image: bot:transcendance
     build:
       context: ./AI
       dockerfile: Dockerfile
@@ -46,6 +51,8 @@ services:
       - "8081:8081"
 
   pong:
+    container_name: pong
+    image: pong:transcendance
     build:
       context: ./pong  # Le contexte de build est maintenant ./srcs
       dockerfile: ./Dockerfile
@@ -55,6 +62,19 @@ services:
       - "8080:8080"
     networks:
       - django_network
+
+  blockchain:
+    container_name: ganache
+    image: blockchain:transcendance
+    build:
+      context: ./blockchain
+      dockerfile: dockerfile
+    networks:
+      - django_network
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./srcs:/app
 
 networks:
   django_network:
