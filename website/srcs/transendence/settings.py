@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'game',
+    'tournaments',
     'leaderboards',
 	'channels',
 	'corsheaders',
@@ -167,6 +168,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'transendence', 'static'),
     os.path.join(BASE_DIR, 'game', 'static'),
     os.path.join(BASE_DIR, 'users', 'static'),
+    os.path.join(BASE_DIR, 'tournaments', 'static'),
 ]
 
 STATIC_URL = 'static/'
