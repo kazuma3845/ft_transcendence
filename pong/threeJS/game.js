@@ -100,10 +100,12 @@ function showWinScreen(player, message, score1, score2) {
     renderer.setAnimationLoop(null);
 }
 
-function startGame() {
+async function startGame() {
     const startScreen = document.getElementById('startScreen');
     startScreen.style.display = 'none';
-    pong.sendDataForID();
+    await pong.sendDataForID();
+    console.log('sendDataForID:', pong.id);
+
     renderer.setAnimationLoop(animate);
 }
 

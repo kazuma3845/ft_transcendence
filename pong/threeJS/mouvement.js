@@ -15,7 +15,6 @@ export default class Pong {
         this.ball_angle = 90;
         this.score = [0, 0];
         this.rebond = 0;
-        // this.power = true;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -206,7 +205,7 @@ export default class Pong {
     }
 
     sendDataForID() {
-        fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
+        return fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -217,8 +216,8 @@ export default class Pong {
         .then(response => response.json())
         .then(data => {
             this.id = data.id;
-            this.playerLeft = data.leftPlayer;
-            this.playerRight = data.rightPlayer;
+            this.playerLeft = data.player1;
+            this.playerRight = data.player2;
             this.winScore = data.win_number;
             this.initialSpeed = data.move_speed_ball;
             this.paddle_move_speed = data.move_speed_paddle;

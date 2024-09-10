@@ -20,3 +20,6 @@ function loadGames() {
 function loadLeaderboards() {
 	// Code pour charger les classements depuis l'API des classements
 }
+
+function loadTournamentsForm() {
+}

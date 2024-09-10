@@ -18,6 +18,9 @@ function router() {
                         loadLoginForm();  // Rediriger vers la page de connexion si non authentifié
                     }
                     break;
+                case '#tournaments':
+                    loadTournamentsForm();
+                    break;
                 default:
                     loadHome();
                     break;
