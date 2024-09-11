@@ -26,14 +26,14 @@ Module Blockchain:
   Il pourra retourner les scores a partir d'une gameSessionID qui est elle generee par Django
   Les sessions non completees ne sont pas enregistrees et donc non displayed dans l'historique 
   ✔ Se renseigner sur les requirements @done(24-09-02 11:27)
-  ☐ Installer tous les requirements @today
-  ☐ Construire le container
+  ✔ Installer tous les requirements @done(24-09-11 15:03)
+  ✔ Construire le container @done(24-09-11 15:03)
   Pour le moment bug au moment de deployer le contract
-  ☐ Deployer environnement de test
+  ☐ Deployer environnement de test @today
   ☐ Updater Django avec les requirements
   ☐ Renvoyer les scores via blockchain
   ☐ Enregistrer les scores via smart-contract
-  ☐ Updater le docker-compose
+  ✔ Updater le docker-compose @done(24-09-11 15:04)
   ✘ Recevoir les data de l'API @cancelled(24-09-03 17:06)
 
 Requirements:
