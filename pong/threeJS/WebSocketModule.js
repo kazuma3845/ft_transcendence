@@ -5,7 +5,7 @@ const WebSocketModule = (() => {
     function startWebSocket(sessionId) {
         console.log("#### id: ", sessionId);
         // Créer une connexion WebSocket
-        socket = new WebSocket(`ws://127.0.0.1/ws/game/sessions/${sessionId}/`);
+        socket = new WebSocket(`ws://web:8000/ws/game/sessions/${sessionId}/`);
 
         // Connexion ouverte
         socket.onopen = function(e) {
@@ -17,7 +17,6 @@ const WebSocketModule = (() => {
             console.log('Message received:', e.data);
             try {
                 const data = JSON.parse(e.data);
-                console.log('Parsed data:', data.type);
                 if (data.type === 'left_game') {
                     updateLeftPos(data);
                 }

@@ -105,7 +105,6 @@ async function startGame() {
     startScreen.style.display = 'none';
     await pong.sendDataForID();
     WebSocketModule.startWebSocket(pong.id);
-    console.log('sendDataForID:', pong.id);
 
     renderer.setAnimationLoop(animate);
 }
