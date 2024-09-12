@@ -146,7 +146,7 @@ function updateScore(sessionId, player1Points, player2Points) {
         return response.json();
     })
     .then(data => {
-        console.log('Updated Scores:', data);
+        // console.log('Updated Scores:', data);
         // Mettez à jour l'affichage du score dans l'interface utilisateur si nécessaire
     })
     .catch(error => console.error('Error:', error));
@@ -160,7 +160,7 @@ function attachSingleGameListener() {
 }
 
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game/sessions/${sessionId}/`);
+    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/sessions/${sessionId}/`);
 
     socket.onopen = function(e) {
         console.log('WebSocket connected.');
