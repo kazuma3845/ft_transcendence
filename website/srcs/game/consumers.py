@@ -27,14 +27,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             }
         )
 
-    async def player_joined(self, event):
-        message = event['message']
-
-        # Envoyer le message à WebSocket
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))
-
     async def disconnect(self, close_code):
         # Quitter la salle de jeu
         await self.channel_layer.group_discard(
@@ -44,19 +36,51 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        player1_points = text_data_json['player1_points']
-        player2_points = text_data_json['player2_points']
+        message_type = text_data_json['type']
 
-        print(f"Received data: {text_data_json}")
-        # Envoyer les données du score à la salle
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'game_score',
-                'player1_points': player1_points,
-                'player2_points': player2_points
-            }
-        )
+        if message_type == 'game_score':
+            player1_points = text_data_json['content']['player1_points']
+            player2_points = text_data_json['content']['player2_points']
+            print(f"Received data: {text_data_json}")
+            # Envoyer les données du score à la salle
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'game_score',
+                    'player1_points': player1_points,
+                    'player2_points': player2_points
+                }
+            )
+
+        if message_type == 'update_position':
+            content = text_data_json['content']
+            print(f"Received data: {text_data_json}")
+            # Envoyer les données du score à la salle
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'update_position',
+                    'content': content,
+                }
+            )
+
+    async def update_position(self, event):
+        content = event['content']
+
+        # Envoyer les scores aux clients WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'update_position',
+            'content': content,
+        }))
+
+
+    async def player_joined(self, event):
+        message = event['message']
+
+        # Envoyer le message à WebSocket
+        await self.send(text_data=json.dumps({
+            'message': message
+        }))
 
     async def game_score(self, event):
         player1 = event['player1']

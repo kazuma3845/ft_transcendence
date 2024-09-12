@@ -16,11 +16,9 @@ const WebSocketModule = (() => {
             console.log('Message received:', e.data);
             try {
                 const data = JSON.parse(e.data);
-                if (data.type === 'left_game') {
-                    updateLeftPos(data);
-                }
-                if (data.type === 'right_game') {
-                    updateRightPos(data);
+                if (data.type === 'update_position') {
+                    console.log("Nous sommes dans le bot !");
+                    updatePosition(data);
                 }
             } catch (error) {
                 console.error('Error parsing message:', error);

@@ -74,7 +74,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         serializer = GameSessionSerializer(session)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-# not used anymore, prefer Websocket !!!
     @action(detail=True, methods=['post'], url_path='update_score')
     def update_score(self, request, pk=None):
         session = self.get_object()

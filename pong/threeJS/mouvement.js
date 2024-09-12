@@ -190,6 +190,11 @@ export default class Pong {
     }
 
     sendDataToScore() {
+        const testorData = {
+            salut: this.score[0],
+            coucou: this.score[1],
+        };
+        WebSocketModule.sendMessage("update_position", testorData);
         const data = {
             player1_points: this.score[0],
             player2_points: this.score[1],
