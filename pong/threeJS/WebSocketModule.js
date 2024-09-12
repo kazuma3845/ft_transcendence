@@ -1,4 +1,5 @@
 // Module WebSocket
+import pong from './game.js';
 
 const WebSocketModule = (() => {
     let socket;
@@ -9,17 +10,17 @@ const WebSocketModule = (() => {
 
         // Connexion ouverte
         socket.onopen = function(e) {
-            console.log('WebSocket connected.');
+            // console.log('WebSocket connected.');
         };
 
         // Réception des messages
         socket.onmessage = function(e) {
-            console.log('Message received:', e.data);
+            // console.log('Message received:', e.data);
             try {
                 const data = JSON.parse(e.data);
                 if (data.type === 'update_position') {
-                    console.log("Nous sommes dans le bot !");
-                    updatePosition(data);
+                    // console.log("Nous sommes dans le bot !");
+                    pong.updatePosition(data);
                 }
             } catch (error) {
                 console.error('Error parsing message:', error);
@@ -44,8 +45,10 @@ const WebSocketModule = (() => {
                 type: messageType,
                 content: messageContent
             }));
+            return 1;
         } else {
             console.error('WebSocket is not open. Cannot send message.');
+            return 0;
         }
     }
 

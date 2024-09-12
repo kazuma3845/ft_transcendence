@@ -167,7 +167,7 @@ function startWebSocket(sessionId) {
     };
 
     socket.onmessage = function(e) {
-        console.log('Message received:', e.data);
+        // console.log('Message received:', e.data);
         try {
             const data = JSON.parse(e.data);
             console.log('Parsed data:', data.type);

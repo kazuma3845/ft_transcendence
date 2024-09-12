@@ -62,59 +62,51 @@ export default class Pong {
 
         if (this.keysPressed['s']) {
             s = true;
-            // if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
-            //     this.form.paddleLeft.position.y -= moveSpeed;
-            // } else {
-            //     this.form.paddleLeft.position.y = -(halfArenaHeight - halfRaquetteHeight);
-            // }
         }
 
         if (this.keysPressed['w']) {
             w = true;
-            // if ((this.form.paddleLeft.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
-            //     this.form.paddleLeft.position.y += moveSpeed;
-            // } else {
-            //     this.form.paddleLeft.position.y = halfArenaHeight - halfRaquetteHeight;
-            // }
         }
         const key_position = {
             key_w: w,
             key_s: s,
-            player: this.playerLeft,
+            player: this.player,
             time: deltaTime
         };
-        WebSocketModule.sendMessage("update_position", key_position);
+        if (w || s)
+            WebSocketModule.sendMessage("update_position", key_position);
     }
 
     updatePosition(data)
     {
-        console.log("TEST!!!!!!!!!!!!")
-        // const speedFactor = data.content.deltaTime / 16.67;
-        // const moveSpeed = this.paddle_move_speed * speedFactor;
+        const speedFactor = data.content.time / 16.67;
+        const moveSpeed = this.paddle_move_speed * speedFactor;
 
-        // this.trueSpeed = Math.round(moveSpeed);
+        this.trueSpeed = Math.round(moveSpeed);
 
-        // const halfArenaHeight = this.arenaHeight / 2;
-        // const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
-        // // const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
+        const halfArenaHeight = this.arenaHeight / 2;
+        const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
+        // const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
 
-        // if (data.content.key_w && data.content.player == this.playerLeft)
-        // {
-        //     if ((this.form.paddleLeft.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
-        //         this.form.paddleLeft.position.y += moveSpeed;
-        //     } else {
-        //         this.form.paddleLeft.position.y = halfArenaHeight - halfRaquetteHeight;
-        //     }
-        // }
-        // if (data.content.key_s && data.content.player == this.playerLeft)
-        // {
-        //     if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
-        //         this.form.paddleLeft.position.y -= moveSpeed;
-        //     } else {
-        //         this.form.paddleLeft.position.y = -(halfArenaHeight - halfRaquetteHeight);
-        //     }
-        // }
-        // if (data.content.input['w'] && data.content.player == 2)
+        if (data.content.key_w && data.content.player == this.playerLeft)
+        {
+            console.log("W: ", moveSpeed);
+            if ((this.form.paddleLeft.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
+                this.form.paddleLeft.position.y += moveSpeed;
+            } else {
+                this.form.paddleLeft.position.y = halfArenaHeight - halfRaquetteHeight;
+            }
+        }
+        if (data.content.key_s && data.content.player == this.playerLeft)
+        {
+            console.log("S: ", moveSpeed);
+            if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
+                this.form.paddleLeft.position.y -= moveSpeed;
+            } else {
+                this.form.paddleLeft.position.y = -(halfArenaHeight - halfRaquetteHeight);
+            }
+        }
+        // if (data.content.key_w && data.content.player == this.playerRight)
         // {
         //     if ((this.form.paddleRight.position.y + halfRaquetteHeight2 + moveSpeed) < halfArenaHeight) {
         //         this.form.paddleRight.position.y += moveSpeed;
@@ -122,7 +114,7 @@ export default class Pong {
         //         this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight2;
         //     }
         // }
-        // if (data.content.input['s'] && data.content.player == 2)
+        // if (data.content.key_s && data.content.player == this.playerRight)
         // {
         //     if ((this.form.paddleRight.position.y - halfRaquetteHeight2 - moveSpeed) > -halfArenaHeight) {
         //         this.form.paddleRight.position.y -= moveSpeed;
@@ -281,6 +273,7 @@ export default class Pong {
         .then(response => response.json())
         .then(data => {
             this.id = data.id;
+            this.player = data.currentPlayer;
             this.playerLeft = data.player1;
             this.playerRight = data.player2;
             this.winScore = data.win_number;
