@@ -72,7 +72,14 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         # Sérialiser la session pour renvoyer les informations au frontend
         serializer = GameSessionSerializer(session)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = serializer.data
+        data['currentPlayer'] = request.user.username
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], url_path='join_game')
+    def join_game(self, request, pk=None):
+        session = self.get_object()
+        session.player2 = request.user
 
     @action(detail=True, methods=['post'], url_path='update_score')
     def update_score(self, request, pk=None):

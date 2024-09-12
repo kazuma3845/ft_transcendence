@@ -86,11 +86,10 @@ export default class Pong {
 
         const halfArenaHeight = this.arenaHeight / 2;
         const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
-        // const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
+        const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
 
         if (data.content.key_w && data.content.player == this.playerLeft)
         {
-            console.log("W: ", moveSpeed);
             if ((this.form.paddleLeft.position.y + halfRaquetteHeight + moveSpeed) < halfArenaHeight) {
                 this.form.paddleLeft.position.y += moveSpeed;
             } else {
@@ -99,29 +98,28 @@ export default class Pong {
         }
         if (data.content.key_s && data.content.player == this.playerLeft)
         {
-            console.log("S: ", moveSpeed);
             if ((this.form.paddleLeft.position.y - halfRaquetteHeight - moveSpeed) > -halfArenaHeight) {
                 this.form.paddleLeft.position.y -= moveSpeed;
             } else {
                 this.form.paddleLeft.position.y = -(halfArenaHeight - halfRaquetteHeight);
             }
         }
-        // if (data.content.key_w && data.content.player == this.playerRight)
-        // {
-        //     if ((this.form.paddleRight.position.y + halfRaquetteHeight2 + moveSpeed) < halfArenaHeight) {
-        //         this.form.paddleRight.position.y += moveSpeed;
-        //     } else {
-        //         this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight2;
-        //     }
-        // }
-        // if (data.content.key_s && data.content.player == this.playerRight)
-        // {
-        //     if ((this.form.paddleRight.position.y - halfRaquetteHeight2 - moveSpeed) > -halfArenaHeight) {
-        //         this.form.paddleRight.position.y -= moveSpeed;
-        //     } else {
-        //         this.form.paddleRight.position.y = -(halfArenaHeight - halfRaquetteHeight2);
-        //     }
-        // }
+        if (data.content.key_w && data.content.player == this.playerRight)
+        {
+            if ((this.form.paddleRight.position.y + halfRaquetteHeight2 + moveSpeed) < halfArenaHeight) {
+                this.form.paddleRight.position.y += moveSpeed;
+            } else {
+                this.form.paddleRight.position.y = halfArenaHeight - halfRaquetteHeight2;
+            }
+        }
+        if (data.content.key_s && data.content.player == this.playerRight)
+        {
+            if ((this.form.paddleRight.position.y - halfRaquetteHeight2 - moveSpeed) > -halfArenaHeight) {
+                this.form.paddleRight.position.y -= moveSpeed;
+            } else {
+                this.form.paddleRight.position.y = -(halfArenaHeight - halfRaquetteHeight2);
+            }
+        }
     }
 
     handleKeyPress(event) {
