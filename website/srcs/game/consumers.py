@@ -81,48 +81,83 @@ class GameConsumer(AsyncWebsocketConsumer):
             'player1': player1,
             'player2': player2
         }))
+# import json
+# from channels.generic.websocket import AsyncWebsocketConsumer
+# import logging
+
+# logger = logging.getLogger(__name__)
 
 # class GameConsumer(AsyncWebsocketConsumer):
 #     async def connect(self):
-#         # Utilisation d'un groupe général pour ce test simple
-#         self.game_group_name = 'simple_test_group'
+#         self.session_id = self.scope['url_route']['kwargs']['session_id']
+#         self.room_group_name = f'game_{self.session_id}'
 
-#         # Rejoindre le groupe
+#         # Rejoindre la salle de jeu
 #         await self.channel_layer.group_add(
-#             self.game_group_name,
+#             self.room_group_name,
 #             self.channel_name
 #         )
-
-#         logger.info("Client connected to WebSocket for simple test")
 
 #         await self.accept()
+#         print(f"WebSocket connection accepted for session {self.session_id}")
 
-#     async def disconnect(self, close_code):
-#         # Quitter le groupe
-#         await self.channel_layer.group_discard(
-#             self.game_group_name,
-#             self.channel_name
-#         )
-
-#         logger.info("Client disconnected from WebSocket for simple test")
-
-#     async def receive(self, text_data):
-#         text_data_json = json.loads(text_data)
-#         message = text_data_json['message']
-
-#         # Envoyer un message au groupe
+#         # Diffuser un message aux membres du groupe pour indiquer qu'un nouveau joueur a rejoint
 #         await self.channel_layer.group_send(
-#             self.game_group_name,
+#             self.room_group_name,
 #             {
-#                 'type': 'game_message',
-#                 'message': message
+#                 'type': 'player_joined',
+#                 'message': f"New player has joined the game!"
 #             }
 #         )
 
-#     async def game_message(self, event):
-#         message = event['message']
 
-#         # Envoyer le message au WebSocket
+#     async def disconnect(self, close_code):
+#         # Quitter la salle de jeu
+#         await self.channel_layer.group_discard(
+#             self.room_group_name,
+#             self.channel_name
+#         )
+
+#     async def receive(self, text_data):
+#         text_data_json = json.loads(text_data)
+#         message_type = text_data_json['type']
+
+#         if message_type == 'game_score':
+#             player1_points = text_data_json['content']['player1_points']
+#             player2_points = text_data_json['content']['player2_points']
+
+#             # appeler l API pour mettre a jour le score http://127.0.0.1:8000/api/game/sessions/${this.id}/update_score/
+
+#         # Envoyer les données du score à la salle
+#         await self.channel_layer.group_send(
+#             self.room_group_name,
+#             {
+#                 'type': 'game_score',
+#                 'player1_points': player1_points,
+#                 'player2_points': player2_points
+#             }
+#         )
+
+#     async def game_score(self, event):
+#         player1 = event['player1']
+#         player1_points = event['player1_points']
+#         player2_points = event['player2_points']
+
+#         # Envoyer les scores aux clients WebSocket
 #         await self.send(text_data=json.dumps({
-#             'message': message
+#             'type': 'game_score',
+#             'player1': player1,
+#             'player1_points': player1_points,
+#             'player2_points': player2_points
+#         }))
+
+#     async def display_player1(self, event):
+#         player1 = event['player1']
+#         player2 = event['player2']
+
+#         # Envoyer les scores aux clients WebSocket
+#         await self.send(text_data=json.dumps({
+#             'type': 'display_player1',
+#             'player1': player1,
+#             'player2': player2
 #         }))

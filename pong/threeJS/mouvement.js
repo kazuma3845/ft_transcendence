@@ -1,3 +1,4 @@
+import WebSocketModule from './WebSocketModule.js';
 
 export default class Pong {
     constructor(form, bot) {
@@ -24,6 +25,7 @@ export default class Pong {
     handleKeyDown(event) {
         this.keysPressed[event.key] = true;
     }
+
 
     handleKeyUp(event) {
         this.keysPressed[event.key] = false;
@@ -202,6 +204,7 @@ export default class Pong {
             body: JSON.stringify(data)
         })
         .catch(error => console.error('Erreur:', error));
+        // WebSocketModule.sendMessage("game_score", data);
     }
 
     sendDataForID() {
@@ -224,6 +227,8 @@ export default class Pong {
             this.power = data.power;
             this.botActivated = data.bot;
             this.botLVL = (data.bot_difficulty / 10);
+
+            WebSocketModule.startWebSocket(this.id);
         })
         .catch(error => console.error('Erreur:', error));
     }

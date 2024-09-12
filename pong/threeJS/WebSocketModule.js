@@ -3,9 +3,8 @@ const WebSocketModule = (() => {
     let socket;
 
     function startWebSocket(sessionId) {
-        console.log("#### id: ", sessionId);
         // Créer une connexion WebSocket
-        socket = new WebSocket(`ws://web:8000/ws/game/sessions/${sessionId}/`);
+        socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/sessions/${sessionId}/`);
 
         // Connexion ouverte
         socket.onopen = function(e) {
