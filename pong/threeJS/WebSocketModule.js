@@ -1,4 +1,5 @@
 // Module WebSocket
+
 const WebSocketModule = (() => {
     let socket;
 
