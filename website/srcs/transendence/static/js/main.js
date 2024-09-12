@@ -23,3 +23,9 @@ function loadLeaderboards() {
 
 function loadTournamentsForm() {
 }
+
+function loadJointTournamentsForm() {
+}
+
+function loadCreatTournamentsForm() {
+}

@@ -25,6 +25,8 @@ input {
 .centered_container_white {
 	display: inline-block;
     padding: 40px 40px;
+	margin-top: 70px;
+	margin-left: 175px;
     box-sizing: border-box;
 	background-color: white;
 	border-radius: 20px;

@@ -21,6 +21,12 @@ function router() {
                 case '#tournaments':
                     loadTournamentsForm();
                     break;
+                case '#createTournament':
+                    loadCreatTournamentsForm();
+                    break;
+                case '#joinTournament':
+                    loadJointTournamentsForm();
+                    break;
                 default:
                     loadHome();
                     break;

@@ -31,7 +31,7 @@ scene.add(form.line);
 const cameraPositions = {
     default: { x: 0, y: 0, z: 180 },
     top: { x: 0, y: -150, z: 150, rotationX: 45 * Math.PI / 180 },
-    behindPaddle: { x: -200, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180}
+    behindPaddle: { x: -205, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180}
 };
 
 function updateCameraPosition(position) {
