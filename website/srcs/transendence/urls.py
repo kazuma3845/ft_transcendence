@@ -22,10 +22,11 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('', views.index, name='home'),
-    path('api/users/', include('users.urls')),        # API pour l'app users
-    path('api/game/', include('game.urls')),          # API pour l'app game
+    path('api/users/', include('users.urls')),
+    path('api/game/', include('game.urls')),
     path('api/leaderboards/', include('leaderboards.urls')),
-    path('blockchain/', include('blockchain.urls')),
+    path('api/blockchain/', include('blockchain.urls')),
+    path('api/tournaments/', include('tournaments.urls')),
     # path('users/', include('users.urls')),
     # path('game/', include('game.urls')),
     # path('leaderboards/', include('leaderboards.urls')),

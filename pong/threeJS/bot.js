@@ -29,14 +29,14 @@ export default class Bot {
         this.form.paddleRight.position.x,
         this.form.paddleRight.position.y,
       ],
-      paddle_size: this.form.paddle_size[1],
-      paddle_move_speed: this.pong.paddle_move_speed,
+      paddle_size: this.form.paddle_right_size[1],
+      paddle_move_speed: this.pong.trueSpeed,
       side: "right", // ou "left" selon la logique
       score: this.pong.score, // Mettre à jour avec le score actuel
       ballPaused: this.pong.ballPaused,
       bot_lvl: this.pong.botLVL, // ! MOD THIS TO ADJUST BOT LVL
     };
-    console.log("Sending data:", JSON.stringify(data));
+    // console.log("Sending data:", JSON.stringify(data));
     fetch("http://localhost:8081/api/receive-data", {
       method: "POST",
       headers: {
@@ -52,15 +52,15 @@ export default class Bot {
   }
 
   processBotResponse(data) {
-    console.log("Réponse reçue:", data);
+    // console.log("Réponse reçue:", data);
     this.input = data.input;
   }
 
   replaceBot() {
     let raw_input =
       this.form.paddleRight.position.y / this.pong.paddle_move_speed;
-    this.input = Math.round(raw_input) * -1;
-    console.log("Mouvements pour se replacer au centre :", this.input);
+    this.input = (Math.round(raw_input) * -1);
+    // console.log("Mouvements pour se replacer au centre :", this.input);
   }
 
   updateBotPosition() {
@@ -83,10 +83,10 @@ export default class Bot {
         const paddleY = this.form.paddleRight.position.y;
         const distanceToTop = halfArenaHeight - paddleY;
         const distanceToBottom = -halfArenaHeight - paddleY;
-        
+
         if (paddleY < 0) // Je genere un chiffre random en fonction de la distance la plus eloignee
             this.input = Math.round(Math.random() * distanceToTop / this.pong.paddle_move_speed);
-         else 
+         else
             this.input = Math.round(Math.random() * distanceToBottom / this.pong.paddle_move_speed);
         this.bot_in_place = true;
     }
