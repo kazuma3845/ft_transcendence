@@ -46,3 +46,24 @@ input#power, input#bot {
     width: 16px;
 	margin-bottom: 24px;
 }
+
+.container_parent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ajustez cette largeur selon vos besoins */
+    padding: 0 175px; /* Ajoutez cette ligne pour un espacement égal sur les côtés */
+    box-sizing: border-box;
+    
+}
+
+.container_white_left, .container_white_right {
+    display: inline-block;
+    padding: 40px 40px;
+    margin-top: 70px;
+    box-sizing: border-box;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* width: calc(50% - 175px); */
+}

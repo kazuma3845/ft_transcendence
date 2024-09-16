@@ -1,6 +1,6 @@
 services:
   db:
-    container_name: database
+    # container_name: database
     image: postgres:13
     restart: always
     environment:
@@ -26,8 +26,8 @@ services:
       - django_network
 
   web:
-    container_name: django
-    image: django:transcendance
+    # container_name: django
+    # image: django:transcendance
     build:
       context: ./website
       dockerfile: Dockerfile
@@ -53,8 +53,8 @@ services:
       - django_network
 
   bot:
-    container_name: bot
-    image: bot:transcendance
+    # container_name: bot
+    # image: bot:transcendance
     build:
       context: ./AI
       dockerfile: Dockerfile
@@ -64,8 +64,8 @@ services:
       - "8081:8081"
 
   pong:
-    container_name: pong
-    image: pong:transcendance
+    # container_name: pong
+    # image: pong:transcendance
     build:
       context: ./pong 
       dockerfile: ./Dockerfile
@@ -77,8 +77,8 @@ services:
       - django_network
 
   blockchain:
-    container_name: ganache
-    image: blockchain:transcendance
+    # container_name: ganache
+    # image: blockchain:transcendance
     build:
       context: ./blockchain
       dockerfile: dockerfile
