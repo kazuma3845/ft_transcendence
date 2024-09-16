@@ -21,7 +21,7 @@ services:
     container_name: django
     image: django:transcendance
     build:
-      context: ./website  # Le contexte de build est maintenant ./srcs
+      context: ./website  
       dockerfile: Dockerfile
     volumes:
       - ./website/srcs:/app/srcs
@@ -54,7 +54,7 @@ services:
     container_name: pong
     image: pong:transcendance
     build:
-      context: ./pong  # Le contexte de build est maintenant ./srcs
+      context: ./pong 
       dockerfile: ./Dockerfile
     volumes:
       - ./pong:/app
@@ -74,7 +74,7 @@ services:
     ports:
       - "8545:8545"
     volumes:
-      - ./srcs:/app
+      - ./blockchain/volumes:/app/volumes
 
 networks:
   django_network:

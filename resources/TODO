@@ -29,6 +29,8 @@ Module Blockchain:
   Les sessions non completees ne sont pas enregistrees et donc non displayed dans l'historique 
   ✔ Se renseigner sur les requirements @done(24-09-02 11:27)
   Ganache, Truffle, Solidity
+  ✔ Compiler le contract @done(24-09-13 15:47)
+  docker run -v $(pwd):/sources ethereum/solc:0.8.0 --bin --abi -o /sources/output /sources/PongScores.sol
   ✔ Installer tous les requirements @done(24-09-11 15:03)
   ✔ Construire le container @done(24-09-11 15:03)
   ✔ Deployer environnement de test @done(24-09-11 17:47)
