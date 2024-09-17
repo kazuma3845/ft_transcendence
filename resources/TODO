@@ -39,10 +39,12 @@ Module Blockchain:
   J'ai utilise ethers a la place de web3 car j'avais des problemes dans la generation de nombre aleatoires utilisee pour le UUID, plus ce pb avec ethers
   J'ai du lancer le docker avec un mnemonic fixe pour pouvoir en deduire la la clé privée dans mon code.
   J'ai du recompiler le code en m'assurant que le docker solc etait sur la meme version que mon contrat -> error:opcode 
-  ☐ Updater Django avec les requirements
-  ☐ Renvoyer les scores via blockchain
+  ✔ Updater Django avec les requirements @done(24-09-17 15:47)
+  ☐ Faire les API
   ☐ Enregistrer les scores via smart-contract
+  ☐ Renvoyer les scores via blockchain
   ☐ Mettre le mnemonic dans le .env
+  ☐ Trouver un moyen de stocker la clé privée pour la récupérer de maniere sécurisée dans les API
   ✔ Updater le docker-compose @done(24-09-11 15:04)
   ✘ Recevoir les data de l'API @cancelled(24-09-03 17:06)
 

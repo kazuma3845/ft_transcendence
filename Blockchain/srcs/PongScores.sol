@@ -2,27 +2,26 @@
 pragma solidity ^0.8.0;
 
 contract PongScores {
-
-    struct PlayerScore {
-        address player; 
-        uint256 score;   
+    struct GameSession {
+        string[] usernames;
+        uint256[] scores;    
     }
-
-    mapping(uint256 => PlayerScore[]) public gameSessionScores;
-    event GameSessionRecorded(uint256 gameSessionId, uint256 timestamp);   
-    function setGameSessionScores(uint256 _gameSessionId, address[] memory _players, uint256[] memory _scores) public {
+    mapping(uint256 => GameSession) private gameSessions;  // Mapping des game sessions par ID
+    event GameSessionRecorded(uint256 gameSessionId, uint256 timestamp); 
+    
+    function setGameSessionScores(uint256 _gameSessionId, string[] memory _usernames, uint256[] memory _scores) public {
         require(_gameSessionId != 0, "ID de GameSession invalide");
-        require(_players.length == _scores.length, "Le nombre de joueurs doit correspondre au nombre de scores");
+        require(_usernames.length == _scores.length, "Le nombre de joueurs doit correspondre au nombre de scores");
 
-        for (uint256 i = 0; i < _players.length; i++) {
-            gameSessionScores[_gameSessionId].push(PlayerScore({
-                player: _players[i],
-                score: _scores[i]
-            }));
-        }
-        emit GameSessionRecorded(_gameSessionId, block.timestamp);
+        gameSessions[_gameSessionId] = GameSession({
+            usernames: _usernames,
+            scores: _scores
+        });
+
+        emit GameSessionRecorded(_gameSessionId, block.timestamp);  
     }
-    function getScoresByGameSession(uint256 _gameSessionId) public view returns (PlayerScore[] memory) {
-        return gameSessionScores[_gameSessionId];
+
+    function getGameSesSsion(uint256 _gameSessionId) public view returns (string[] memory, uint256[] memory) {
+        return (gameSessions[_gameSessionId].usernames, gameSessions[_gameSessionId].scores);
     }
 }
