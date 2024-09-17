@@ -13,7 +13,7 @@ down:
 	docker compose -f $(COMPOSE_FILE) down
 
 clean:
-	-docker compose -f $(COMPOSE_FILE) down --rmi all --remove-orphans
-	-docker system prune -a -f
+	-docker compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
+	-docker system prune -a -f --volumes
 
 re: clean up
