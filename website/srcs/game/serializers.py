@@ -44,18 +44,20 @@ class GameSessionSerializer(serializers.ModelSerializer):
             'id',
             'player1',
             'player2',
-            # 'created_time',  # Nouveau champ ajouté
+            # 'created_time',
             'start_time',
             'end_time',
             'player1_points',
             'player2_points',
             'winner',
-            'win_number',        # Nouveau champ ajouté
-            'move_speed_ball',   # Nouveau champ ajouté
-            'move_speed_paddle', # Nouveau champ ajouté
-            'power',             # Nouveau champ ajouté
-            'bot',               # Nouveau champ ajouté
-            'bot_difficulty'     # Nouveau champ ajouté
+            'win_number',
+            'move_speed_ball',
+            'move_speed_paddle',
+            'power',
+            'bot',
+            'bot_difficulty',
+            'player1_started',
+            'player2_started'
         ]
 
 class GameMoveSerializer(serializers.ModelSerializer):

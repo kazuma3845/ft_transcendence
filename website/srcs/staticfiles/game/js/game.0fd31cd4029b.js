@@ -43,7 +43,6 @@ function attachGameFormSubmitListener() {
             } else {
                 loadGame();  // Charger la session de jeu si elle est créée avec succès
                 const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
-                localStorage.setItem('game_session_id', sessionId);
                 if (sessionId) {
                     startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
                 }
@@ -120,7 +119,7 @@ function startSingleGame() {
     .then(data => {
         const sessionId = data.id;
         const player1 = data.player1;
-        localStorage.setItem('game_session_id', sessionId);
+
         // Traite les données de la session ici
         // startWebSocket(sessionId);
         console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
@@ -301,46 +300,29 @@ async function fetchAvailableSessions() {
             const link = document.createElement('a'); // Créer un élément <a> pour le lien
 
             // Définir l'URL du lien et son texte
-            link.href = `#`; // Pas de redirection directe
+            link.href = `/api/game/sessions/${session.id}/join_game/`;
             link.textContent = `Rejoindre la session ${session.id}`;
 
             // Ajouter un événement de clic pour le lien
             link.addEventListener('click', function(event) {
-                event.preventDefault(); // Empêcher la redirection par défaut
-                joinGame(session.id); // Appeler la fonction pour rejoindre le jeu
+                event.preventDefault();
+                joinGame(session.id);
             });
 
             // Ajouter le lien à l'élément <li> et l'élément <li> à la liste
             listItem.appendChild(link);
             sessionList.appendChild(listItem);
         });
+
     } catch (error) {
         console.error('Erreur lors de la récupération des sessions:', error);
     }
 }
 
-async function joinGame(sessionId) {
-    try {
-        console.log(`salut la vie `);
-        // Appeler l'API pour rejoindre la session
-        const response = await fetch(`/api/game/sessions/${sessionId}/join_game/`, {
-            method: 'POST', // Utilisation de POST pour rejoindre la session
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
-            },
-        });
-
-        // Vérifier si la requête a réussi
-        if (!response.ok) {
-            throw new Error(`Erreur lors de la connexion à la session: ${response.status}`);
-        }
-
-        // Si l'appel API est réussi, lancer la fonction pour charger le jeu
-        console.log(`Vous avez rejoint la session ${sessionId}`);
-        loadGame(); // Lancer la fonction pour charger le jeu
-
-    } catch (error) {
-        console.error('Erreur lors de la connexion à la session:', error);
-    }
+// Fonction appelée lors du clic sur un lien pour rejoindre une session
+function joinGame(sessionId) {
+    // Ici tu peux ajouter la logique pour rejoindre une session
+    console.log(`Rejoindre la session avec ID: ${sessionId}`);
+    // Exemple : redirection vers la page ou envoi d'une autre requête
+    window.location.href = `http://127.0.0.1:8000/api/game/sessions/${sessionId}/join_game/`;
 }

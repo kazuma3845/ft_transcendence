@@ -43,6 +43,7 @@ function attachGameFormSubmitListener() {
             } else {
                 loadGame();  // Charger la session de jeu si elle est créée avec succès
                 const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
+                localStorage.setItem('game_session_id', sessionId);
                 if (sessionId) {
                     startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
                 }
@@ -119,7 +120,7 @@ function startSingleGame() {
     .then(data => {
         const sessionId = data.id;
         const player1 = data.player1;
-
+        localStorage.setItem('game_session_id', sessionId);
         // Traite les données de la session ici
         // startWebSocket(sessionId);
         console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
@@ -273,3 +274,73 @@ window.onload = function() {
         updateWinNumber();
     }
 };
+
+// Fonction pour appeler l'API et afficher les GameSessions disponibles
+async function fetchAvailableSessions() {
+    try {
+        // Effectuer un appel GET à l'API
+        const response = await fetch('/api/game/sessions/available_sessions/');
+
+        // Vérifier si la requête a réussi
+        if (!response.ok) {
+            throw new Error(`Erreur: ${response.status}`);
+        }
+
+        // Récupérer les données JSON de l'API
+        const sessions = await response.json();
+
+        // Sélectionner l'élément HTML où afficher les liens
+        const sessionList = document.getElementById('session-list');
+
+        // Vider le contenu précédent
+        sessionList.innerHTML = '';
+
+        // Parcourir les sessions et créer un lien pour chacune
+        sessions.forEach(session => {
+            const listItem = document.createElement('li'); // Créer un élément <li>
+            const link = document.createElement('a'); // Créer un élément <a> pour le lien
+
+            // Définir l'URL du lien et son texte
+            link.href = `#`; // Pas de redirection directe
+            link.textContent = `Rejoindre la session ${session.id}`;
+
+            // Ajouter un événement de clic pour le lien
+            link.addEventListener('click', function(event) {
+                event.preventDefault(); // Empêcher la redirection par défaut
+                joinGame(session.id); // Appeler la fonction pour rejoindre le jeu
+            });
+
+            // Ajouter le lien à l'élément <li> et l'élément <li> à la liste
+            listItem.appendChild(link);
+            sessionList.appendChild(listItem);
+        });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des sessions:', error);
+    }
+}
+
+async function joinGame(sessionId) {
+    try {
+        console.log(`salut la vie `);
+        // Appeler l'API pour rejoindre la session
+        const response = await fetch(`/api/game/sessions/${sessionId}/join_game/`, {
+            method: 'POST', // Utilisation de POST pour rejoindre la session
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
+            },
+        });
+
+        // Vérifier si la requête a réussi
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la connexion à la session: ${response.status}`);
+        }
+
+        // Si l'appel API est réussi, lancer la fonction pour charger le jeu
+        console.log(`Vous avez rejoint la session ${sessionId}`);
+        loadGame(); // Lancer la fonction pour charger le jeu
+
+    } catch (error) {
+        console.error('Erreur lors de la connexion à la session:', error);
+    }
+}
