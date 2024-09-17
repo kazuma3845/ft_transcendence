@@ -1,0 +1,69 @@
+.box {
+	width: 1000px;
+	height: calc(100vh - 300px);
+	margin-top: 50px;
+	margin-left: 175px;
+	background-color: black;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.box-text {
+	color: white !important;
+	font-size: 24px;
+}
+
+iframe {
+	width: 120%;
+	height: 120%;
+	top: 35px;
+	border: none;
+}
+
+.scoreboard {
+    display: flex;
+	margin-top: 60px !important;
+    justify-content: space-between;
+    align-items: center;
+    width: 1000px;
+    margin: 0 auto;
+	margin-left: 175px;
+}
+
+.scoreboard p {
+    margin: 0;
+    font-size: 24px;
+}
+
+.scoreboard span {
+    font-weight: bold;
+    font-size: 36px;
+}
+
+input#power, input#bot {
+    height: 16px;
+    width: 16px;
+	margin-bottom: 24px;
+}
+
+.container_parent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ajustez cette largeur selon vos besoins */
+    padding: 0 175px; /* Ajoutez cette ligne pour un espacement égal sur les côtés */
+    box-sizing: border-box;
+    
+}
+
+.container_white_left, .container_white_right {
+    display: inline-block;
+    padding: 40px 40px;
+    margin-top: 70px;
+    box-sizing: border-box;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* width: calc(50% - 175px); */
+}

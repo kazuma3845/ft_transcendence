@@ -18,6 +18,8 @@ class GameSession(models.Model):
     power = models.BooleanField(null=True, blank=True)
     bot = models.BooleanField(null=True, blank=True)
     bot_difficulty = models.IntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    player1_started = models.BooleanField(default=False)  # Initialisé à False
+    player2_started = models.BooleanField(default=False)
 
 class GameMove(models.Model):
     session = models.ForeignKey(GameSession, on_delete=models.CASCADE)

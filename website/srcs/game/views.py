@@ -79,7 +79,16 @@ class GameSessionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='join_game')
     def join_game(self, request, pk=None):
         session = self.get_object()
+
+        # Vérifier si player2 est déjà rempli
+        if session.player2 is not None:
+            return Response({"detail": "Cette session a déjà un deuxième joueur."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Assigner player2 à l'utilisateur courant
         session.player2 = request.user
+        session.save()
+
+        return Response({"detail": "Vous avez rejoint la session avec succès."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], url_path='update_score')
     def update_score(self, request, pk=None):
@@ -120,6 +129,19 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         # Sérialiser la session mise à jour
         serializer = GameSessionSerializer(session)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def available_sessions(self, request):
+        # Obtenir l'utilisateur courant
+        current_user = request.user
+
+        # Filtrer les sessions où player2 est vide et player1 n'est pas l'utilisateur courant
+        sessions = GameSession.objects.filter(player2__isnull=True, bot=False).exclude(player1=current_user)
+
+        # Sérialiser les données
+        serializer = self.get_serializer(sessions, many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GameMoveViewSet(viewsets.ModelViewSet):

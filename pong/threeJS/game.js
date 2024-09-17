@@ -102,11 +102,13 @@ function showWinScreen(player, message, score1, score2) {
 
 async function startGame() {
     const startScreen = document.getElementById('startScreen');
-    startScreen.style.display = 'none';
     await pong.sendDataForID();
-    // WebSocketModule.startWebSocket(pong.id);
 
+    // WebSocketModule.startWebSocket(pong.id);
+    startScreen.style.display = 'none';
     renderer.setAnimationLoop(animate);
+    // if (pong.player1start && pong.player2start) {
+    // }
 }
 
 document.getElementById('startButton').addEventListener('click', startGame);
