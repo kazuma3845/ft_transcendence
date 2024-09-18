@@ -13,10 +13,11 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xfeb47b);
 document.body.appendChild(renderer.domElement);
 
-const form = new Form();
+const form = new Form(null);
 const pong = new Pong(form, null);
 const bot = new Bot(pong, form);
 pong.bot = bot;
+form.pong = pong;
 const power = new Power(form, pong);
 
 scene.add(form.ball);

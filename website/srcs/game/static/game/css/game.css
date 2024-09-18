@@ -51,19 +51,43 @@ input#power, input#bot {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Ajustez cette largeur selon vos besoins */
-    padding: 0 175px; /* Ajoutez cette ligne pour un espacement égal sur les côtés */
+    width: 100%;
+    padding: 0 175px;
     box-sizing: border-box;
-    
+    gap: 50px;
 }
 
 .container_white_left, .container_white_right {
     display: inline-block;
-    padding: 40px 40px;
+    padding: 40px;
     margin-top: 70px;
     box-sizing: border-box;
     background-color: white;
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    /* width: calc(50% - 175px); */
+    width: 380px;
+    height: 750px;
+}
+
+#session-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#session-list li {
+    padding: 8px 20px;
+    text-align: center;
+}
+
+#session-list li a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#session-list li a:hover {
+    background-color: #d9d9d9;
 }
