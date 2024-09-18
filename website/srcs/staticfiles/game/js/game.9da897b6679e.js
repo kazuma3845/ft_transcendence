@@ -9,43 +9,27 @@ function loadGameForm() {
     });
 }
 
-async function loadGame() {
-    fetch('/static/game/html/game.html')
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('app').innerHTML = html;
-        // startWebSocket(sessionId);
-        // attachLoginFormSubmitListener();
-		// attachSingleGameListener();
-    });
-}
-
-
 function attachGameFormSubmitListener() {
     document.getElementById('game-form').addEventListener('submit', function(event) {
         event.preventDefault();  // Empêche le rechargement de la page
 
-        // Utiliser FormData pour récupérer les données du formulaire
         const formData = new FormData(this);
-
-        // Convertir FormData en un objet JavaScript
         const data = {};
+
         formData.forEach((value, key) => {
             data[key] = value;
         });
 
-        // Pour les cases à cocher, s'assurer d'avoir une valeur booléenne
         data['power'] = document.getElementById('power').checked;
         data['bot'] = document.getElementById('bot').checked;
 
-        // Convertir l'objet en JSON et envoyer avec fetch
         fetch('/api/game/sessions/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
+                'X-CSRFToken': getCSRFToken(),
             },
-            body: JSON.stringify(data)  // Convertir l'objet en JSON
+            body: JSON.stringify(data)
         })
         .then(response => response.json())
         .then(data => {
@@ -53,19 +37,28 @@ function attachGameFormSubmitListener() {
                 document.getElementById('error-message').textContent = data.error;
                 document.getElementById('error-message').style.display = 'block';
             } else {
-                await loadGame();  // Charger la session de jeu si elle est créée avec succès
-                const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
+                let sessionId = data.id;
+                console.log('Setting session ID:', sessionId);
                 localStorage.setItem('game_session_id', sessionId);
-                console.log('###### ici quoi');
-                const iframe = document.querySelector('iframe');
-                if (iframe) {
-                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, 'http://127.0.0.1:8080/');
-                } else {
-                    console.error('Iframe not found in the DOM');
-                }
-                if (sessionId) {
-                    startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
-                }
+                console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
+                // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
+                loadGame().then(() => {
+                    console.log('Formulaire de jeu chargé avec succès');
+                    const iframe = document.querySelector('iframe');
+                    if (iframe) {
+                        iframe.onload = function() {
+                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, 'http://127.0.0.1:8080');
+                        };
+                    } else {
+                        console.error('Iframe not found');
+                    }
+
+                    if (sessionId) {
+                        startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée
+                    }
+                }).catch(error => {
+                    console.error('Erreur lors du chargement du formulaire de jeu:', error);
+                });
             }
         })
         .catch(error => console.error('Erreur:', error));
@@ -102,39 +95,65 @@ function attachGameFormSubmitListener() {
 // }
 
 
-function loadPong() {
-    fetch('/static/game/html/pong.html')
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('app').innerHTML = html;
-        // attachLoginFormSubmitListener();
-		// attachSingleGameListener();
+function loadGame() {
+    return new Promise((resolve, reject) => {
+        fetch('/static/game/html/game.html')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('app').innerHTML = html;
+
+            // Si tu veux démarrer la WebSocket ou attacher des listeners après le chargement de la page, tu peux les appeler ici.
+            // startWebSocket(sessionId);
+            // attachLoginFormSubmitListener();
+            // attachSingleGameListener();
+
+            resolve();  // Résoudre la promesse une fois que tout est chargé
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement de la page de jeu:', error);
+            reject(error);  // Rejeter la promesse en cas d'erreur
+        });
     });
 }
 
-function startSingleGame() {
-    fetch('/api/game/sessions/start_single/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCSRFToken(),
-        },
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to start game session');
-        }
-        return response.json();
-    })
-    .then(data => {
-        const sessionId = data.id;
-        const player1 = data.player1;
-        localStorage.setItem('game_session_id', sessionId);
-        // Traite les données de la session ici
-        // startWebSocket(sessionId);
-        console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
-    })
-    .catch(error => console.error('Error:', error));
-}
+// function loadPong() {
+//     fetch('/static/game/html/pong.html')
+//     .then(response => response.text())
+//     .then(html => {
+//         document.getElementById('app').innerHTML = html;
+//         // attachLoginFormSubmitListener();
+// 		// attachSingleGameListener();
+//     });
+// }
+
+// function startSingleGame() {
+//     fetch('/api/game/sessions/start_single/', {
+//         method: 'POST',
+//         headers: {
+//             'X-CSRFToken': getCSRFToken(),
+//         },
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Failed to start game session');
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         const sessionId = data.id;
+//         const player1 = data.player1;
+//         localStorage.setItem('game_session_id', sessionId);
+//         // Traite les données de la session ici
+//         // startWebSocket(sessionId);
+//         console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
+//     })
+//     .catch(error => console.error('Error:', error));
+// }
 
 function updateScore(sessionId, player1Points, player2Points) {
     fetch(`/api/game/sessions/${sessionId}/update_score/`, {
@@ -161,12 +180,12 @@ function updateScore(sessionId, player1Points, player2Points) {
     .catch(error => console.error('Error:', error));
 }
 
-function attachSingleGameListener() {
-	document.getElementById('myButton').addEventListener('click', function() {
-			// Appeler la fonction souhaitée
-			startSingleGame();
-	});
-}
+// function attachSingleGameListener() {
+// 	document.getElementById('myButton').addEventListener('click', function() {
+// 			// Appeler la fonction souhaitée
+// 			startSingleGame();
+// 	});
+// }
 
 function startWebSocket(sessionId) {
     const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/sessions/${sessionId}/`);
@@ -179,13 +198,12 @@ function startWebSocket(sessionId) {
         // console.log('Message received:', e.data);
         try {
             const data = JSON.parse(e.data);
-            console.log('Parsed data:', data.type);
+            console.log('Client websocket parsed data:', data.type);
             if (data.type === 'game_score') {
                 updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
             }
-            if (data.type === 'display_player1') {
-                console.log('->> displayPlayer1');
-                displayPlayer1(data.player1, data.player2);
+            if (data.type === 'display_player') {
+                displayPlayer(data.player1, data.player2);
             }
         } catch (error) {
             console.error('Error parsing message:', error);
@@ -215,7 +233,7 @@ function startWebSocket(sessionId) {
         }
     }
 
-    function displayPlayer1(username, username2) {
+    function displayPlayer(username, username2) {
         const player1Elem = document.getElementById('player1');
         const player2Elem = document.getElementById('player2');
 
@@ -346,7 +364,27 @@ async function joinGame(sessionId) {
 
         // Si l'appel API est réussi, lancer la fonction pour charger le jeu
         console.log(`Vous avez rejoint la session ${sessionId}`);
-        loadGame(); // Lancer la fonction pour charger le jeu
+        localStorage.setItem('game_session_id', sessionId);
+
+        // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
+        loadGame().then(() => {
+            console.log('Formulaire de jeu chargé avec succès');
+            const iframe = document.querySelector('iframe');
+            if (iframe) {
+                iframe.onload = function() {
+                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, 'http://127.0.0.1:8080');
+                };
+            } else {
+                console.error('Iframe not found');
+            }
+
+            if (sessionId) {
+                startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée
+            }
+        }).catch(error => {
+            console.error('Erreur lors du chargement du formulaire de jeu:', error);
+        });
+
 
     } catch (error) {
         console.error('Erreur lors de la connexion à la session:', error);

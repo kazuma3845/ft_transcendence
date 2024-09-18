@@ -104,7 +104,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             async_to_sync(channel_layer.group_send)(
                 f'game_{session.id}',
                 {
-                    'type': 'display_player1',
+                    'type': 'display_player',
                     'player1': session.player1.username,
                     'player2': 'Bot',
                 }

@@ -10,6 +10,7 @@ function loadGameForm() {
 }
 
 function attachGameFormSubmitListener() {
+    console.log('CRTEEER');
     document.getElementById('game-form').addEventListener('submit', function(event) {
         event.preventDefault();  // Empêche le rechargement de la page
 
@@ -37,16 +38,17 @@ function attachGameFormSubmitListener() {
                 document.getElementById('error-message').textContent = data.error;
                 document.getElementById('error-message').style.display = 'block';
             } else {
-                const sessionId = data.id;
+                let sessionId = data.id;
+                console.log('Setting session ID:', sessionId);
                 localStorage.setItem('game_session_id', sessionId);
-
+                console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
                 // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
                 loadGame().then(() => {
                     console.log('Formulaire de jeu chargé avec succès');
                     const iframe = document.querySelector('iframe');
                     if (iframe) {
                         iframe.onload = function() {
-                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, 'http://127.0.0.1:8080/');
+                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, 'http://127.0.0.1:8080');
                         };
                     } else {
                         console.error('Iframe not found');
@@ -201,8 +203,8 @@ function startWebSocket(sessionId) {
             if (data.type === 'game_score') {
                 updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
             }
-            if (data.type === 'display_player1') {
-                displayPlayer1(data.player1, data.player2);
+            if (data.type === 'display_player') {
+                displayPlayer(data.player1, data.player2);
             }
         } catch (error) {
             console.error('Error parsing message:', error);
@@ -232,7 +234,7 @@ function startWebSocket(sessionId) {
         }
     }
 
-    function displayPlayer1(username, username2) {
+    function displayPlayer(username, username2) {
         const player1Elem = document.getElementById('player1');
         const player2Elem = document.getElementById('player2');
 
@@ -363,7 +365,27 @@ async function joinGame(sessionId) {
 
         // Si l'appel API est réussi, lancer la fonction pour charger le jeu
         console.log(`Vous avez rejoint la session ${sessionId}`);
-        loadGame(); // Lancer la fonction pour charger le jeu
+        localStorage.setItem('game_session_id', sessionId);
+
+        // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
+        loadGame().then(() => {
+            console.log('Formulaire de jeu chargé avec succès');
+            const iframe = document.querySelector('iframe');
+            if (iframe) {
+                iframe.onload = function() {
+                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, 'http://127.0.0.1:8080');
+                };
+            } else {
+                console.error('Iframe not found');
+            }
+
+            if (sessionId) {
+                startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée
+            }
+        }).catch(error => {
+            console.error('Erreur lors du chargement du formulaire de jeu:', error);
+        });
+
 
     } catch (error) {
         console.error('Erreur lors de la connexion à la session:', error);
