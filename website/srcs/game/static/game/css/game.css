@@ -1,5 +1,5 @@
 .box {
-	width: 1000px;
+	width: 80vw;
 	height: calc(100vh - 300px);
 	margin-top: 50px;
 	margin-left: 175px;
@@ -54,7 +54,7 @@ input#power, input#bot {
     width: 100%; /* Ajustez cette largeur selon vos besoins */
     padding: 0 175px; /* Ajoutez cette ligne pour un espacement égal sur les côtés */
     box-sizing: border-box;
-    
+
 }
 
 .container_white_left, .container_white_right {

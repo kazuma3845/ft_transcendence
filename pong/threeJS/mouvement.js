@@ -260,7 +260,9 @@ export default class Pong {
     }
 
     sendDataForID() {
-        return fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
+        let sessionId = localStorage.getItem('game_session_id');
+        WebSocketModule.startWebSocket(sessionId);
+        return fetch(`http://127.0.0.1:8000/api/game/sessions/${sessionId}/start_single/`, {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -281,7 +283,7 @@ export default class Pong {
             this.botActivated = data.bot;
             this.botLVL = (data.bot_difficulty / 10);
 
-            WebSocketModule.startWebSocket(this.id);
+            // WebSocketModule.startWebSocket(this.id);
         })
         .catch(error => console.error('Erreur:', error));
     }
@@ -301,5 +303,3 @@ export default class Pong {
         return cookieValue;
     }
 }
-
-

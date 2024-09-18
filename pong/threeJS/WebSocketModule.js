@@ -51,6 +51,16 @@ const WebSocketModule = (() => {
             return 0;
         }
     }
+    // Écoute le message venant du frontend principal
+    window.addEventListener('message', (event) => {
+        console.log(`coucoc #`)
+        if (event.origin !== 'http://127.0.0.1:8000') {
+            return;
+        }
+        // Récupérer l'ID de la session de jeu
+        localStorage.setItem('game_session_id', event.data.gameSessionId);
+
+    });
 
     // Retourner les fonctions accessibles depuis l'extérieur du module
     return {

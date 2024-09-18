@@ -120,39 +120,39 @@ function loadGame() {
     });
 }
 
-// function loadPong() {
-//     fetch('/static/game/html/pong.html')
-//     .then(response => response.text())
-//     .then(html => {
-//         document.getElementById('app').innerHTML = html;
-//         // attachLoginFormSubmitListener();
-// 		// attachSingleGameListener();
-//     });
-// }
+function loadPong() {
+    fetch('/static/game/html/pong.html')
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById('app').innerHTML = html;
+        // attachLoginFormSubmitListener();
+		// attachSingleGameListener();
+    });
+}
 
-// function startSingleGame() {
-//     fetch('/api/game/sessions/start_single/', {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRFToken': getCSRFToken(),
-//         },
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Failed to start game session');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         const sessionId = data.id;
-//         const player1 = data.player1;
-//         localStorage.setItem('game_session_id', sessionId);
-//         // Traite les données de la session ici
-//         // startWebSocket(sessionId);
-//         console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
+function startSingleGame() {
+    fetch('/api/game/sessions/start_single/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to start game session');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const sessionId = data.id;
+        const player1 = data.player1;
+        localStorage.setItem('game_session_id', sessionId);
+        // Traite les données de la session ici
+        // startWebSocket(sessionId);
+        console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 function updateScore(sessionId, player1Points, player2Points) {
     fetch(`/api/game/sessions/${sessionId}/update_score/`, {
@@ -179,12 +179,12 @@ function updateScore(sessionId, player1Points, player2Points) {
     .catch(error => console.error('Error:', error));
 }
 
-// function attachSingleGameListener() {
-// 	document.getElementById('myButton').addEventListener('click', function() {
-// 			// Appeler la fonction souhaitée
-// 			startSingleGame();
-// 	});
-// }
+function attachSingleGameListener() {
+	document.getElementById('myButton').addEventListener('click', function() {
+			// Appeler la fonction souhaitée
+			startSingleGame();
+	});
+}
 
 function startWebSocket(sessionId) {
     const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/sessions/${sessionId}/`);
@@ -197,11 +197,12 @@ function startWebSocket(sessionId) {
         // console.log('Message received:', e.data);
         try {
             const data = JSON.parse(e.data);
-            console.log('Client websocket parsed data:', data.type);
+            console.log('Parsed data:', data.type);
             if (data.type === 'game_score') {
                 updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
             }
             if (data.type === 'display_player1') {
+                console.log('->> displayPlayer1');
                 displayPlayer1(data.player1, data.player2);
             }
         } catch (error) {
