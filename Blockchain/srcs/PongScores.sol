@@ -21,7 +21,7 @@ contract PongScores {
         emit GameSessionRecorded(_gameSessionId, block.timestamp);  
     }
 
-    function getGameSesSsion(uint256 _gameSessionId) public view returns (string[] memory, uint256[] memory) {
+    function getScoresByGameSession(uint256 _gameSessionId) public view returns (string[] memory, uint256[] memory) {
         return (gameSessions[_gameSessionId].usernames, gameSessions[_gameSessionId].scores);
     }
 }

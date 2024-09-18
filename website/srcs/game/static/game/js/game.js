@@ -31,7 +31,7 @@ function attachGameFormSubmitListener() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
+                'X-CSRFToken': getCSRFToken(),
             },
             body: JSON.stringify(data)  // Convertir l'objet en JSON
         })

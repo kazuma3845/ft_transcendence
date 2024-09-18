@@ -36,7 +36,7 @@ services:
     command: daphne -b 0.0.0.0 -p 8000 transendence.asgi:application -v 2
     volumes:
       - ./website/srcs:/app/srcs
-      - ./blockchain/srcs:/app/blockhain_v
+      - ./blockchain/srcs:/app/blockchain_v
     ports:
       - "8000:8000"
     depends_on:
