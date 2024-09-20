@@ -3,3 +3,6 @@
 
 # Ignorer les fichiers système
 .DS_Store
+
+.env
+venv

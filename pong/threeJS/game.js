@@ -91,18 +91,29 @@ function checkWinCondition() {
     }
 }
 
+function registerScores()
+
 function showWinScreen(player, message, score1, score2) {
     const winScreen = document.getElementById('winScreen');
     const winMessage = document.getElementById('winMessage');
     winMessage.textContent = `${player} ${message} Final Score: ${score1} - ${score2}`;
 
-    const url = "http://127.0.0.1:8000/api/blockchain/set_score/"
+    
+    registerScores();
+    
+    winScreen.style.display = 'flex';
+    renderer.setAnimationLoop(null);
+}
 
+function registerScores() {
+
+    const url = "http://127.0.0.1:8000/api/blockchain/set_score/"
+    
     const gameData = {
-    game_session_id: pong.id,
-    players: [pong.playerLeft, pong.playerRight],
-    scores: pong.score
-    }
+        game_session_id: pong.id,
+        players: [pong.playerLeft, pong.playerRight],
+        scores: pong.score
+    };
 
     const fetchOptions = {
         method: 'POST',
@@ -118,13 +129,10 @@ function showWinScreen(player, message, score1, score2) {
     fetch(url, fetchOptions)
         .then(response => {
             if (!response.ok) {
-                throw new Error(response.statusText)
+                throw new Error(response.statusText);
             }
             return response.json();
         });
-
-    winScreen.style.display = 'flex';
-    renderer.setAnimationLoop(null);
 }
 
 async function startGame() {

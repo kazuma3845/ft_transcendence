@@ -19,7 +19,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:alpine  # Utilisation d'une image légère de Redis
+    image: redis:alpine  
     restart: always
     ports:
       - "6379:6379"
