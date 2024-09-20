@@ -95,6 +95,16 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         else:
             return Response({"detail": "You are not a player in this game."}, status=status.HTTP_403_FORBIDDEN)
 
+        # channel_layer = get_channel_layer()
+        # async_to_sync(channel_layer.group_send)(
+        #     f'game_{session.id}',
+        #     {
+        #         'type': 'display_player',
+        #         'player1': session.player1.username,
+        #         'player2': session.player2.username,
+        #     }
+        # )
+
         # Si bot est activé, configurer le jeu contre le bot
         if session.bot:
             session.start_time = timezone.now()
@@ -115,15 +125,24 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             session.start_time = timezone.now()
             session.save()
 
-            # # Envoyer un message WebSocket pour indiquer que le jeu peut commencer
-            # channel_layer = get_channel_layer()
-            # async_to_sync(channel_layer.group_send)(
-            #     f'game_{session.id}',
-            #     {
-            #         'type': 'start_game',
-            #         'message': 'The game has started!',
-            #     }
-            # )
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'game_{session.id}',
+                {
+                    'type': 'display_player',
+                    'player1': session.player1.username,
+                    'player2': session.player2.username,
+                }
+            )
+            # Envoyer un message WebSocket pour indiquer que le jeu peut commencer
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'game_{session.id}',
+                {
+                    'type': 'start_game',
+                    'message': 'The game has started!',
+                }
+            )
 
         # Sauvegarder les informations de démarrage dans la base de données
         session.save()
@@ -144,6 +163,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         # Assigner player2 à l'utilisateur courant
         session.player2 = request.user
+
         session.save()
 
         return Response({"detail": "Vous avez rejoint la session avec succès."}, status=status.HTTP_200_OK)
