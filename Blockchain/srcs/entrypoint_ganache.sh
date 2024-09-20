@@ -14,6 +14,7 @@ kill_existing_ganache() {
 
 launch_ganache() {
     echo "Lancement de Ganache sur le port 8545"
+    echo "healthy" > ganache.health
     eval $GANACHE_CMD
 }
 
@@ -46,7 +47,6 @@ else
     echo "Arrêt de Ganache après le déploiement."
     kill $GANACHE_PID
     sleep 5
-
     echo "Relance de Ganache..."
     kill_existing_ganache
     launch_ganache
