@@ -1,25 +1,22 @@
 services:
   db:
     container_name: database
-    image: postgres:13
+    build:
+      context: ./database
+      dockerfile: Dockerfile
     restart: always
-    environment:
-      POSTGRES_DB: your_database_name
-      POSTGRES_USER: your_database_user
-      POSTGRES_PASSWORD: your_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - django_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    env_file:
+      - .env
 
   redis:
     container_name: redis
-    image: redis:alpine  
+    image: redis:alpine
     restart: always
     ports:
       - "6379:6379"
@@ -28,12 +25,9 @@ services:
 
   web:
     container_name: django
-    image: django:transcendance
     build:
       context: ./website
       dockerfile: Dockerfile
-    entrypoint: /app/entrypoint.sh
-    command: daphne -b 0.0.0.0 -p 8000 transendence.asgi:application -v 2
     volumes:
       - ./website/srcs:/app/srcs
       - ./blockchain/srcs:/app/blockchain_v
@@ -44,13 +38,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    environment:
-      - DB_NAME=your_database_name
-      - DB_USER=your_database_user
-      - DB_PASSWORD=your_password
-      - DB_HOST=db
-      - DB_PORT=5432
-      - REDIS_HOST=redis  # Ajout de l'environnement pour Redis
     networks:
       - django_network
     env_file:
@@ -71,7 +58,7 @@ services:
     container_name: pong
     image: pong:transcendance
     build:
-      context: ./pong 
+      context: ./pong
       dockerfile: ./Dockerfile
     volumes:
       - ./pong:/app
@@ -100,4 +87,3 @@ networks:
 
 volumes:
   postgres_data:
-
