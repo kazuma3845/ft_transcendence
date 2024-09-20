@@ -52,6 +52,23 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         else:
             return Response({'error': 'Nom d\'utilisateur ou mot de passe incorrect'}, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False, methods=['GET'], url_path='info-user')
+    def info_user(self, request):
+        # Récupérer l'utilisateur courant
+        user = request.user
+
+        # Récupérer le profil utilisateur associé
+        try:
+            user_profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Profil utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Sérialiser le profil utilisateur
+        serializer = UserProfileSerializer(user_profile)
+
+        # Retourner les données sérialisées
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 @login_required
 def index(request):
     return HttpResponse("Bienvenue dans l'application Users")

@@ -38,6 +38,7 @@ function attachGameFormSubmitListener() {
                 document.getElementById('error-message').style.display = 'block';
             } else {
                 let sessionId = data.id;
+                console.log('Setting session ID:', sessionId);
                 localStorage.setItem('game_session_id', sessionId);
                 console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
                 // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
@@ -196,7 +197,7 @@ function startWebSocket(sessionId) {
         // console.log('Message received:', e.data);
         try {
             const data = JSON.parse(e.data);
-            console.log('F-E: client websocket parsed data:', data);
+            console.log('Client websocket parsed data:', data.type);
             if (data.type === 'game_score') {
                 updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
             }

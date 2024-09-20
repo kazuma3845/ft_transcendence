@@ -3,7 +3,7 @@ import Form from './form.js';
 import Pong from './mouvement.js';
 import Bot from './bot.js';
 import Power from './power.js';
-// import WebSocketModule from './WebSocketModule.js';
+import WebSocketModule from './WebSocketModule.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -14,7 +14,7 @@ renderer.setClearColor(0xfeb47b);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
-const pong = new Pong(form, null);
+const pong = new Pong(form, null, null);
 const bot = new Bot(pong, form);
 pong.bot = bot;
 const power = new Power(form, pong);
@@ -103,7 +103,9 @@ function showWinScreen(player, message, score1, score2) {
 async function startGame() {
     const startScreen = document.getElementById('startScreen');
     await pong.sendDataForID();
-
+    const websocket = new WebSocketModule(pong);
+    pong.websocket = websocket;
+    pong.websocket.startWebSocket(pong.id);
     // WebSocketModule.startWebSocket(pong.id);
     startScreen.style.display = 'none';
     renderer.setAnimationLoop(animate);

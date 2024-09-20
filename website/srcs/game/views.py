@@ -115,15 +115,15 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             session.start_time = timezone.now()
             session.save()
 
-            # Envoyer un message WebSocket pour indiquer que le jeu peut commencer
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f'game_{session.id}',
-                {
-                    'type': 'start_game',
-                    'message': 'The game has started!',
-                }
-            )
+            # # Envoyer un message WebSocket pour indiquer que le jeu peut commencer
+            # channel_layer = get_channel_layer()
+            # async_to_sync(channel_layer.group_send)(
+            #     f'game_{session.id}',
+            #     {
+            #         'type': 'start_game',
+            #         'message': 'The game has started!',
+            #     }
+            # )
 
         # Sauvegarder les informations de démarrage dans la base de données
         session.save()

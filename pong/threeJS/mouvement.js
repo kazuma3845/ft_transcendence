@@ -1,9 +1,9 @@
-import WebSocketModule from './WebSocketModule.js';
 
 export default class Pong {
-    constructor(form, bot) {
+    constructor(form, bot, websocket) {
         this.bot = bot;
         this.form = form;
+        this.websocket = websocket;
 
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
@@ -74,7 +74,7 @@ export default class Pong {
             time: deltaTime
         };
         if (w || s)
-            WebSocketModule.sendMessage("update_position", key_position);
+            this.websocket.sendMessage("update_position", key_position);
     }
 
     updatePosition(data)
@@ -261,7 +261,6 @@ export default class Pong {
 
     sendDataForID() {
         let sessionId = localStorage.getItem('game_session_id');
-        WebSocketModule.startWebSocket(sessionId);
         return fetch(`http://127.0.0.1:8000/api/game/sessions/${sessionId}/start_single/`, {
             method: 'POST',
             credentials: 'include',
