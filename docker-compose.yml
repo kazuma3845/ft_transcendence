@@ -42,7 +42,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:  # Dépendance à Redis ajoutée
+      redis:
         condition: service_started
     environment:
       - DB_NAME=your_database_name
@@ -53,6 +53,8 @@ services:
       - REDIS_HOST=redis  # Ajout de l'environnement pour Redis
     networks:
       - django_network
+    env_file:
+      - .env
 
   bot:
     container_name: bot
@@ -90,9 +92,12 @@ services:
       - "8545:8545"
     volumes:
       - ./blockchain/volumes:/app/volumes
+    env_file:
+      - .env
 
 networks:
   django_network:
 
 volumes:
   postgres_data:
+

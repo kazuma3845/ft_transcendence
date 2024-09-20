@@ -1,5 +1,6 @@
 Daily TODO: @today
-  ☐ Tester le code du smartcontract 
+  ☐ Cleaner le docker-compose
+  ✔ Tester le code du smartcontract @done(24-09-20 16:01)
 
 Module BOT:
   ✔ Calculer la position finale en fonction des infos de la game @done(24-09-02 11:16)
@@ -16,7 +17,7 @@ Module BOT:
   ☐ Faire en sorte que le bot reçoive plusieurs inputs @3h
   L'idee est de faire en sorte que les bots au plus bas niveaux suivent tres brievement la balle lorsqu'il y a un rebond, au lieu 
   d'aller directement a l'endroit final
-  ☐ Fix le probleme sur les ordinateurs des autres @high 
+  ✔ Fix le probleme sur les ordinateurs des autres @done(24-09-20 16:01)
     On dirait que sur les ordinateurs des autres le bot ne fonctionne pas correctement, il semble se deplacer moins que prevu malgre qu'il affiche le bon nombre
     d'inputs realises dans le console.log. 
     UPDATE ; Tom a decouvert que sur son navigateur, les inputs deplacent 2x moins que la vitesse de deplacement. Donc les calculs sont bons
@@ -40,11 +41,13 @@ Module Blockchain:
   J'ai du lancer le docker avec un mnemonic fixe pour pouvoir en deduire la la clé privée dans mon code.
   J'ai du recompiler le code en m'assurant que le docker solc etait sur la meme version que mon contrat -> error:opcode 
   ✔ Updater Django avec les requirements @done(24-09-17 15:47)
-  ☐ Faire les API
-  ☐ Enregistrer les scores via smart-contract
-  ☐ Renvoyer les scores via blockchain
-  ☐ Mettre le mnemonic dans le .env
-  ☐ Trouver un moyen de stocker la clé privée pour la récupérer de maniere sécurisée dans les API
+  ✔ Faire les API @done(24-09-20 16:00)
+  ✔ Enregistrer les scores via smart-contract @done(24-09-20 16:00)
+  ✔ Renvoyer les scores via blockchain @done(24-09-20 16:00)
+  ✔ Mettre le mnemonic dans le .env @done(24-09-20 16:00)
+  ✘ Trouver un moyen de stocker la clé privée pour la récupérer de maniere sécurisée dans les API @cancelled(24-09-20 16:01)
+  HashiVault ou Secrets mais vu qu'on fait pas le websecurity module on va surement pas faire et juste 
+  laisser la private key dans le .env
   ✔ Updater le docker-compose @done(24-09-11 15:04)
   ✘ Recevoir les data de l'API @cancelled(24-09-03 17:06)
 

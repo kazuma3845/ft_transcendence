@@ -10,7 +10,5 @@ RUN	npm install ethers@5.7.2
 COPY srcs/ /app/sources/
 EXPOSE 8545
 RUN chmod 777 /app/sources/entrypoint_ganache.sh
-ENV MNEMO='potato blush range blue exchange naive replace output easy tiger bottom cupboard'
-
 
 ENTRYPOINT [ "/app/sources/entrypoint_ganache.sh" ]

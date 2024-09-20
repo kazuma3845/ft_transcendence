@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GANACHE_CMD="ganache-cli -m \"$MNEMO\" --host 0.0.0.0 --port 8545 --db /app/volumes/ganache_db"
+GANACHE_CMD="ganache-cli -m \"$MNEMO\" --host 0.0.0.0 --db /app/volumes/ganache_db > /dev/null 2>&1" #Pour supprimer l'ouptut Ganache et le mnemo
 CONTRACT_FILE="/app/volumes/contract-address.json"
 
 kill_existing_ganache() {
@@ -13,19 +13,19 @@ kill_existing_ganache() {
 }
 
 launch_ganache() {
-    echo "Lancement de Ganache sur le port 8545 avec le mnemonic : $MNEMO"
+    echo "Lancement de Ganache sur le port 8545"
     eval $GANACHE_CMD
 }
 
 trap 'kill_existing_ganache' EXIT
 
 if [ -f "$CONTRACT_FILE" ]; then
-    echo "Le fichier de contrat $CONTRACT_FILE existe déjà."
+    echo "Le contrat est déjà déployé."
     echo "Lancement direct de Ganache..."
     kill_existing_ganache 
     launch_ganache
 else
-    echo "Le fichier de contrat $CONTRACT_FILE n'existe pas. Déploiement en cours..."
+    echo "Le contrat n'existe pas. Déploiement en cours..."
     
     eval $GANACHE_CMD &
     GANACHE_PID=$!

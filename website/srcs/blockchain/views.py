@@ -1,6 +1,7 @@
 from web3 import Web3
 from django.http import JsonResponse
 import json
+import os
 
 web3 = Web3(Web3.HTTPProvider("http://ganache:8545"))  # FIXME: A ADAPTER
 
@@ -8,11 +9,10 @@ api_path = "/app/blockchain_v/output/PongScores.abi"
 with open(api_path, "r") as abi_file:
     contract_abi = json.load(abi_file)
 
-contract_address = "0x346D8BF0ABC36FEeeC341Ed99Df5BC895e1bb01A"  # FIXME: A ADAPTER
+contract_address = os.environ['CONTRACT_ADRESS']  
 contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 account = web3.eth.accounts[0]
-print("Account used for etherum transation is :", account)
-private_key = "0x03baa2a168dceaf3a32f5f0397e7c3d4ebfd04ffdc3ab2bb73a1707c2faa727f"  #!FIXME a enlever
+private_key = os.environ['KEY']
 chain_id = web3.eth.chain_id
 
 # --------------------------------------------------------- Interaction WEB3

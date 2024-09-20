@@ -91,7 +91,6 @@ function checkWinCondition() {
     }
 }
 
-function registerScores()
 
 function showWinScreen(player, message, score1, score2) {
     const winScreen = document.getElementById('winScreen');
