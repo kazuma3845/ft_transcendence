@@ -26,7 +26,10 @@ function router() {
                     loadCreatTournamentsForm();
                     break;
                 case '#profil':
-                    loadProfil();
+                    if (isAuthenticated)
+                        loadProfil();
+                    else
+                        loadLoginForm();
                     break;
                 default:
                     loadHome();

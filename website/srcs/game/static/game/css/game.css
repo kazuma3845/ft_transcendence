@@ -54,7 +54,6 @@ input#power, input#bot {
     width: 100%;
     padding: 0 175px;
     box-sizing: border-box;
-
 }
 
 .container_white_left, .container_white_right {
@@ -65,5 +64,6 @@ input#power, input#bot {
     background-color: white;
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    /* width: calc(50% - 175px); */
+    width: 350px;
+    height: 720px;
 }
