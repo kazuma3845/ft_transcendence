@@ -25,8 +25,8 @@ function router() {
                 case '#createTournament':
                     loadCreatTournamentsForm();
                     break;
-                case '#joinTournament':
-                    loadJointTournamentsForm();
+                case '#profil':
+                    loadProfil();
                     break;
                 default:
                     loadHome();

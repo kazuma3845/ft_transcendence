@@ -24,8 +24,8 @@ function loadLeaderboards() {
 function loadTournamentsForm() {
 }
 
-function loadJointTournamentsForm() {
+function loadCreatTournamentsForm() {
 }
 
-function loadCreatTournamentsForm() {
+function loadProfil() {
 }
