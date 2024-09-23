@@ -102,15 +102,26 @@ function showWinScreen(player, message, score1, score2) {
 
 async function startGame() {
     const startScreen = document.getElementById('startScreen');
+    const loader = document.getElementById('loader');
     await pong.sendDataForID();
     const websocket = new WebSocketModule(pong);
     pong.websocket = websocket;
     pong.websocket.startWebSocket(pong.id);
-    // WebSocketModule.startWebSocket(pong.id);
     startScreen.style.display = 'none';
+    console.log(`player1_started ${pong.player1_started} | player2_started ${pong.player2_started}`);
+    if (pong.botActivated === true || (pong.player1_started === true && pong.player2_started === true)) {
+        renderer.setAnimationLoop(animate);
+    }
+    else {
+        loader.style.display = 'flex';
+    }
+
+}
+
+export function startGameDual() {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'none';
     renderer.setAnimationLoop(animate);
-    // if (pong.player1start && pong.player2start) {
-    // }
 }
 
 document.getElementById('startButton').addEventListener('click', startGame);

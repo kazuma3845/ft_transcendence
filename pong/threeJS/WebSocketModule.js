@@ -1,4 +1,5 @@
 // Module WebSocket pour chaque instance de jeu Pong
+import {startGameDual} from './game.js';
 
 export default class WebSocketModule {
     constructor(pong) {
@@ -29,6 +30,16 @@ export default class WebSocketModule {
                 if (data.type === 'update_position') {
                     // Appel de la fonction du jeu pour mettre à jour la position
                     this.pong.updatePosition(data);
+                }
+                if (data.type === 'start_game') {
+                    console.log(`start_game = ${data.content}`)
+                    // Appel de la fonction du jeu pour mettre à jour la position
+                    startGameDual();
+                }
+                if (data.type === 'launch_ball') {
+                    console.log(`launch_ball = ${data.content}`)
+                    // Appel de la fonction du jeu pour mettre à jour la position
+                    this.pong.ballPaused = false;
                 }
             } catch (error) {
                 console.error('Error parsing message:', error);
