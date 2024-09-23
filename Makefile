@@ -15,5 +15,6 @@ down:
 clean:
 	-docker compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
 	-docker system prune -a -f --volumes
+	-rm -rf ./website/srcs/staticfiles
 
 re: clean up

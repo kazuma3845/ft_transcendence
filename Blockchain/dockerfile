@@ -13,6 +13,6 @@ RUN chmod 777 /app/sources/entrypoint_ganache.sh
 
 #Cat successfull = 0 -> HEALTHCHECK = healthy
 HEALTHCHECK --interval=5s --timeout=5s --retries=15 \
-  CMD cat ganache.health || exit 1 
+  CMD cat ganache.health || exit 1
 
 ENTRYPOINT [ "/app/sources/entrypoint_ganache.sh" ]
