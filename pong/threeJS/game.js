@@ -92,13 +92,47 @@ function checkWinCondition() {
     }
 }
 
+
 function showWinScreen(player, message, score1, score2) {
     const winScreen = document.getElementById('winScreen');
     const winMessage = document.getElementById('winMessage');
     winMessage.textContent = `${player} ${message} Final Score: ${score1} - ${score2}`;
 
+    
+    registerScores();
+    
     winScreen.style.display = 'flex';
     renderer.setAnimationLoop(null);
+}
+
+function registerScores() {
+
+    const url = "http://127.0.0.1:8000/api/blockchain/set_score/"
+    
+    const gameData = {
+        game_session_id: pong.id,
+        players: [pong.playerLeft, pong.playerRight],
+        scores: pong.score
+    };
+
+    const fetchOptions = {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': pong.getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(gameData)
+    };
+
+    fetch(url, fetchOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        });
 }
 
 async function startGame() {

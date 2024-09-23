@@ -1,0 +1,18 @@
+FROM node:14
+
+RUN apt-get update && \
+    apt-get install -y lsof psmisc && \
+    apt-get install -y curl software-properties-common python3 python3-pip && \
+    npm install -g ganache-cli
+
+#Une erreur avec les nouvelles versions de ethers fais bugger le provider
+RUN	npm install ethers@5.7.2
+COPY srcs/ /app/sources/
+EXPOSE 8545
+RUN chmod 777 /app/sources/entrypoint_ganache.sh
+
+#Cat successfull = 0 -> HEALTHCHECK = healthy
+HEALTHCHECK --interval=5s --timeout=5s --retries=15 \
+  CMD cat ganache.health || exit 1 
+
+ENTRYPOINT [ "/app/sources/entrypoint_ganache.sh" ]

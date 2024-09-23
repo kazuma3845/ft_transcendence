@@ -1,5 +1,5 @@
 # Ignorer les fichiers de configuration sensibles
 .website/.env
-
-# Ignorer les fichiers système
 .DS_Store
+.env
+venv

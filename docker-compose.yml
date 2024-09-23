@@ -1,23 +1,22 @@
 services:
   db:
-    image: postgres:13
+    container_name: database
+    build:
+      context: ./database
+      dockerfile: Dockerfile
     restart: always
-    environment:
-      POSTGRES_DB: your_database_name
-      POSTGRES_USER: your_database_user
-      POSTGRES_PASSWORD: your_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - django_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    env_file:
+      - .env
 
   redis:
-    image: redis:alpine  # Utilisation d'une image légère de Redis
+    container_name: redis
+    image: redis:alpine
     restart: always
     ports:
       - "6379:6379"
@@ -25,31 +24,30 @@ services:
       - django_network
 
   web:
+    container_name: django
     build:
       context: ./website
       dockerfile: Dockerfile
-    entrypoint: /app/entrypoint.sh
-    command: daphne -b 0.0.0.0 -p 8000 transendence.asgi:application -v 2
     volumes:
       - ./website/srcs:/app/srcs
+      - ./blockchain/srcs:/app/blockchain_v
     ports:
       - "8000:8000"
     depends_on:
+      blockchain:
+        condition: service_healthy
       db:
         condition: service_healthy
-      redis:  # Dépendance à Redis ajoutée
+      redis:
         condition: service_started
-    environment:
-      - DB_NAME=your_database_name
-      - DB_USER=your_database_user
-      - DB_PASSWORD=your_password
-      - DB_HOST=db
-      - DB_PORT=5432
-      - REDIS_HOST=redis  # Ajout de l'environnement pour Redis
     networks:
       - django_network
+    env_file:
+      - .env
 
   bot:
+    container_name: bot
+    image: bot:transcendance
     build:
       context: ./AI
       dockerfile: Dockerfile
@@ -59,8 +57,10 @@ services:
       - "8081:8081"
 
   pong:
+    container_name: pong
+    image: pong:transcendance
     build:
-      context: ./pong  # Le contexte de build est maintenant ./srcs
+      context: ./pong
       dockerfile: ./Dockerfile
     volumes:
       - ./pong:/app
@@ -68,6 +68,21 @@ services:
       - "8080:8080"
     networks:
       - django_network
+
+  blockchain:
+    container_name: ganache
+    image: blockchain:transcendance
+    build:
+      context: ./blockchain
+      dockerfile: dockerfile
+    networks:
+      - django_network
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./blockchain/volumes:/app/volumes
+    env_file:
+      - .env
 
 networks:
   django_network:

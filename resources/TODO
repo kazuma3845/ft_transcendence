@@ -1,0 +1,97 @@
+Daily TODO: @today
+  ☐ Cleaner le docker-compose
+  ✔ Tester le code du smartcontract @done(24-09-20 16:01)
+
+Module BOT:
+  ✔ Calculer la position finale en fonction des infos de la game @done(24-09-02 11:16)
+  ✔ Envoyer/Recevoir les infos de la game via l'API @done(24-09-02 11:16)
+  ✔ Creer le container @done(24-09-02 11:24)
+  ✔ Ajouter le container au docker-compose @done(24-09-02 11:24)
+  ✔ Communication avec les autres containers @done(24-09-02 11:24)
+  ✔ Faire en sorte que le bot se deplace dans la game @done(24-09-02 11:16)
+  ✔ Faire revenir le bot au centre @done(24-09-02 17:00)
+  ✔ Faire en sorte que le bot relance la balle @done(24-09-02 17:01)
+  ✔ Bot relance la balle plus ou moins vite en fonction du niveau @done(24-09-02 17:01)
+  ☐ Faire en sorte que le bot se replace plus ou moins bien et rapidement
+  ✔ Ajuster le niveau de difficulte du bot @done(24-09-02 11:16)
+  ☐ Faire en sorte que le bot reçoive plusieurs inputs @3h
+  L'idee est de faire en sorte que les bots au plus bas niveaux suivent tres brievement la balle lorsqu'il y a un rebond, au lieu 
+  d'aller directement a l'endroit final
+  ✔ Fix le probleme sur les ordinateurs des autres @done(24-09-20 16:01)
+    On dirait que sur les ordinateurs des autres le bot ne fonctionne pas correctement, il semble se deplacer moins que prevu malgre qu'il affiche le bon nombre
+    d'inputs realises dans le console.log. 
+    UPDATE ; Tom a decouvert que sur son navigateur, les inputs deplacent 2x moins que la vitesse de deplacement. Donc les calculs sont bons
+    mais la distance parcourue par un input est divisée.
+
+
+Module Blockchain:
+  Le smartcontract est appele uniquement a la fin d'une game pour enregistrer des score
+  Il pourra retourner les scores a partir d'une gameSessionID qui est elle generee par Django
+  Les sessions non completees ne sont pas enregistrees et donc non displayed dans l'historique 
+  ✔ Se renseigner sur les requirements @done(24-09-02 11:27)
+  Ganache, Truffle, Solidity
+  ✔ Compiler le contract @done(24-09-13 15:47)
+  docker run -v $(pwd):/sources ethereum/solc:0.8.0 --bin --abi -o /sources/output /sources/PongScores.sol
+  ✔ Installer tous les requirements @done(24-09-11 15:03)
+  ✔ Construire le container @done(24-09-11 15:03)
+  ✔ Deployer environnement de test @done(24-09-11 17:47)
+  ✔ Deployer le contract @done(24-09-11 17:48)
+  J'ai utilise une image docker officielle pour compiler le contrat et les passer dans le docker, j'en ai fait un script sh 
+  J'ai utilise ethers a la place de web3 car j'avais des problemes dans la generation de nombre aleatoires utilisee pour le UUID, plus ce pb avec ethers
+  J'ai du lancer le docker avec un mnemonic fixe pour pouvoir en deduire la la clé privée dans mon code.
+  J'ai du recompiler le code en m'assurant que le docker solc etait sur la meme version que mon contrat -> error:opcode 
+  ✔ Updater Django avec les requirements @done(24-09-17 15:47)
+  ✔ Faire les API @done(24-09-20 16:00)
+  ✔ Enregistrer les scores via smart-contract @done(24-09-20 16:00)
+  ✔ Renvoyer les scores via blockchain @done(24-09-20 16:00)
+  ✔ Mettre le mnemonic dans le .env @done(24-09-20 16:00)
+  ✘ Trouver un moyen de stocker la clé privée pour la récupérer de maniere sécurisée dans les API @cancelled(24-09-20 16:01)
+  HashiVault ou Secrets mais vu qu'on fait pas le websecurity module on va surement pas faire et juste 
+  laisser la private key dans le .env
+  ✔ Updater le docker-compose @done(24-09-11 15:04)
+  ✘ Recevoir les data de l'API @cancelled(24-09-03 17:06)
+
+Requirements:
+  ☐ Single-Page application
+  ☐ Back and  forward button working
+  ☐ Compatible avec derniere google chrome version
+  ☐ No errors when browsing
+  ☐ Tout doit etre lance via une seule commande
+  Par exemple ; make 
+  ☐ Jouer a pong en utilisant un seul clavier
+  ☐ Systeme de tournoi
+  On doit pouvoir voir qui joue contre qui et l'ordre des joueurs
+  ☐ Systeme de matchmaking
+  ☐ Systeme d'enregistrement au debut des tournois avec l'alias (bypass par le module du User Management)
+  ☐ Site doit etre protege contre SQL injections
+  ☐ Les password doivent etre hased dans la DB
+  ☐ Obligation d'utiliser HTTPS avec un backend
+  ☐ Les credentials, cle d'API, env variables doivent etre dans un .env et pas sur le git
+  ☐ Les API doivent etre securisées
+
+  Liste des modules choisis:
+    MAJOR:
+      Web:
+        ✔ Django as backend @2h @done(24-09-04 18:10)
+        ☐ Tournament score in blockchain @2h @today
+      User Management:
+        ☐ Authentification, user management, utilisateurs de tournois @2h
+      Gameplay and user experience:
+        ☐ Live chat @2h
+        ☐ Remote players @2h
+      AI/Algo:
+        ✔ AI opponent @2h @done(24-09-03 17:11)
+      Graphics:
+        ✔ 3D pong using ThreeJS @2h @done(24-09-04 18:10)
+    MINOR:
+      Web: 
+        ☐ Framework fronted @1h
+        ✔ Database for the backend @1h @done(24-09-04 18:10)
+      Gameplay and user experience:
+        ☐ Game Customization Options @1h
+      AI/Algo:
+        ☐ User and Game Stats Dashboard @1h
+      Accessibility: 
+        ☐ PAS ENCORE DECIDE @1h
+  
+Archive:

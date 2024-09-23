@@ -1,0 +1,8 @@
+FROM postgres:13
+
+COPY healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+HEALTHCHECK --interval=10s --timeout=5s --retries=5 CMD /usr/local/bin/healthcheck.sh
+
+#Port par défaut
+EXPOSE 5432 

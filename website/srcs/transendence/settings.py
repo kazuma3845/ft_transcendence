@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'leaderboards',
 	'channels',
 	'corsheaders',
+    'blockchain',
 ]
 
 MIDDLEWARE = [
@@ -181,3 +182,4 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/users/login/'
+
