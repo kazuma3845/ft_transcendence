@@ -3,7 +3,7 @@ import Form from './form.js';
 import Pong from './mouvement.js';
 import Bot from './bot.js';
 import Power from './power.js';
-// import WebSocketModule from './WebSocketModule.js';
+import WebSocketModule from './WebSocketModule.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -13,8 +13,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0xfeb47b);
 document.body.appendChild(renderer.domElement);
 
-const form = new Form(null);
-const pong = new Pong(form, null);
+const form = new Form();
+const pong = new Pong(form, null, null);
 const bot = new Bot(pong, form);
 pong.bot = bot;
 form.pong = pong;
@@ -103,13 +103,26 @@ function showWinScreen(player, message, score1, score2) {
 
 async function startGame() {
     const startScreen = document.getElementById('startScreen');
+    const loader = document.getElementById('loader');
     await pong.sendDataForID();
-
-    // WebSocketModule.startWebSocket(pong.id);
+    const websocket = new WebSocketModule(pong);
+    pong.websocket = websocket;
+    pong.websocket.startWebSocket(pong.id);
     startScreen.style.display = 'none';
+    console.log(`player1_started ${pong.player1_started} | player2_started ${pong.player2_started}`);
+    if (pong.botActivated === true || (pong.player1_started === true && pong.player2_started === true)) {
+        renderer.setAnimationLoop(animate);
+    }
+    else {
+        loader.style.display = 'flex';
+    }
+
+}
+
+export function startGameDual() {
+    const loader = document.getElementById('loader');
+    loader.style.display = 'none';
     renderer.setAnimationLoop(animate);
-    // if (pong.player1start && pong.player2start) {
-    // }
 }
 
 document.getElementById('startButton').addEventListener('click', startGame);

@@ -1,9 +1,9 @@
-import WebSocketModule from './WebSocketModule.js';
 
 export default class Pong {
-    constructor(form, bot) {
+    constructor(form, bot, websocket) {
         this.bot = bot;
         this.form = form;
+        this.websocket = websocket;
 
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
@@ -74,7 +74,7 @@ export default class Pong {
             time: deltaTime
         };
         if (w || s)
-            WebSocketModule.sendMessage("update_position", key_position);
+            this.websocket.sendMessage("update_position", key_position);
     }
 
     updatePosition(data)
@@ -122,13 +122,19 @@ export default class Pong {
         }
     }
 
+    // A VOIR !!!
     handleKeyPress(event) {
+        let key_launch = {
+            ballPaused: false,
+        };
+
         if (event.key === 'Enter' && this.ballPaused) {
-            this.ballPaused = false;
-        if (this.botActivated) {
-            if (this.form.ball.position.x < 0)
-                this.bot.handleBallHit();
-        }
+            this.websocket.sendMessage("launch_ball", key_launch);
+            // this.ballPaused = false;
+            if (this.botActivated) {
+                if (this.form.ball.position.x < 0)
+                    this.bot.handleBallHit();
+            }
         }
     }
 
@@ -259,17 +265,18 @@ export default class Pong {
         // WebSocketModule.sendMessage("game_score", data);
     }
 
-    sendDataForID() {
-        return fetch('http://127.0.0.1:8000/api/game/sessions/start_single/', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': this.getCookie('csrftoken'),
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
+    async sendDataForID() {
+        let sessionId = localStorage.getItem('game_session_id');
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/game/sessions/${sessionId}/start_single/`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCookie('csrftoken'),
+                },
+            });
+            const data = await response.json();
             this.id = data.id;
             this.player = data.currentPlayer;
             this.playerLeft = data.player1;
@@ -280,10 +287,11 @@ export default class Pong {
             this.power = data.power;
             this.botActivated = data.bot;
             this.botLVL = (data.bot_difficulty / 10);
-
-            WebSocketModule.startWebSocket(this.id);
-        })
-        .catch(error => console.error('Erreur:', error));
+            this.player1_started = data.player1_started;
+            this.player2_started = data.player2_started;
+        } catch (error) {
+            return console.error('Erreur:', error);
+        }
     }
 
     getCookie(name) {
@@ -301,5 +309,3 @@ export default class Pong {
         return cookieValue;
     }
 }
-
-

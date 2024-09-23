@@ -46,34 +46,111 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Retourner la session sérialisée
         return Response(GameSessionSerializer(session).data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=['post', 'get'], url_path='start_single')
-    def start_single_game(self, request):
+    # @action(detail=False, methods=['post', 'get'], url_path='start_single')
+    # def start_single_game(self, request):
+    #     # Récupérer l'utilisateur connecté
+    #     player1 = request.user
+
+    #     # Chercher la session de jeu la plus récente où l'utilisateur est player1
+    #     session = GameSession.objects.filter(player1=player1).order_by('-id').first()
+
+    #     session.start_time = timezone.now();
+
+    #     if not session:
+    #         # Si aucune session n'est trouvée, retourner une réponse vide ou un message d'erreur
+    #         return Response({"detail": "No active game session found."}, status=status.HTTP_404_NOT_FOUND)
+
+    #     channel_layer = get_channel_layer()
+    #     async_to_sync(channel_layer.group_send)(
+    #         f'game_{session.id}',
+    #         {
+    #             'type': 'display_player1',
+    #             'player1': session.player1.username,
+    #             'player2': 'Bot',
+    #         }
+    #     )
+
+    #     # Sérialiser la session pour renvoyer les informations au frontend
+    #     serializer = GameSessionSerializer(session)
+    #     data = serializer.data
+    #     data['currentPlayer'] = request.user.username
+    #     return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post', 'get'], url_path='start_single')
+    def start_single_game(self, request, pk=None):
+        # Récupérer la session de jeu par l'ID dans l'URL
+        try:
+            session = GameSession.objects.get(id=pk)
+        except GameSession.DoesNotExist:
+            return Response({"detail": "Game session not found."}, status=status.HTTP_404_NOT_FOUND)
+
         # Récupérer l'utilisateur connecté
-        player1 = request.user
+        current_user = request.user
 
-        # Chercher la session de jeu la plus récente où l'utilisateur est player1
-        session = GameSession.objects.filter(player1=player1).order_by('-id').first()
+        # Vérifier si l'utilisateur est player1 ou player2
+        if current_user == session.player1:
+            session.player1_started = True
+        elif current_user == session.player2:
+            session.player2_started = True
+        else:
+            return Response({"detail": "You are not a player in this game."}, status=status.HTTP_403_FORBIDDEN)
 
-        session.start_time = timezone.now();
+        # channel_layer = get_channel_layer()
+        # async_to_sync(channel_layer.group_send)(
+        #     f'game_{session.id}',
+        #     {
+        #         'type': 'display_player',
+        #         'player1': session.player1.username,
+        #         'player2': session.player2.username,
+        #     }
+        # )
 
-        if not session:
-            # Si aucune session n'est trouvée, retourner une réponse vide ou un message d'erreur
-            return Response({"detail": "No active game session found."}, status=status.HTTP_404_NOT_FOUND)
+        # Si bot est activé, configurer le jeu contre le bot
+        if session.bot:
+            session.start_time = timezone.now()
+            session.save()
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f'game_{session.id}',
-            {
-                'type': 'display_player1',
-                'player1': session.player1.username,
-                'player2': 'Bot',
-            }
-        )
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'game_{session.id}',
+                {
+                    'type': 'display_player',
+                    'player1': session.player1.username,
+                    'player2': 'Bot',
+                }
+            )
 
-        # Sérialiser la session pour renvoyer les informations au frontend
+        # Vérifier si les deux joueurs ont démarré
+        elif session.player1_started and session.player2_started:
+            session.start_time = timezone.now()
+            session.save()
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'game_{session.id}',
+                {
+                    'type': 'display_player',
+                    'player1': session.player1.username,
+                    'player2': session.player2.username,
+                }
+            )
+            # Envoyer un message WebSocket pour indiquer que le jeu peut commencer
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'game_{session.id}',
+                {
+                    'type': 'start_game',
+                    'message': 'The game has started!',
+                }
+            )
+
+        # Sauvegarder les informations de démarrage dans la base de données
+        session.save()
+
+        # Sérialiser la session et renvoyer les informations au frontend
         serializer = GameSessionSerializer(session)
         data = serializer.data
-        data['currentPlayer'] = request.user.username
+        data['currentPlayer'] = current_user.username
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], url_path='join_game')
@@ -86,6 +163,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         # Assigner player2 à l'utilisateur courant
         session.player2 = request.user
+
         session.save()
 
         return Response({"detail": "Vous avez rejoint la session avec succès."}, status=status.HTTP_200_OK)
