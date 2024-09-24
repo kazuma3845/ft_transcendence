@@ -62,7 +62,6 @@ function updateHeader() {
                 headerContainer.innerHTML = `
                     <p style="color: white;">Bienvenue, <span style="color: white; font-weight: 800;" >${data.email}</span></p>
                     <button type="click" id="logout-button" class="a-button grey">Déconnexion</button>
-
                 `;
 				attachLogoutListener();
                 // document.getElementById('logout-form').addEventListener('submit', function(event) {

@@ -1,0 +1,9 @@
+.title {
+  font-family: 'Bungee Shade', cursive; /* Utilisation de la police importée */
+  font-size: 2.5rem; /* Taille du texte */
+  color: #ff5733; /* Couleur du texte */
+  text-transform: uppercase; /* Transformer le texte en majuscules */
+  letter-spacing: 2px; /* Espacement entre les lettres */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Ombre portée pour un effet stylisé */
+}
+

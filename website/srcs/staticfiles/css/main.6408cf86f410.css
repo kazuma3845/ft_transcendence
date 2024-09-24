@@ -1,0 +1,12 @@
+.title {
+  font-family: 'Bungee Shade', cursive; /* Utilisation de la police importée */
+  text-transform: uppercase; /* Transformer le texte en majuscules */
+  letter-spacing: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.offcanvas-custom {
+  height: 75vh; /* Hauteur de l'offcanvas (75% de la hauteur de l'écran) */
+  background-color: rgba(255, 255, 255, 0.227); /* Fond blanc avec transparence */
+  border-radius: 0 0 10px 10px; /* Coins arrondis en bas */
+}

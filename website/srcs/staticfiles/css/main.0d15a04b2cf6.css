@@ -5,9 +5,10 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.offcanvas.offcanvas-custom {
+.offcanvas-custom {
   width: 15vh;
   border-radius: 0 0 12px 12px;
   left: auto;
   height: 85vh;
+  /* z-index: -1; */
 }

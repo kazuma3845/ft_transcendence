@@ -5,9 +5,10 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.offcanvas.offcanvas-custom {
+.offcanvas-custom {
   width: 15vh;
+  background-color: rgba(234, 15, 15, 0.261); /* Fond blanc avec transparence */
   border-radius: 0 0 12px 12px;
-  left: auto;
+  left: auto !important;
   height: 85vh;
 }
