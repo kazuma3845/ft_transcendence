@@ -1,23 +1,49 @@
-<div class="parent_center">
-	<div class="centered_container_white">
-		<h2>Connexion</h2>
+<link rel="stylesheet" href="{% static 'css/users.css' %}" />
 
-		<form method="POST" id="login-form">
+<div class="container parent_center">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6 centered_container_white p-4">
+      <h2 class="text-center login-title mb-4">Connexion</h2>
 
-			<div class="form-group">
-				<label for="username">Pseudo:</label>
-				<input type="username" id="username" name="username" >
-			</div>
+      <form method="POST" id="login-form">
+        <div class="form-group mb-3">
+          <label for="username" class="form-label">Pseudo:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-control login-input"
+            placeholder="Votre pseudo"
+          />
+        </div>
 
-			<div class="form-group">
-				<label for="password">Mot de passe:</label>
-				<input type="password" id="password" name="password">
-			</div>
+        <div class="form-group mb-3">
+          <label for="password" class="form-label">Mot de passe:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control login-input"
+            placeholder="Votre mot de passe"
+          />
+        </div>
 
-			<p id="error-message" class="error" style="display: none;"></p>
+        <p
+          id="error-message"
+          class="error text-danger"
+          style="display: none"
+        ></p>
 
-			<button class="standard-button" type="submit">Se connecter</button>
-		</form>
-		<a href="#signup">Je n'ai pas de compte</a>
-	</div>
+        <div class="d-grid">
+          <button class="login-btn btn" type="submit">
+            Se connecter
+          </button>
+        </div>
+      </form>
+
+      <div class="text-center mt-3">
+        <a href="#signup" class="text-secondary">Create an account</a>
+      </div>
+    </div>
+  </div>
 </div>

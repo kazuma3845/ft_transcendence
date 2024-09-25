@@ -1,0 +1,56 @@
+/* Centrer le conteneur de manière responsive */
+.parent_center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+  }
+  
+  .centered_container_white {
+	background-color: white;
+	border-radius: 1rem;
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+	backdrop-filter: blur(7.5px);
+	-webkit-backdrop-filter: blur(10px);
+  }
+  
+  /* Style pour le titre Connexion */
+  .title {
+	font-family: "Handjet", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 200;
+	font-style: normal;
+	font-variation-settings: "ELGR" 1, "ELSH" 0.6;
+	text-transform: uppercase;
+	letter-spacing: 10px;
+
+  }
+  
+  /* Style personnalisé pour les champs de texte */
+  .login-input {
+	border-radius: 1rem;
+	border: 2px solid rgba(57, 67, 175, 0.74);
+	padding: 10px;
+	font-family: "Handjet", sans-serif;
+	font-variation-settings: "ELGR" 1, "ELSH" 0.6;
+  }
+  
+  /* Bouton personnalisé avec hover */
+  .login-btn {
+	border-radius: 1rem;
+	border-width: medium;
+	font-family: "Handjet", sans-serif;
+	font-optical-sizing: auto;
+	font-weight: 250;
+	font-variation-settings: "ELGR" 1, "ELSH" 1;
+	background-color: #5763e6;
+  }
+  
+  .login-btn:hover {
+	color: #b2b1f3;
+	font-weight: 350;
+	box-shadow: 2px 2px 0px #b2b1f3;
+  }
+  
+
+  
