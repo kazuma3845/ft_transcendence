@@ -85,7 +85,7 @@ Requirements:
         ✔ 3D pong using ThreeJS @2h @done(24-09-04 18:10)
     MINOR:
       Web: 
-        ☐ Framework fronted @1h
+        ✔ Framework fronted @1h @done(24-09-25 15:56)
         ✔ Database for the backend @1h @done(24-09-04 18:10)
       Gameplay and user experience:
         ✔ Game Customization Options @1h @done(24-09-23 15:32)

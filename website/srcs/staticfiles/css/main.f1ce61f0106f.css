@@ -1,13 +1,8 @@
 .title {
-  font-family: "Handjet", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 200;
-  font-style: normal;
-  font-variation-settings: "ELGR" 1, "ELSH" 0.6;
-  text-transform: uppercase;
+  font-family: "Bungee Shade", cursive; /* Utilisation de la police importée */
+  text-transform: uppercase; /* Transformer le texte en majuscules */
   letter-spacing: 10px;
-  text-shadow: 2px 2px 0 rgb(26 99 221 / 80%), 6px 6px 0 rgb(71 64 194 / 40%),
-    8px 8px 0 rgb(51 82 209 / 20%);
+  text-shadow: 2px 2px 4px #5c6ec5;
 }
 
 .offcanvas.offcanvas-custom {
@@ -25,7 +20,6 @@
 #offcanvasRight i {
   font-size: 2rem;
   color: rgba(57, 67, 175, 0.74);
-  text-shadow: 3px 3px 0px #f8f9fa;
 }
 
 body {
@@ -37,11 +31,5 @@ body {
 }
 
 footer p {
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
-  font-variation-settings: "ELGR" 1, "ELSH" 1;
-  font-family: "Handjet", sans-serif;
-  text-shadow: -1px 1px 0px #f8f9fa;
-  color: rgb(84 45 208 / 57%);
+  color: rgba(126, 131, 227, 0.56);
 }

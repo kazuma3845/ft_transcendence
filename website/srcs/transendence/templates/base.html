@@ -30,16 +30,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Climate+Crisis&family=Handjet:wght,ELGR,ELSH@100..900,1..2,0..16&display=swap"
       rel="stylesheet"
     />
-
-    {% block extra_head %}{% endblock %}
   </head>
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-light bg-light-subtle w-100 border-bottom p-4">
+    <nav class="navbar navbar-light w-100 border-bottom border-white p-4">
       <a class="navbar-brand title fs-2 fs-md-3 fs-lg-1" href="#"
         >Transcendence</a
       >
@@ -47,8 +45,8 @@
         class="btn"
         type="button"
         data-bs-toggle="offcanvas"
-        data-bs-target="#offcanvasTop"
-        aria-controls="offcanvasTop"
+        data-bs-target="#offcanvasRight"
+        aria-controls="offcanvasRight"
       >
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </button>
@@ -57,19 +55,37 @@
     <!-- Toggleable SideBar -->
 
     <div
-      class="offcanvas offcanvas-custom offcanvas-top"
+      class="offcanvas offcanvas-custom offcanvas-end"
+      data-bs-backdrop="false"
       tabindex="-1"
-      id="offcanvasTop"
-      aria-labelledby="offcanvasTopLabel"
+      id="offcanvasRight"
+      aria-labelledby="offcanvasRightLabel"
     >
       <div class="offcanvas-body">
-        <ul class="nav flex-column"> 
-			<li class="nav-item">
-				<button class="btn" href="#game">
-					<i class="fa-solid fa-table-tennis-paddle-ball"></i>
-				</button>			
-			</li>
-		</ul>
+        <ul
+          class="nav d-flex flex-column justify-content-evenly align-items-center h-100"
+        >
+          <li class="nav-item">
+            <a class="btn btn-lg" href="#profile">
+              <i class="fa-solid fa-user"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-lg" href="#chat">
+              <i class="fas fa-comments"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-lg" href="#game">
+              <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-lg" href="#tournament">
+              <i class="fa-solid fa-trophy"></i>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -77,7 +93,7 @@
       <!-- Contenu dynamique sera injecté ici -->
     </main>
 
-    <footer class="footer">
+    <footer class="text-center fixed-bottom">
       <p>By Kazuma, Neah & Martzoni</p>
     </footer>
 
