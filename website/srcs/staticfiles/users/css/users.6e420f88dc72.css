@@ -1,0 +1,18 @@
+.parent_center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-title {
+  font-weight: 300;
+  letter-spacing: 10px;
+  color: rgba(255, 255, 255, 0.975);
+}
+
+.form-label {
+  font-weight: 200;
+  letter-spacing: 10px;
+  color: rgba(57, 67, 175, 0.74);
+}

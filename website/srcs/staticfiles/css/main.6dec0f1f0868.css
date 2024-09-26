@@ -58,10 +58,6 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  font-family: "Handjet", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-  font-variation-settings: "ELGR" 1, "ELSH" 1;
 }
 
 footer p {

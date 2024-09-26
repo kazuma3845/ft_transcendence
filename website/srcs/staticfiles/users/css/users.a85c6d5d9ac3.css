@@ -17,10 +17,10 @@
 }
 
 .form-control {
-  transition: border-color 0.5s ease-in-out, box-shadow 1s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 1s ease-in-out;
 }
 
 .form-control:focus {
   box-shadow: 0 0 0 0.25rem rgba(81, 13, 253, 0.25); /* Glow bleu */
-  border-color: rgba(108, 55, 242, 0.25); /* Couleur de bordure bleu */
+  border-color: #86b7fe; /* Couleur de bordure bleu */
 }
