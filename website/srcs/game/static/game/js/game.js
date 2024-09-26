@@ -63,36 +63,6 @@ function attachGameFormSubmitListener() {
     });
 }
 
-// function createGameSession() {
-//     fetch('/api/game/sessions/', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
-//         },
-//         body: JSON.stringify({
-//             // Vous pouvez passer des données supplémentaires ici si nécessaire
-//         })
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();  // Convertir la réponse en JSON
-//     })
-//     .then(data => {
-//         console.log('Game session created:', data);
-//         const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
-//         if (sessionId) {
-//             startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
-//         }
-//     })
-//     .catch(error => {
-//         console.error('There was a problem with the fetch operation:', error);
-//     });
-// }
-
-
 function loadGame() {
     return new Promise((resolve, reject) => {
         fetch('/static/game/html/game.html')
@@ -118,40 +88,6 @@ function loadGame() {
         });
     });
 }
-
-// function loadPong() {
-//     fetch('/static/game/html/pong.html')
-//     .then(response => response.text())
-//     .then(html => {
-//         document.getElementById('app').innerHTML = html;
-//         // attachLoginFormSubmitListener();
-// 		// attachSingleGameListener();
-//     });
-// }
-
-// function startSingleGame() {
-//     fetch('/api/game/sessions/start_single/', {
-//         method: 'POST',
-//         headers: {
-//             'X-CSRFToken': getCSRFToken(),
-//         },
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Failed to start game session');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         const sessionId = data.id;
-//         const player1 = data.player1;
-//         localStorage.setItem('game_session_id', sessionId);
-//         // Traite les données de la session ici
-//         // startWebSocket(sessionId);
-//         console.log(`Game Session ID: ${sessionId}, Player1: ${player1}`);
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
 
 function updateScore(sessionId, player1Points, player2Points) {
     fetch(`/api/game/sessions/${sessionId}/update_score/`, {

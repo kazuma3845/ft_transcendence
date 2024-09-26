@@ -38,7 +38,6 @@ export default class Pong {
         this.trueSpeed = Math.round(moveSpeed);
 
         const halfArenaHeight = this.arenaHeight / 2;
-        const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
         const halfRaquetteHeight2 = this.form.paddle_right_size[1] / 2;
 
         let w = false;
@@ -71,7 +70,7 @@ export default class Pong {
             key_w: w,
             key_s: s,
             player: this.player,
-            time: deltaTime
+            time: moveSpeed
         };
         if (w || s)
             this.websocket.sendMessage("update_position", key_position);
@@ -79,10 +78,10 @@ export default class Pong {
 
     updatePosition(data)
     {
-        const speedFactor = data.content.time / 16.67;
-        const moveSpeed = this.paddle_move_speed * speedFactor;
+        // const speedFactor = data.content.time / 16.67;
+        const moveSpeed = data.content.time;
 
-        this.trueSpeed = Math.round(moveSpeed);
+        // this.trueSpeed = Math.round(moveSpeed);
 
         const halfArenaHeight = this.arenaHeight / 2;
         const halfRaquetteHeight = this.form.paddle_left_size[1] / 2;
