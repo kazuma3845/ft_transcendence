@@ -1,8 +1,3 @@
-/* .parent_center {
-  height: 100vh;
-  width: 100vw;
-} */
-
 .login-title {
   font-weight: 300;
   letter-spacing: 10px;
@@ -21,6 +16,7 @@
 }
 
 .form-control:focus {
-  box-shadow: 0 0 0 0.25rem rgba(81, 13, 253, 0.25); /* Glow bleu */
-  border-color: rgba(108, 55, 242, 0.25); /* Couleur de bordure bleu */
+  box-shadow: 0 0 0 0.25rem rgba(81, 13, 253, 0.25);
+  border-color: rgba(108, 55, 242, 0.25);
 }
+
