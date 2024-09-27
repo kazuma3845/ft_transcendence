@@ -13,7 +13,7 @@
 .offcanvas.offcanvas-custom {
   border-radius: 12px;
   height: 80vh;
-  width: 10vh;
+  width: auto;
   top: 12vh;
   right: 3px;
   background: rgba(255, 255, 255, 0.25);
@@ -38,7 +38,7 @@ i:hover {
     3px 3px 2px rgba(255, 255, 255, 0.8);
 }
 
-.login-btn {
+.custom-btn {
   border-radius: 1rem;
   border-width: medium;
   font-family: "Handjet", sans-serif;
@@ -47,7 +47,7 @@ i:hover {
   font-variation-settings: "ELGR" 1, "ELSH" 1;
 }
 
-.login-btn:hover {
+.custom-btn:hover {
   color: #b2b1f3;
   font-weight: 350;
   box-shadow: 2px 2px 0px #b2b1f3;
@@ -73,4 +73,9 @@ footer p {
   font-family: "Handjet", sans-serif;
   text-shadow: -1px 1px 0px #f8f9fa;
   color: rgb(84 45 208 / 57%);
+}
+
+
+#app{
+  height: 88%;
 }

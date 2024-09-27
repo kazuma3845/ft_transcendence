@@ -14,8 +14,8 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgb(254, 180, 123);
-    color: rgb(0, 0, 0);
+    background-color: transparent;
+    color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,8 +33,8 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgb(254, 180, 123);
-    color: #e15b64;
+    background-color: rgb(123, 125, 254);
+    color: #5b7ce1;
     display: none;
     align-items: center;
     justify-content: center;
