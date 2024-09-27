@@ -1,34 +1,22 @@
-.form-group {
-	display: flex;
-	flex-direction: column;
-	margin-top: 18px;
-	margin-bottom: 18px;
-	width: 320px;
+.login-title {
+  font-weight: 300;
+  letter-spacing: 10px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.975);
 }
 
-input {
-	margin-top: 6px;
-	height: 36px;
-	font-size: 18px;
-	font-family: "Roboto Mono", monospace;
+.form-label {
+  font-weight: 300;
+  letter-spacing: 3px;
+  color: rgba(57, 67, 175, 0.74);
 }
 
-.parent_center {
-	margin: 0;
-	height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
+.form-control {
+  transition: border-color 0.5s ease-in-out, box-shadow 1s ease-in-out;
 }
 
-.centered_container_white {
-	display: inline-block;
-    padding: 40px 40px;
-	margin-top: 70px;
-	margin-left: 175px;
-    box-sizing: border-box;
-	background-color: white;
-	border-radius: 20px;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(81, 13, 253, 0.25);
+  border-color: rgba(108, 55, 242, 0.25);
 }
+

@@ -1,5 +1,5 @@
 Daily TODO: @today
-  ☐ Cleaner le docker-compose
+  ✔ Cleaner le docker-compose @done(24-09-23 15:58)
   ✔ Tester le code du smartcontract @done(24-09-20 16:01)
 
 Module BOT:
@@ -73,22 +73,22 @@ Requirements:
     MAJOR:
       Web:
         ✔ Django as backend @2h @done(24-09-04 18:10)
-        ☐ Tournament score in blockchain @2h @today
+        ✔ Tournament score in blockchain @2h @done(24-09-23 15:29)
       User Management:
         ☐ Authentification, user management, utilisateurs de tournois @2h
       Gameplay and user experience:
         ☐ Live chat @2h
-        ☐ Remote players @2h
+        ☐ Remote players @2h @MARTIN
       AI/Algo:
         ✔ AI opponent @2h @done(24-09-03 17:11)
       Graphics:
         ✔ 3D pong using ThreeJS @2h @done(24-09-04 18:10)
     MINOR:
       Web: 
-        ☐ Framework fronted @1h
+        ✔ Framework fronted @1h @done(24-09-25 15:56)
         ✔ Database for the backend @1h @done(24-09-04 18:10)
       Gameplay and user experience:
-        ☐ Game Customization Options @1h
+        ✔ Game Customization Options @1h @done(24-09-23 15:32)
       AI/Algo:
         ☐ User and Game Stats Dashboard @1h
       Accessibility: 
