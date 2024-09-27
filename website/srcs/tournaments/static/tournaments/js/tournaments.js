@@ -70,6 +70,34 @@ function loadtournament() {
     });
 }
 
+function start_tournament() {
+    document.getElementById('start-tournaments').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        loadTournamentsGame();
+    });
+}
+
+function displayError(errorMessage) {
+    const errorElement = document.getElementById('error-message');
+    errorElement.textContent = errorMessage;
+    errorElement.style.display = 'block';
+}
+
+async function handleSuccess(tournamentsId) {
+    localStorage.setItem('tournament_session_id', tournamentsId);
+    console.log('Current session ID in Local Storage:', localStorage.getItem('tournament_session_id'));
+
+    try {
+        await loadTournamentsGame();
+        if (tournamentsId) {
+            startWebSocket(tournamentsId);
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement du formulaire de jeu:', error);
+    }
+}
+
 // function loadTournamentsGame() {
 //     return new Promise((resolve, reject) => {
 //         fetch('/static/game/html/game.html')
