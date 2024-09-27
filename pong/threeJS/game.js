@@ -69,7 +69,8 @@ function animate(timestamp) {
 
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
-    pong.updateBallPosition(deltaTime);
+    if (pong.player == pong.playerLeft)
+        pong.updateBallPosition(deltaTime);
     pong.deplacerRaquette(deltaTime);
     if (pong.power) {
         if (i++ == 0)
@@ -98,9 +99,9 @@ function showWinScreen(player, message, score1, score2) {
     const winMessage = document.getElementById('winMessage');
     winMessage.textContent = `${player} ${message} Final Score: ${score1} - ${score2}`;
 
-    
+
     registerScores();
-    
+
     winScreen.style.display = 'flex';
     renderer.setAnimationLoop(null);
 }
@@ -108,7 +109,7 @@ function showWinScreen(player, message, score1, score2) {
 function registerScores() {
 
     const url = "http://127.0.0.1:8000/api/blockchain/set_score/"
-    
+
     const gameData = {
         game_session_id: pong.id,
         players: [pong.playerLeft, pong.playerRight],
@@ -138,19 +139,18 @@ function registerScores() {
 async function startGame() {
     const startScreen = document.getElementById('startScreen');
     const loader = document.getElementById('loader');
-    await pong.sendDataForID();
     const websocket = new WebSocketModule(pong);
+    console.log(`Avant : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
     pong.websocket = websocket;
-    pong.websocket.startWebSocket(pong.id);
+    pong.websocket.startWebSocket(localStorage.getItem('game_session_id'));
+    await pong.sendDataForID();
     startScreen.style.display = 'none';
-    console.log(`player1_started ${pong.player1_started} | player2_started ${pong.player2_started}`);
-    if (pong.botActivated === true || (pong.player1_started === true && pong.player2_started === true)) {
+    if (pong.botActivated === true) {
         renderer.setAnimationLoop(animate);
     }
-    else {
+    if (pong.botActivated === false && (pong.player1_started != true || pong.player2_started != true)) {
         loader.style.display = 'flex';
     }
-
 }
 
 export function startGameDual() {
