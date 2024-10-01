@@ -44,7 +44,10 @@
         >Transcendence</a
       >
 
-      <div class="d-flex column-gap-3">
+      <div
+        class="d-flex column-gap-3 justify-content-center align-items-center"
+      >
+        <a id="nav-bar-username"> </a>
         <a
           id="nav-bar-login-btn"
           class="custom-btn btn btn-outline-light btn-lg"
@@ -52,15 +55,13 @@
         >
           Log In
         </a>
-        <a id="logout-button" class="custom-btn btn btn-outline-light btn-lg" display="none">
-          Log Out
-        </a>
         <button
           class="btn btn-sm"
           type="button"
           data-bs-toggle="offcanvas"
           data-bs-target="#offcanvasRight"
           aria-controls="offcanvasRight"
+          id="menu-btn"
         >
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
@@ -70,7 +71,7 @@
     <!-- Toggleable SideBar -->
 
     <div
-      class="offcanvas offcanvas-custom offcanvas-end"
+      class="offcanvas offcanva-custom glassmorphism-block offcanvas-end"
       data-bs-backdrop="false"
       tabindex="-1"
       id="offcanvasRight"
@@ -100,16 +101,26 @@
               <i class="fa-solid fa-trophy"></i>
             </a>
           </li>
+          <li class="nav-item">
+            <a class="btn btn-lg">
+              <i
+                id="logout-button"
+                class="fa-solid fa-right-from-bracket"
+                data-bs-toggle="offcanvas"
+              >
+              </i>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
+    <!-- Toggleable SideBar END -->
+    <!-- Modal -->
 
     <main
       id="app"
       class="d-flex justify-content-center align-items-center v-100"
-    >
-      <!-- Contenu dynamique sera injecté ici -->
-    </main>
+    ></main>
 
     <footer class="text-center fixed-bottom">
       <p>By Kazuma, Neah & Martzoni</p>

@@ -10,3 +10,9 @@ iframe {
   letter-spacing: 10px;
   color: rgba(57, 67, 175, 0.74);
 }
+
+
+.game-form-container
+{
+  border-radius: 12px;
+}

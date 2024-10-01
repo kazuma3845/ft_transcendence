@@ -6,7 +6,6 @@ function attachLoginFormListener() {
         history.pushState(null, null, "#");
       } else {
         history.pushState(null, null, "#login");
-        // loadSignupForm();
       }
       router();
     });
@@ -28,15 +27,19 @@ function attachLoginFormSubmitListener() {
         body: formData,
       })
         .then((response) => response.json())
-        .then((data) => {
+        .then(async (data) => {
           if (data.error) {
             document.getElementById("error-message").textContent = data.error;
             document.getElementById("error-message").style.display = "block";
           } else {
-            // alert('Connexion réussie!');
+            await fetchUserInfo();
+            updateUsername();
+            loadModal(
+              "Logged In Successfully",
+              `Welcome back ${userInfo.user.username}, you've been missed 💜`
+            );
             updateHeader();
-            // console.log("window.location.href :", window.location.href)
-            if (window.location.hash === "#login") window.location.href = "#"; // Redirige ou recharge l'application après la connexion
+            if (window.location.hash === "#login") window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
             router(); // Recharge l'interface pour refléter l'état connecté
           }
         })
@@ -58,15 +61,15 @@ function updateHeader() {
     .then((response) => response.json())
     .then((data) => {
       const login_btn = document.getElementById("nav-bar-login-btn");
-      const logout_btn = document.getElementById("logout-button");
+      const menu_btn = document.getElementById("menu-btn");
 
       if (data.authenticated) {
         login_btn.style.display = "none";
-        logout_btn.style.display = "block";
+        menu_btn.style.display = "block";
         attachLogoutListener();
       } else {
         login_btn.style.display = "block";
-        logout_btn.style.display = "none";
+        menu_btn.style.display = "none";
         attachLoginFormListener();
       }
     });
@@ -78,7 +81,7 @@ function checkAuthentication() {
       console.log("Response received:", response);
       return response.json();
     })
-    .then((data) => {
+    .then(async (data) => {
       console.log("Parsed JSON data:", data);
       if (data.authenticated) {
         return true;
@@ -116,9 +119,14 @@ function logoutUser() {
   })
     .then((response) => {
       if (response.ok) {
-        // alert('Déconnexion réussie!');
         window.location.href = "#"; // Redirige ou recharge l'application après la déconnexion
+        loadModal(
+          "Logged Out Successfully",
+          `Goodbye ${userInfo.user.username}, you will be missed...💔`
+        );
+        userInfo = null;
         updateHeader();
+        updateUsername();
         router(); // Recharge l'interface pour refléter l'état déconnecté
       } else {
         alert("Erreur lors de la déconnexion.");

@@ -10,12 +10,27 @@
     8px 8px 0 rgb(51 82 209 / 20%);
 }
 
-.offcanvas.offcanvas-custom {
+#nav-bar-username {
+  font-family: "Handjet", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  letter-spacing: 3px;
+  font-style: normal;
+  font-size: 2rem;
+  font-variation-settings: "ELGR" 1, "ELSH" 1;
+  color: rgba(255, 255, 255, 0.965);
+  text-shadow: 2px 2px 0 rgb(26 99 221 / 80%);
+}
+
+.offcanvas.offcanva-custom {
   border-radius: 12px;
   height: 80vh;
   width: auto;
   top: 12vh;
   right: 3px;
+}
+
+.glassmorphism-block {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(10px);
@@ -75,7 +90,17 @@ footer p {
   color: rgb(84 45 208 / 57%);
 }
 
-
-#app{
+#app {
   height: 88%;
+}
+.modal-dialog {
+  width: 50%;
+}
+.modal-content {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(7.5px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
 }
