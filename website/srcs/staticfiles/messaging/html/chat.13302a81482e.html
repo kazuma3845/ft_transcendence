@@ -1,0 +1,51 @@
+<div class="container-fluid h-100 ">
+	<div class="row h-100">
+
+	  <!-- Liste des discussions (droite) -->
+	  <div class="col-3 bg-light p-3">
+		<div class="search-bar mb-3">
+		  <button class="btn btn-outline-secondary w-100">Rechercher utilisateur</button>
+		</div>
+
+		<div class="discussion-list">
+		  <h5>Discussion en cours</h5>
+		  <!-- Chaque utilisateur avec une conversation en cours -->
+		  <div class="user-conversation bg-primary p-2 mb-2 rounded">
+			USER #
+		  </div>
+		  <div class="user-conversation bg-primary p-2 mb-2 rounded">
+			USER #
+		  </div>
+		  <!-- Ajoute ici autant d'utilisateurs que nécessaire -->
+		</div>
+	  </div>
+
+	  <!-- Zone de chat active (gauche) -->
+	  <div class="col-9 bg-lightblue p-3">
+		<div class="chat-header mb-3">
+		  <h5>Discussion avec User #</h5>
+		</div>
+
+		<div class="chat-messages mb-3" id="chat-messages" style="height: 60vh; overflow-y: auto;">
+		  <!-- Messages échangés -->
+		  <div class="message bg-primary p-2 rounded mb-2">
+			MESSAGE de l'utilisateur
+		  </div>
+		  <div class="message bg-success p-2 rounded mb-2">
+			MESSAGE de vous
+		  </div>
+		</div>
+
+		<!-- Input pour écrire un nouveau message -->
+		<div class="chat-input">
+		  <div class="input-group">
+			<input type="text" class="form-control" placeholder="Écrire un message" id="message-input">
+			<div class="input-group-append">
+			  <button class="btn btn-success" id="send-message">Envoyer</button>
+			</div>
+		  </div>
+		</div>
+	  </div>
+
+	</div>
+  </div>
