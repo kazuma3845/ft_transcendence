@@ -62,16 +62,7 @@ document.addEventListener('keydown', (event) => {
 let lastTime;
 let i = 0;
 
-function animate(timestamp) {
-    if (!lastTime) {
-        lastTime = timestamp;
-    }
-
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
-    if (pong.player == pong.playerLeft)
-        pong.updateBallPosition(deltaTime);
-    pong.deplacerRaquette(deltaTime);
+function animate() {
     if (pong.power) {
         if (i++ == 0)
             scene.add(power.bonus);
@@ -79,6 +70,7 @@ function animate(timestamp) {
     }
     if (pong.botActivated)
         bot.updateBotPosition();
+    pong.deplacerRaquette();
     renderer.render(scene, camera);
 
     checkWinCondition();

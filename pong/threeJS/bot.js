@@ -3,6 +3,7 @@ export default class Bot {
     this.pong = pong;
     this.form = form;
     this.bot_in_place = false;
+    this.input = 0;
   }
 
   handleBallHit() {
@@ -30,7 +31,7 @@ export default class Bot {
         this.form.paddleRight.position.y,
       ],
       paddle_size: this.form.paddle_right_size[1],
-      paddle_move_speed: this.pong.trueSpeed,
+      paddle_move_speed: this.pong.paddle_move_speed,
       side: "right", // ou "left" selon la logique
       score: this.pong.score, // Mettre à jour avec le score actuel
       ballPaused: this.pong.ballPaused,
@@ -65,14 +66,14 @@ export default class Bot {
 
   updateBotPosition() {
     // console.log("Déplacer le bot de:", this.input);
-    this.pong.keysPressed["o"] = false;
-    this.pong.keysPressed["k"] = false;
+    this.pong.right_back = false;
+    this.pong.right_up = false;
 
     if (this.input > 0) {
-      this.pong.keysPressed["o"] = true;
+      this.pong.right_up= true;
       this.input--;
     } else if (this.input < 0) {
-      this.pong.keysPressed["k"] = true;
+      this.pong.right_back = true;
       this.input++;
     }
   }

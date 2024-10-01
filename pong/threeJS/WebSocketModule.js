@@ -40,7 +40,10 @@ export default class WebSocketModule {
                     console.log(`launch_ball = ${data.content}`)
                     // Appel de la fonction du jeu pour mettre à jour la position
                     this.pong.ballPaused = false;
-                }
+                }                
+                // if (data.type === 'readBeforeStart') {
+                //     // Appel de la fonction du jeu pour mettre à jour la position
+                // }
             } catch (error) {
                 console.error('Error parsing message:', error);
             }
@@ -67,7 +70,7 @@ export default class WebSocketModule {
             }));
             return true;
         } else {
-            console.error(`WebSocket for session ${sessionId} is not open. Cannot send message.`);
+            console.error(`WebSocket for session is not open. Cannot send message.`);
             return false;
         }
     }
