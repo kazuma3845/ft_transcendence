@@ -7,12 +7,19 @@ from .calcul import GameCalculator
 logger = logging.getLogger(__name__)
 
 class GameConsumer(AsyncWebsocketConsumer):
+    calculator = None  # Déclaration de la variable de classe
+
+    @classmethod
+    def initialize_calculator(cls):
+        if cls.calculator is None:
+            cls.calculator = GameCalculator()
+
     async def connect(self):
         try:
             self.session_id = self.scope['url_route']['kwargs']['session_id']
             self.room_group_name = f'game_{self.session_id}'
 
-            self.calculator = GameCalculator()
+            self.initialize_calculator()
 
             # Rejoindre la salle de jeu
             await self.channel_layer.group_add(
