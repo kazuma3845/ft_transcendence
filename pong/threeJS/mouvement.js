@@ -1,20 +1,17 @@
 export default class Pong {
-    constructor(form, bot, websocket) {
+    constructor(form, bot, websocket, power) {
         this.bot = bot;
         this.form = form;
         this.websocket = websocket;
+        this.power = power;
 
         this.arenaWidth = this.form.arene_size[0] - (2 * this.form.LRborder_size[0]);
         this.arenaHeight = this.form.arene_size[1] - (2 * this.form.NSborder_size[1]);
-        this.initialSpeed = 6;
-        this.ballSpeedX = this.initialSpeed;
-        this.ballSpeedY = 0;
         this.lastExecTime = 1
         this.score = [0, 0]
 
         this.ballPaused = true;
         this.keysPressed = {};
-        this.ball_angle = 90;
 
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
@@ -56,7 +53,7 @@ export default class Pong {
         key_position = {
             paddleSpeed: this.paddle_move_speed,
             moveSpeed: this.initialSpeed,
-            power: this.power,
+            power: this.powerActive,
             bot: this.botActivated,
             left_back: this.left_back,
             left_up: this.left_up,
@@ -84,8 +81,22 @@ export default class Pong {
         updatePosition(data)
         {
             // console.log("LAST UPDATE: ", data.content)
-            // this.form.ball.rotation.x += this.adjustedSpeedY * 0.1
-            // this.form.ball.rotation.y += this.adjustedSpeedX * 0.1
+            if (this.ballPaused) {
+                this.form.ball.rotation.x += 0
+                this.form.ball.rotation.y += 0
+            }
+            else {
+                this.form.ball.rotation.x += data.content.rotatey * 0.1
+                this.form.ball.rotation.y += data.content.rotatex * 0.1
+            }
+            if (this.powerActive) {
+                this.power.bonus.position.x = data.content.bonusPosx;
+                this.power.bonus.position.y = data.content.bonusPosy;
+                this.form.paddle_left_size[1] = data.content.bonuspadleLsize;
+                this.form.paddle_right_size[1] = data.content.bonuspadleRsize;
+                this.power.updatePaddleGeometry(this.form.paddleLeft, this.form.paddle_left_size);
+                this.power.updatePaddleGeometry(this.form.paddleRight, this.form.paddle_right_size);
+            }
             if (this.botActivated) {
                 this.ball_angle = data.content.ball_angle;
                 if (data.content.replaceBot)
@@ -123,7 +134,7 @@ export default class Pong {
             this.winScore = data.win_number;
             this.initialSpeed = data.move_speed_ball;
             this.paddle_move_speed = data.move_speed_paddle;
-            this.power = data.power;
+            this.powerActive = data.power;
             this.botActivated = data.bot;
             this.botLVL = (data.bot_difficulty / 10);
             this.player1_started = data.player1_started;

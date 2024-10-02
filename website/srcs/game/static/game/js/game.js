@@ -267,7 +267,7 @@ function startWebSocket(sessionId) {
         // console.log('Message received:', e.data);
         try {
             const data = JSON.parse(e.data);
-            console.log('F-E: client websocket parsed data:', data);
+            // console.log('F-E: client websocket parsed data:', data);
             if (data.type === 'game_score') {
                 updateScoreDisplay(data.player1, data.player1_points, data.player2_points);
             }
@@ -288,7 +288,7 @@ function startWebSocket(sessionId) {
     };
 
     function updateScoreDisplay(username, player1Points, player2Points) {
-        console.log('Updating scores:', player1Points, player2Points);
+        // console.log('Updating scores:', player1Points, player2Points);
         const player1Elem = document.getElementById('player1');
         const player1ScoreElem = document.getElementById('player1Score');
         const player2ScoreElem = document.getElementById('player2Score');

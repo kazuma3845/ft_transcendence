@@ -14,11 +14,12 @@ renderer.setClearColor(0xfeb47b);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
-const pong = new Pong(form, null, null);
+const pong = new Pong(form, null, null, null);
 const bot = new Bot(pong, form);
+const power = new Power(form);
 pong.bot = bot;
+pong.power = power;
 form.pong = pong;
-const power = new Power(form, pong);
 
 scene.add(form.ball);
 scene.add(form.Arene);
@@ -59,14 +60,12 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-let lastTime;
 let i = 0;
 
 function animate() {
-    if (pong.power) {
+    if (pong.powerActive) {
         if (i++ == 0)
             scene.add(power.bonus);
-        power.activePower();
     }
     if (pong.botActivated)
         bot.updateBotPosition();
@@ -132,7 +131,7 @@ async function startGame() {
     const startScreen = document.getElementById('startScreen');
     const loader = document.getElementById('loader');
     const websocket = new WebSocketModule(pong);
-    console.log(`Avant : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
+    // console.log(`Avant : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
     pong.websocket = websocket;
     pong.websocket.startWebSocket(localStorage.getItem('game_session_id'));
     await pong.sendDataForID();
