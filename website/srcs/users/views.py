@@ -15,6 +15,13 @@ from rest_framework.decorators import action
 from rest_framework import status
 from game.models import GameSession
 from game.serializers import GameSessionSerializer
+from django.contrib.auth.models import User
+from django.db.models import Q
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from users.models import UserProfile
+from .serializers import UserProfileSerializer, UserSerializer
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -97,11 +104,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         serializer = GameSessionSerializer(game_sessions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    @action(detail=False, methods=['get'])
+
+    @action(detail=False, methods=['get'], url_path='search')
     def search(self, request):
         query = request.query_params.get('query', None)
         if query is not None:
+            # Rechercher dans le modèle User
             users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
-            serializer = self.get_serializer(users, many=True)
+            serializer = UserSerializer(users, many=True)  # Utiliser le UserSerializer ici
             return Response(serializer.data)
         return Response([])

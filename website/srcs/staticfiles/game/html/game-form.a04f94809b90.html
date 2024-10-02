@@ -1,0 +1,89 @@
+<div class="parent_center">
+	<div class="container_parent">
+		<div class="container_white_left">
+		<h2>Nouvelle partie</h2>
+		<form method="POST" id="game-form">
+			<label for="move_speed_ball">Move Speed Ball: <span id="move_speed_ball_value">6</span></label><br>
+			<input type="range" id="move_speed_ball" name="move_speed_ball" min="1" max="10" value="6" oninput="updateValue('move_speed_ball_value', this.value)">
+			<br><br>
+
+			<label for="move_speed_paddle">Move Speed Paddle: <span id="move_speed_paddle_value">4</span></label><br>
+			<input type="range" id="move_speed_paddle" name="move_speed_paddle" min="1" max="10" value="4" oninput="updateValue('move_speed_paddle_value', this.value)">
+			<br><br>
+
+			<label for="power">Power:</label>
+			<input type="checkbox" id="power" name="power" onchange="updateCheckboxValue('power_value', this.checked)">
+			<span id="power_value">Off</span><br><br>
+
+			<label for="bot">Bot:</label>
+			<input type="checkbox" id="bot" name="bot" checked onchange="updateCheckboxValue('bot_value', this.checked)">
+			<span id="bot_value">On</span><br><br>
+
+			<label for="bot_difficulty">Bot Difficulty: <span id="bot_difficulty_value">5</span></label><br>
+			<input type="range" id="bot_difficulty" name="bot_difficulty" min="1" max="10" value="5" oninput="updateValue('bot_difficulty_value', this.value)">
+			<br><br>
+
+			<label for="actual_win_number">Choose a winning number: <span id="actual_win_number_value">5</span></label><br>
+			<input type="range" id="actual_win_number" name="actual_win_number" min="1" max="6" step="1" value="3" oninput="updateWinNumber()">
+			<input type="hidden" id="win_number" name="win_number" value="5">
+			<br><br>
+			<!-- <label for="win_number">Choose a winning number:</label><br><br>
+
+			<div class="radio-container">
+				<input type="radio" id="win_number_1" name="win_number" value="1">
+				<input type="radio" id="win_number_3" name="win_number" value="3">
+				<input type="radio" id="win_number_5" name="win_number" value="5">
+				<input type="radio" id="win_number_7" name="win_number" value="7">
+				<input type="radio" id="win_number_9" name="win_number" value="9">
+				<input type="radio" id="win_number_11" name="win_number" value="11">
+			</div>
+
+			<div class="radio-container number">
+				<label for="win_number_1">1</label>
+				<label for="win_number_3">3</label>
+				<label for="win_number_5">5</label>
+				<label for="win_number_7">7</label>
+				<label for="win_number_9">9</label>
+				<label for="win_number_11">11</label>
+			</div>
+			<p id="error-message" class="error" style="display: none;"></p> -->
+
+			<button class="standard-button" type="submit">Créer</button>
+		</form>
+	</div>
+	<div class="container_white_right">
+		<h2>Game en cours:</h2>
+		<ul id="session-list"></ul>
+	</div>
+</div>
+</div>
+<style>
+    .radio-container  {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+	.number {
+        margin-bottom: 30px;
+    }
+
+    .radio-container label {
+        text-align: center;
+        flex: 1;
+    }
+
+    .radio-container input[type="radio"] {
+        margin: 0 auto;
+        display: block;
+    }
+</style>
+<!-- <script>
+    function updateValue(id, value) {
+        document.getElementById(id).textContent = value;
+    }
+
+    function updateCheckboxValue(id, isChecked) {
+        document.getElementById(id).textContent = isChecked ? 'On' : 'Off';
+    }
+</script> -->
