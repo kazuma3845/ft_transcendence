@@ -1,4 +1,5 @@
 # Create your views here.
+from django.db.models import Max
 from rest_framework import viewsets
 from .models import Conversation, Message, BlockedUser
 from .serializers import ConversationSerializer, MessageSerializer, BlockedUserSerializer
@@ -10,6 +11,14 @@ from rest_framework.response import Response
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+
+    def get_queryset(self):
+        # Renvoyer les conversations où le currentUser est un participant
+        user_profile = self.request.user.userprofile  # Assuming you have a OneToOne relationship between User and UserProfile
+        return Conversation.objects.filter(participants=user_profile) \
+            .annotate(last_message=Max('messages__timestamp')) \
+            .order_by('-last_message')  # Trier par le message le plus récent (le plus récent d'abord)
+
     # Ajouter une action personnalisée pour récupérer les messages d'une conversation
     @action(detail=True, methods=['get'])
     def messages(self, request, pk=None):

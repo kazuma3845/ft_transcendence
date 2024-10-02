@@ -11,8 +11,6 @@ router.register(r'profiles', UserProfileViewSet)
 
 urlpatterns = [
     # path('', views.index, name='index'),
-    path('signup/', views.signup, name='signup'),
-    path('login/', views.login_view, name='login'),
     # Routes API pour les profiles d'utilisateurs
     path('', include(router.urls)),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),

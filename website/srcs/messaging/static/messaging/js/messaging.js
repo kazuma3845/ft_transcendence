@@ -5,6 +5,55 @@
 // 5.	sendMessage : Envoie un message via WebSocket.
 // 6.	displayNewMessage : Affiche un nouveau message dans la zone de chat.
 
+// Fonction pour afficher la modal
+function openSearchUserModal() {
+    const modal = document.getElementById('newConversationModal');
+    modal.style.display = 'flex';  // Afficher la modal en mode flex pour centrer le contenu
+}
+
+// Fonction pour fermer la modal
+function closeSearchUserModal() {
+    const modal = document.getElementById('newConversationModal');
+    modal.style.display = 'none';  // Masquer la modal
+}
+
+// Fermer la modal si l'utilisateur clique en dehors du contenu
+window.onclick = function(event) {
+    const modal = document.getElementById('newConversationModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+};
+
+function searchUser() {
+    const query = document.getElementById('searchUserInput').value;
+
+    if (query.length > 0) {
+        fetch(`/api/users/search/?query=${query}`)  // Remplacer par ton endpoint API de recherche d'utilisateur
+        .then(response => response.json())
+        .then(users => {
+            const resultsList = document.getElementById('searchResults');
+            resultsList.innerHTML = '';  // Réinitialiser les résultats
+
+            users.forEach(user => {
+                if (user.username !== currentUser) {  // Exclure l'utilisateur actuel
+                    const userItem = document.createElement('li');
+                    userItem.textContent = user.username;
+                    userItem.onclick = () => selectUser(user.id, user.username);  // Sélectionner un utilisateur
+                    resultsList.appendChild(userItem);
+                }
+            });
+        });
+    }
+}
+
+// Fonction pour sélectionner un utilisateur et démarrer la conversation
+function selectUser(userId, username) {
+    // Stocke l'utilisateur sélectionné et afficher un message
+    console.log(`Utilisateur sélectionné : ${username}`);
+    // Tu peux ensuite lancer la création de la conversation ou l'afficher dans la modal
+}
+
 function loadChat() {
     fetch('/static/messaging/html/chat.html')
     .then(response => response.text())
@@ -89,19 +138,24 @@ function loadMessages(conversationId) {
 
         messages.forEach(message => {
             const messageItem = document.createElement('div');
-            const isUserMessage = message.sender === 'me';  // Vérifier si l'utilisateur est l'expéditeur
 
+            // Vérifier si le message appartient à l'utilisateur actuel
+            const isUserMessage = message.sender === currentUser;
+
+            // Ajout des classes pour l'alignement à droite ou à gauche
             messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
 
             const messageContent = document.createElement('div');
-            messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-primary' : 'bg-body-tertiary');
+
+            // Styles des messages : vert pour les messages de l'utilisateur, autre pour les autres
+            messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
             messageContent.textContent = message.content;
 
             messageItem.appendChild(messageContent);
             messagesList.appendChild(messageItem);
         });
 
-        // Scroller en bas de la zone de messages
+        // Scroller en bas de la zone de messages pour voir les nouveaux messages
         messagesList.scrollTop = messagesList.scrollHeight;
     });
 }
@@ -110,18 +164,23 @@ function displayNewMessage(data) {
     const messagesList = document.getElementById('chat-messages');
 
     const messageItem = document.createElement('div');
-    const isUserMessage = data.sender === 'me';  // Vérifier si l'utilisateur est l'expéditeur
 
+    // Vérifier si l'utilisateur actuel est l'expéditeur
+    const isUserMessage = data.sender === currentUser;
+
+    // Ajout des classes CSS en fonction de l'expéditeur
     messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
 
     const messageContent = document.createElement('div');
-    messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-primary' : 'bg-body-tertiary');
+
+    // Ajouter des styles en fonction de l'expéditeur (vert pour l'utilisateur, autre couleur pour les autres)
+    messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
     messageContent.textContent = data.message;
 
     messageItem.appendChild(messageContent);
     messagesList.appendChild(messageItem);
 
-    // Scroller en bas de la zone de messages
+    // Scroller automatiquement en bas de la zone de messages
     messagesList.scrollTop = messagesList.scrollHeight;
 }
 
@@ -152,13 +211,16 @@ function connectWebSocket() {
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
+
         // Vérifier le type du message reçu
         if (data.type === "upload_message") {
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
             // const message = data.content.message;  // Récupérer le contenu du message
-
             // Afficher le message dans la boîte de la conversation correspondante
-			loadMessages(conversationId);
+			console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
+			if (activeConversationId === data.content.conversation_id)
+				displayNewMessage(data.content);
+			// loadMessages(conversationId);
         } else {
             console.log(`Type de message non géré : ${data.type}`);
         }

@@ -1,25 +1,27 @@
 <div class="container-fluid h-100 ">
 	<div class="row h-100">
 
-	  <!-- Liste des discussions (droite) -->
-	  <div class="col-3 bg-light p-3">
+	<!-- Liste des discussions (droite) -->
+	<div class="col-3 bg-light p-3">
 		<div class="search-bar mb-3">
-		  <button class="btn btn-outline-secondary w-100">Rechercher utilisateur</button>
-		</div>
+			<!-- <button class="btn btn-outline-secondary w-100" onclick="openSearchUserModal()">Rechercher utilisateur</button> -->
+			<button class="btn btn-primary w-100 mt-2" onclick="openSearchUserModal()">Nouvelle discussion</button>		</div>
 
 		<div class="discussion-list">
-		  <h5>Discussion en cours</h5>
-		  <!-- Chaque utilisateur avec une conversation en cours -->
-		  <div class="user-conversation bg-primary p-2 mb-2 rounded">
-			USER #
-		  </div>
-		  <div class="user-conversation bg-primary p-2 mb-2 rounded">
-			USER #
-		  </div>
-		  <!-- Ajoute ici autant d'utilisateurs que nécessaire -->
+			<h5>Discussion en cours</h5>
+			<!-- Liste des discussions existantes ici -->
 		</div>
-	  </div>
-
+	</div>
+	<!-- Modal structure -->
+	<div id="newConversationModal" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="closeSearchUserModal()">&times;</span> <!-- Bouton pour fermer la modal -->
+			<h3>Nouvelle Discussion</h3>
+			<input type="text" id="searchUserInput" placeholder="Rechercher un utilisateur..." oninput="searchUser()">
+			<ul id="searchResults"></ul> <!-- Affichage des résultats de la recherche -->
+			<button class="btn btn-primary" onclick="startConversation()">Démarrer la conversation</button>
+		</div>
+	</div>
 	  <!-- Zone de chat active (gauche) -->
 	  <div class="col-9 bg-lightblue p-3">
 		<div class="chat-header mb-3">
@@ -28,12 +30,6 @@
 
 		<div class="chat-messages mb-3" id="chat-messages" style="height: 60vh; overflow-y: auto;">
 		  <!-- Messages échangés -->
-		  <div class="message bg-primary p-2 rounded mb-2">
-			MESSAGE de l'utilisateur
-		  </div>
-		  <div class="message bg-success p-2 rounded mb-2">
-			MESSAGE de vous
-		  </div>
 		</div>
 
 		<!-- Input pour écrire un nouveau message -->

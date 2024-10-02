@@ -60,8 +60,41 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         if message_type == 'newMessage':
             conversation_id = content['conversation_id']
-            message = content['message']
-            print(f"##### NEW CREATION CHAT")
+            message_content = content['message']
+            sender_username = content['sender']
+
+            UserProfile = apps.get_model('users', 'UserProfile')
+            Conversation = apps.get_model('messaging', 'Conversation')
+            Message = apps.get_model('messaging', 'Message')
+            User = get_user_model()  # Assurer la compatibilité avec les User personnalisés
+
+            # Récupérer l'utilisateur User à partir de son nom d'utilisateur
+            try:
+                sender_user = await database_sync_to_async(User.objects.get)(username=sender_username)
+            except User.DoesNotExist:
+                print(f"User {sender_username} does not exist")
+                return  # Si l'utilisateur n'existe pas, on arrête
+
+            # Récupérer le profil UserProfile à partir de l'utilisateur
+            try:
+                sender_profile = await database_sync_to_async(UserProfile.objects.get)(user=sender_user)
+            except UserProfile.DoesNotExist:
+                print(f"UserProfile for user {sender_username} does not exist")
+                return
+
+            # Récupérer la conversation
+            try:
+                conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
+            except Conversation.DoesNotExist:
+                print(f"Conversation {conversation_id} does not exist")
+                return
+
+            # Créer et sauvegarder le nouveau message
+            new_message = await database_sync_to_async(Message.objects.create)(
+                conversation=conversation,
+                sender=sender_profile,
+                content=message_content
+            )
 
             # Vérifier si la conversation existe et si l'utilisateur fait partie de cette conversation dans un contexte async
             try:
@@ -76,8 +109,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'chat_message',
                     'conversation_id': conversation_id,
-                    'message': message,
-                    'sender': self.user.username  # Utiliser le nom d'utilisateur
+                    'message': message_content,
+                    'sender': await database_sync_to_async(lambda: sender_profile.user.username)()  # Utiliser le nom d'utilisateur
                 }
             )
 
@@ -86,39 +119,39 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_content = event['message']
         sender_username = event['sender']
 
-        UserProfile = apps.get_model('users', 'UserProfile')
-        Conversation = apps.get_model('messaging', 'Conversation')
-        Message = apps.get_model('messaging', 'Message')
-        User = get_user_model()  # Assurer la compatibilité avec les User personnalisés
+        # UserProfile = apps.get_model('users', 'UserProfile')
+        # Conversation = apps.get_model('messaging', 'Conversation')
+        # Message = apps.get_model('messaging', 'Message')
+        # User = get_user_model()  # Assurer la compatibilité avec les User personnalisés
 
-        # Récupérer l'utilisateur User à partir de son nom d'utilisateur
-        try:
-            sender_user = await database_sync_to_async(User.objects.get)(username=sender_username)
-        except User.DoesNotExist:
-            print(f"User {sender_username} does not exist")
-            return  # Si l'utilisateur n'existe pas, on arrête
+        # # Récupérer l'utilisateur User à partir de son nom d'utilisateur
+        # try:
+        #     sender_user = await database_sync_to_async(User.objects.get)(username=sender_username)
+        # except User.DoesNotExist:
+        #     print(f"User {sender_username} does not exist")
+        #     return  # Si l'utilisateur n'existe pas, on arrête
 
-        # Récupérer le profil UserProfile à partir de l'utilisateur
-        try:
-            sender_profile = await database_sync_to_async(UserProfile.objects.get)(user=sender_user)
-        except UserProfile.DoesNotExist:
-            print(f"UserProfile for user {sender_username} does not exist")
-            return
+        # # Récupérer le profil UserProfile à partir de l'utilisateur
+        # try:
+        #     sender_profile = await database_sync_to_async(UserProfile.objects.get)(user=sender_user)
+        # except UserProfile.DoesNotExist:
+        #     print(f"UserProfile for user {sender_username} does not exist")
+        #     return
 
-        # Récupérer la conversation
-        try:
-            conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
-        except Conversation.DoesNotExist:
-            print(f"Conversation {conversation_id} does not exist")
-            return
+        # # Récupérer la conversation
+        # try:
+        #     conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
+        # except Conversation.DoesNotExist:
+        #     print(f"Conversation {conversation_id} does not exist")
+        #     return
 
-        # Créer et sauvegarder le nouveau message
-        new_message = await database_sync_to_async(Message.objects.create)(
-            conversation=conversation,
-            sender=sender_profile,
-            content=message_content
-        )
-        print(f"NEW CREATION CHAT")
+        # # Créer et sauvegarder le nouveau message
+        # new_message = await database_sync_to_async(Message.objects.create)(
+        #     conversation=conversation,
+        #     sender=sender_profile,
+        #     content=message_content
+        # )
+        # print(f"NEW CREATION CHAT")
         # Envoyer le message au client WebSocket
         await self.send(text_data=json.dumps({
             'type': 'upload_message',
