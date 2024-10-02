@@ -19,12 +19,29 @@ function loadProfil() {
 }
 
 function addProfil() {
-  return fetch("/api/users/profiles/info-user")
-    .then((response) => response.json())
+  return fetchUserInfo()
     .then((data) => {
       console.log("DATA", data);
+
       document.getElementById("username").textContent = data.user.username;
       document.getElementById("email").textContent = data.user.email;
-      document.getElementById("bio").textContent = data.bio;
+      document.getElementById("bio").textContent = data.bio
+        ? data.bio
+        : "Ceci est une bio vraiment pas très intéressante. J'imagine que j'aime le pong puisque je suis ici. (Aidez moi à trouver un stage svp)";
+
+      document.querySelector(".avatar-div img").src = data.avatar_url
+        ? data.avatar_url
+        : "/static/users/avatars/avatar.png";
+
+      document.querySelector(".div-banner img").src = data.banner
+        ? data.banner
+        : "/static/users/banners/ping-pong.gif";
+    })
+
+    .catch((error) => {
+      console.error(
+        "Erreur lors de la récupération des infos utilisateur:",
+        error
+      );
     });
 }

@@ -260,28 +260,28 @@ async function fetchAvailableSessions() {
     // Vider le contenu précédent
     sessionList.innerHTML = "";
 
-    if (sessions.length === 0) 
-    {
-        document.getElementById("current-game-rooms").textContent = "No room available"
+    if (sessions.length === 0) {
+      document.getElementById("current-game-rooms").textContent =
+        "No room available";
     }
-      // Parcourir les sessions et créer un lien pour chacune
-      sessions.forEach((session) => {
-        const listItem = document.createElement("li"); // Créer un élément <li>
-        const link = document.createElement("a"); // Créer un élément <a> pour le lien
+    // Parcourir les sessions et créer un lien pour chacune
+    sessions.forEach((session) => {
+      const listItem = document.createElement("li"); // Créer un élément <li>
+      const link = document.createElement("a"); // Créer un élément <a> pour le lien
 
-        // Définir l'URL du lien et son texte
-        link.href = `#`; // Pas de redirection directe
-        link.textContent = `Rejoindre la session ${session.id}`;
+      // Définir l'URL du lien et son texte
+      link.href = `#`; // Pas de redirection directe
+      link.textContent = `Rejoindre la session ${session.id}`;
 
-        // Ajouter un événement de clic pour le lien
-        link.addEventListener("click", function (event) {
-          event.preventDefault(); // Empêcher la redirection par défaut
-          joinGame(session.id); // Appeler la fonction pour rejoindre le jeu
-        });
-
-        listItem.appendChild(link);
-        sessionList.appendChild(listItem);
+      // Ajouter un événement de clic pour le lien
+      link.addEventListener("click", function (event) {
+        event.preventDefault(); // Empêcher la redirection par défaut
+        joinGame(session.id); // Appeler la fonction pour rejoindre le jeu
       });
+
+      listItem.appendChild(link);
+      sessionList.appendChild(listItem);
+    });
   } catch (error) {
     console.error("Erreur lors de la récupération des sessions:", error);
   }
