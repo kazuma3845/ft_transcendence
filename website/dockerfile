@@ -21,7 +21,8 @@ COPY ./requirements.txt /app/
 COPY ./entrypoint.sh /app/
 
 # Installer les dépendances Python
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install python-decouple
 
 # Copier tout le contenu du projet dans le conteneur
 COPY ./srcs /app/srcs

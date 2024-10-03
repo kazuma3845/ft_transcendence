@@ -68,6 +68,8 @@ services:
       - "8080:8080"
     networks:
       - django_network
+    env_file:
+      - .env
 
   blockchain:
     container_name: ganache

@@ -7,19 +7,13 @@ from .calcul import GameCalculator
 logger = logging.getLogger(__name__)
 
 class GameConsumer(AsyncWebsocketConsumer):
-    calculator = None  # Déclaration de la variable de classe
-
-    @classmethod
-    def initialize_calculator(cls):
-        if cls.calculator is None:
-            cls.calculator = GameCalculator()
-
     async def connect(self):
         try:
             self.session_id = self.scope['url_route']['kwargs']['session_id']
             self.room_group_name = f'game_{self.session_id}'
 
-            self.initialize_calculator()
+            if not hasattr(self, 'calculator'):
+                self.calculator = GameCalculator() ####################################----------A CHECK---------####################
 
             # Rejoindre la salle de jeu
             await self.channel_layer.group_add(
@@ -110,14 +104,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'start_game',
             'message': message,
         }))
-
-    # async def update_position(self, event):
-    #     # content = perform_calculation(event['content'])
-    #     # Envoyer les scores aux clients WebSocket
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'update_position',
-    #         'content': content,
-    #     }))
 
     async def launch_ball(self, event):
         content = event['content']

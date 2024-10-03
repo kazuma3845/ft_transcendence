@@ -5,6 +5,7 @@ import Bot from './bot.js';
 import Power from './power.js';
 import WebSocketModule from './WebSocketModule.js';
 
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -92,14 +93,14 @@ function showWinScreen(player, message, score1, score2) {
 
 
     registerScores();
+    pong.websocket.socket.close();
 
     winScreen.style.display = 'flex';
     renderer.setAnimationLoop(null);
 }
 
 function registerScores() {
-
-    const url = "http://127.0.0.1:8000/api/blockchain/set_score/"
+    const url = `http://10.0.0.7:8000/api/blockchain/set_score/`;
 
     const gameData = {
         game_session_id: pong.id,

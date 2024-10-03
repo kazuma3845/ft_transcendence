@@ -243,7 +243,7 @@ class GameCalculator:
     
     def randomPos(self):
         self.bonusposx = random.uniform(-128, 128)
-        self.bonusposy = random.uniform(-112, 112)
+        self.bonusposy = random.uniform(-105, 105)
 
     def randomPower(self):
         power = random.randint(0, 1)

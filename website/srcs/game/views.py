@@ -21,7 +21,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
     serializer_class = GameSessionSerializer
     permission_classes = [IsAuthenticated]
 
-
     def create(self, request, *args, **kwargs):
         # Initialiser le serializer avec les données de la requête
         serializer = self.get_serializer(data=request.data)
@@ -153,20 +152,26 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         data['currentPlayer'] = current_user.username
         return Response(data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'], url_path='join_game')
-    def join_game(self, request, pk=None):
-        session = self.get_object()
+@action(detail=True, methods=['post'], url_path='join_game')
+def join_game(self, request, pk=None):
+    session = self.get_object()
 
-        # Vérifier si player2 est déjà rempli
-        if session.player2 is not None:
-            return Response({"detail": "Cette session a déjà un deuxième joueur."}, status=status.HTTP_400_BAD_REQUEST)
+    # Vérifier si player2 est déjà rempli
+    if session.player2 is not None:
+        return Response({"detail": "Cette session a déjà un deuxième joueur."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Assigner player2 à l'utilisateur courant
-        session.player2 = request.user
+    # Assigner player2 à l'utilisateur courant
+    session.player2 = request.user
 
-        session.save()
+    session.save()
 
-        return Response({"detail": "Vous avez rejoint la session avec succès."}, status=status.HTTP_200_OK)
+    # Récupérer la variable d'environnement
+    env_variable = config('IP_LOCAL')
+
+    return Response({
+        "detail": "Vous avez rejoint la session avec succès.",
+        "env_variable": env_variable
+    }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'], url_path='update_score')
     def update_score(self, request, pk=None):
