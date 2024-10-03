@@ -1,0 +1,11 @@
+
+
+.profile-block {
+	background: rgba(97, 88, 213, 0.301);
+	backdrop-filter: blur(7.5px);
+	-webkit-backdrop-filter: blur(10px);
+	/* border: 1px solid rgba(255, 255, 255, 0.3);  Pour Safari */
+	box-shadow: 0 8px 32px rgba(227, 228, 236, 0.646);
+	border-radius: 12px;
+  }
+
