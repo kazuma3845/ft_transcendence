@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-c*j8g&nc=%j!j(%8$5(h-2b$yqs=x7#@n-^x3-z=-_#eg^ka0*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'web']
+ALLOWED_HOSTS = (config('IP_LOCAL'), '127.0.0.1')
 
 
 # Application definition
@@ -148,7 +149,8 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
     "http://127.0.0.1:8000",
     'http://localhost:8000',
-
+    f"http://{config('IP_LOCAL')}:8000",
+    f"http://{config('IP_LOCAL')}:8080",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -157,6 +159,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8080',
     "http://127.0.0.1:8000",
     'http://localhost:8000',
+    f"http://{config('IP_LOCAL')}:8000",
+    f"http://{config('IP_LOCAL')}:8080",
 ]
 
 # Static files (CSS, JavaScript, Images)

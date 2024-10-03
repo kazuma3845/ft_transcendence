@@ -51,6 +51,7 @@ export default class Pong {
         let key_position
 
         key_position = {
+            id: this.id,
             paddleSpeed: this.paddle_move_speed,
             moveSpeed: this.initialSpeed,
             power: this.powerActive,
@@ -86,7 +87,7 @@ export default class Pong {
                 this.form.ball.rotation.y += 0
             }
             else {
-                this.form.ball.rotation.x += data.content.rotatey * 0.1
+                this.form.ball.rotation.x += -data.content.rotatey * 0.1
                 this.form.ball.rotation.y += data.content.rotatex * 0.1
             }
             if (this.powerActive) {
@@ -112,13 +113,13 @@ export default class Pong {
             this.form.paddleLeft.position.y = data.content.player_left_pos;
             this.form.ball.position.x = data.content.posx;
             this.form.ball.position.y = data.content.posy;
-            this.sendDataToScore();
+            this.sendDataToScore()
         }
 
     async sendDataForID() {
         let sessionId = localStorage.getItem('game_session_id');
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/game/sessions/${sessionId}/start_single/`, {
+            const response = await fetch(`http://10.0.0.7:8000/api/game/sessions/${sessionId}/start_single/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -149,7 +150,7 @@ export default class Pong {
             player1_points: this.score[0],
             player2_points: this.score[1],
         };
-        fetch(`http://127.0.0.1:8000/api/game/sessions/${this.id}/update_score/`, {
+        fetch(`http://10.0.0.7:8000/api/game/sessions/${this.id}/update_score/`, {
             method: 'POST',
             credentials: 'include',
             headers: {

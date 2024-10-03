@@ -1,9 +1,10 @@
-import * as THREE from "three";
-import Form from "./form.js";
-import Pong from "./mouvement.js";
-import Bot from "./bot.js";
-import Power from "./power.js";
-import WebSocketModule from "./WebSocketModule.js";
+import * as THREE from 'three';
+import Form from './form.js';
+import Pong from './mouvement.js';
+import Bot from './bot.js';
+import Power from './power.js';
+import WebSocketModule from './WebSocketModule.js';
+
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -105,13 +106,14 @@ function showWinScreen(player, message, score1, score2) {
   const winScreen = document.getElementById("winScreen");
   winScreen.style.display = "block";
 
-  registerScores();
+    registerScores();
+    pong.websocket.socket.close();
 
   renderer.setAnimationLoop(null);
 }
 
 function registerScores() {
-  const url = "http://127.0.0.1:8000/api/blockchain/set_score/";
+    const url = `http://10.0.0.7:8000/api/blockchain/set_score/`;
 
   const gameData = {
     game_session_id: pong.id,

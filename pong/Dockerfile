@@ -9,7 +9,6 @@ COPY . .
 
 # Installer les dépendances
 RUN npm install
-
 # Exposer le port que le serveur utilisera
 EXPOSE 8080
 
