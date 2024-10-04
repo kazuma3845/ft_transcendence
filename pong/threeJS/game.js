@@ -100,7 +100,7 @@ function showWinScreen(player, message, score1, score2) {
 }
 
 function registerScores() {
-    const url = `http://10.0.0.7:8000/api/blockchain/set_score/`;
+    const url = `http://10.18.203.86:8000/api/blockchain/set_score/`;
 
     const gameData = {
         game_session_id: pong.id,
