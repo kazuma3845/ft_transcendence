@@ -267,13 +267,12 @@ async function joinGame(sessionId) {
         // Si l'appel API est réussi, lancer la fonction pour charger le jeu
         console.log(`Vous avez rejoint la session ${sessionId}`);
         localStorage.setItem('game_session_id', sessionId);
-        console.log("ENV VARIABLE: ", response.env_variable)
         // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
         loadGame().then(() => {
             const iframe = document.querySelector('iframe');
             if (iframe) {
                 iframe.onload = function() {
-                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, `http://10.0.0.7:8080`);
+                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, `http://10.18.203.86:8080`);
                 };
             } else {
                 console.error('Iframe not found');
@@ -293,7 +292,7 @@ async function joinGame(sessionId) {
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`ws://10.0.0.7:8000/ws/game/sessions/${sessionId}/`);
+    const socket = new WebSocket(`ws://10.18.203.86:8000/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");
@@ -303,7 +302,7 @@ function startWebSocket(sessionId) {
     // console.log('Message received:', e.data);
     try {
       const data = JSON.parse(e.data);
-      console.log("F-E: client websocket parsed data:", data);
+      // console.log("F-E: client websocket parsed data:", data);
       if (data.type === "game_score") {
         updateScoreDisplay(
           data.player1,
@@ -328,7 +327,7 @@ function startWebSocket(sessionId) {
   };
 
   function updateScoreDisplay(username, player1Points, player2Points) {
-    console.log("Updating scores:", player1Points, player2Points);
+    // console.log("Updating scores:", player1Points, player2Points);
     const player1Elem = document.getElementById("player1");
     const player1ScoreElem = document.getElementById("player1Score");
     const player2ScoreElem = document.getElementById("player2Score");

@@ -1,10 +1,10 @@
 async function router() {
   const hash = window.location.hash;
-  console.log("Hash actuel : ", hash);
+  // console.log("Hash actuel : ", hash);
 
   try {
     const isAuthenticated = await checkAuthentication();
-    console.log("Utilisateur authentifié : ", isAuthenticated);
+    // console.log("Utilisateur authentifié : ", isAuthenticated);
     if (isAuthenticated && !userInfo) {
       await fetchUserInfo();
       updateUsername();

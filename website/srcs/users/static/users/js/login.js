@@ -78,11 +78,11 @@ function updateHeader() {
 function checkAuthentication() {
   return fetch("/api/users/profiles/check-auth/")
     .then((response) => {
-      console.log("Response received:", response);
+      // console.log("Response received:", response);
       return response.json();
     })
     .then(async (data) => {
-      console.log("Parsed JSON data:", data);
+      // console.log("Parsed JSON data:", data);
       if (data.authenticated) {
         return true;
       } else {
