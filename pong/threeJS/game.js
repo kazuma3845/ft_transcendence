@@ -9,9 +9,9 @@ import WebSocketModule from './WebSocketModule.js';
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0xfeb47b);
+renderer.setClearColor(0x000000, 0);
 document.body.appendChild(renderer.domElement);
 
 const form = new Form();
@@ -87,16 +87,12 @@ function checkWinCondition() {
 
 
 function showWinScreen(player, message, score1, score2) {
-    const winScreen = document.getElementById('winScreen');
-    const winMessage = document.getElementById('winMessage');
-    winMessage.textContent = `${player} ${message} Final Score: ${score1} - ${score2}`;
+  const winScreen = document.getElementById("winScreen");
+  winScreen.style.display = "block";
 
+  registerScores();
 
-    registerScores();
-    pong.websocket.socket.close();
-
-    winScreen.style.display = 'flex';
-    renderer.setAnimationLoop(null);
+  renderer.setAnimationLoop(null);
 }
 
 function registerScores() {

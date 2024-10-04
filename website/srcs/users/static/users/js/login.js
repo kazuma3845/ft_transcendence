@@ -1,134 +1,136 @@
 function attachLoginFormListener() {
-    document.getElementById('login-button').addEventListener('click', function() {
-        if (window.location.hash ==='#login') {
-            history.pushState(null, null, '#');
-        } else {
-            history.pushState(null, null, '#login');
-            // loadSignupForm();
-        }
-        router();
+  document
+    .getElementById("login-button")
+    .addEventListener("click", function () {
+      if (window.location.hash === "#login") {
+        history.pushState(null, null, "#");
+      } else {
+        history.pushState(null, null, "#login");
+      }
+      router();
     });
 }
 
 function attachLoginFormSubmitListener() {
-    document.getElementById('login-form').addEventListener('submit', function(event) {
-        event.preventDefault();
+  document
+    .getElementById("login-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
 
-        const formData = new FormData(this);
+      const formData = new FormData(this);
 
-        fetch('/api/users/profiles/login/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCSRFToken(),  // Inclut le token CSRF si nécessaire
-            },
-            body: formData
+      fetch("/api/users/profiles/login/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCSRFToken(), // Inclut le token CSRF si nécessaire
+        },
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then(async (data) => {
+          if (data.error) {
+            document.getElementById("error-message").textContent = data.error;
+            document.getElementById("error-message").style.display = "block";
+          } else {
+            await fetchUserInfo();
+            updateUsername();
+            loadModal(
+              "Logged In Successfully",
+              `Welcome back ${userInfo.user.username}, you've been missed 💜`
+            );
+            updateHeader();
+            if (window.location.hash === "#login") window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
+            router(); // Recharge l'interface pour refléter l'état connecté
+          }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById('error-message').textContent = data.error;
-                document.getElementById('error-message').style.display = 'block';
-            } else {
-                // alert('Connexion réussie!');
-				updateHeader();
-                // console.log("window.location.href :", window.location.href)
-                if (window.location.hash === "#login")
-                    window.location.href = '#';  // Redirige ou recharge l'application après la connexion
-                router();  // Recharge l'interface pour refléter l'état connecté
-            }
-        })
-        .catch(error => console.error('Erreur:', error));
+        .catch((error) => console.error("Erreur:", error));
     });
 }
 
 function loadLoginForm() {
-    fetch('/static/users/html/forms/login-form.html')
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('app').innerHTML = html;
-        attachLoginFormSubmitListener();
+  fetch("/static/users/html/forms/login-form.html")
+    .then((response) => response.text())
+    .then((html) => {
+      document.getElementById("app").innerHTML = html;
+      attachLoginFormSubmitListener();
     });
 }
 
 function updateHeader() {
-    fetch('/api/users/profiles/check-auth/')
-        .then(response => response.json())
-        .then(data => {
-            const headerContainer = document.getElementById('nav-main-button');
-            headerContainer.innerHTML = ''; // On vide le conteneur avant de le remplir
+  fetch("/api/users/profiles/check-auth/")
+    .then((response) => response.json())
+    .then((data) => {
+      const login_btn = document.getElementById("nav-bar-login-btn");
+      const menu_btn = document.getElementById("menu-btn");
 
-            if (data.authenticated) {
-                // Si l'utilisateur est authentifié, on affiche le message de bienvenue et le bouton de déconnexion
-                headerContainer.innerHTML = `
-                    <p style="color: white;">Bienvenue, <span style="color: white; font-weight: 800;" >${data.email}</span></p>
-                    <button type="click" id="logout-button" class="a-button grey">Déconnexion</button>
-
-                `;
-				attachLogoutListener();
-                // document.getElementById('logout-form').addEventListener('submit', function(event) {
-                //     event.preventDefault();
-                //     logoutUser();
-                // });
-
-            } else {
-                // Si l'utilisateur n'est pas authentifié, on affiche le bouton d'inscription
-                headerContainer.innerHTML = `
-                    <button id="login-button" class="a-button">Connexion</button>
-                `;
-				attachLoginFormListener();
-            }
-        });
+      if (data.authenticated) {
+        login_btn.style.display = "none";
+        menu_btn.style.display = "block";
+        attachLogoutListener();
+      } else {
+        login_btn.style.display = "block";
+        menu_btn.style.display = "none";
+        attachLoginFormListener();
+      }
+    });
 }
 
 function checkAuthentication() {
-    return fetch('/api/users/profiles/check-auth/')
-        .then(response => {
-            console.log('Response received:', response);  // Log de la réponse brute
-            return response.json();
-        })
-        .then(data => {
-            console.log('Parsed JSON data:', data);  // Log des données JSON analysées
-            if (data.authenticated) {
-                return true;  // Retourne true si l'utilisateur est authentifié
-            } else {
-                return false;  // Retourne false si l'utilisateur n'est pas authentifié
-            }
-        })
-        .catch(error => {
-            console.error('Error in checkAuthentication:', error);  // Log des erreurs
-            return false;  // Retourne false en cas d'erreur
-        });
+  return fetch("/api/users/profiles/check-auth/")
+    .then((response) => {
+      // console.log("Response received:", response);
+      return response.json();
+    })
+    .then(async (data) => {
+      // console.log("Parsed JSON data:", data);
+      if (data.authenticated) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.error("Error in checkAuthentication:", error); // Log des erreurs
+      return false; // Retourne false en cas d'erreur
+    });
 }
 
 // Appelle la fonction pour vérifier l'authentification au chargement de la page
-document.addEventListener('DOMContentLoaded', updateHeader);
+document.addEventListener("DOMContentLoaded", updateHeader);
 
 function attachLogoutListener() {
-	document.getElementById('logout-button').addEventListener('click', function(event) {
-		event.preventDefault();
-		logoutUser();
-	});
+  document
+    .getElementById("logout-button")
+    .addEventListener("click", function (event) {
+      event.preventDefault();
+      logoutUser();
+    });
 
-	// Optionnel : Afficher l'email de l'utilisateur connecté
-	// document.getElementById('user-email').textContent = getUserEmail();  // Assume que cette fonction est définie
+  // Optionnel : Afficher l'email de l'utilisateur connecté
+  // document.getElementById('user-email').textContent = getUserEmail();  // Assume que cette fonction est définie
 }
 
 function logoutUser() {
-    fetch('api/users/logout/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCSRFToken(),  // Inclure le token CSRF dans l'en-tête
-        },
+  fetch("api/users/logout/", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRFToken(), // Inclure le token CSRF dans l'en-tête
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        window.location.href = "#"; // Redirige ou recharge l'application après la déconnexion
+        loadModal(
+          "Logged Out Successfully",
+          `Goodbye ${userInfo.user.username}, you will be missed...💔`
+        );
+        userInfo = null;
+        updateHeader();
+        updateUsername();
+        router(); // Recharge l'interface pour refléter l'état déconnecté
+      } else {
+        alert("Erreur lors de la déconnexion.");
+      }
     })
-    .then(response => {
-        if (response.ok) {
-            // alert('Déconnexion réussie!');
-            window.location.href = '#';  // Redirige ou recharge l'application après la déconnexion
-			updateHeader();
-            router();  // Recharge l'interface pour refléter l'état déconnecté
-        } else {
-            alert('Erreur lors de la déconnexion.');
-        }
-    })
-    .catch(error => console.error('Erreur:', error));
+    .catch((error) => console.error("Erreur:", error));
 }

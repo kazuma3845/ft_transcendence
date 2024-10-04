@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import login, authenticate
@@ -12,6 +13,8 @@ from .serializers import UserProfileSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
+from game.models import GameSession
+from game.serializers import GameSessionSerializer
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -71,10 +74,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'], url_path='info-user')
     def info_user(self, request):
-        # Récupérer l'utilisateur courant
         user = request.user
 
-        # Récupérer le profil utilisateur associé
         try:
             user_profile = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
@@ -85,6 +86,18 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         # Retourner les données sérialisées
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['GET'], url_path='game-sessions')
+    def user_game_sessions(self, request):
+        user = request.user
+        game_sessions = GameSession.objects.filter(Q(player1=user) | Q(player2=user))
+        
+        if not game_sessions.exists():
+            return Response({'message': 'Aucune session trouvée pour cet utilisateur.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = GameSessionSerializer(game_sessions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 @login_required
 def index(request):
     return HttpResponse("Bienvenue dans l'application Users")
@@ -128,3 +141,4 @@ def login_view(request):
             return render(request, 'users/login.html', {'error': 'Nom d\'utilisateur ou mot de passe incorrect'})
     next_url = request.GET.get('next', '')
     return render(request, 'users/login.html', {'next': next_url})
+
