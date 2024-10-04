@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
+
 # Copier les fichiers de dépendances et d'entrée dans le conteneur
 COPY ./requirements.txt /app/
 COPY ./entrypoint.sh /app/

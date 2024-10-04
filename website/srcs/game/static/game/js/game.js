@@ -294,7 +294,6 @@ async function joinGame(sessionId) {
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
     const socket = new WebSocket(`ws://10.18.203.86:8000/ws/game/sessions/${sessionId}/`);
-    const socket = new WebSocket(`ws://10.18.203.86:8000/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");

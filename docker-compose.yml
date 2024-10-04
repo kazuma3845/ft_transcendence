@@ -44,6 +44,18 @@ services:
       - django_network
     env_file:
       - .env
+  
+  nginx:
+    build:
+      context: ./website
+      dockerfile: dockerfile.nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    networks:
+      - django_network
 
   bot:
     container_name: bot
