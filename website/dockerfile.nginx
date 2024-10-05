@@ -1,6 +1,15 @@
 # Utiliser l'image officielle de Nginx basée sur Alpine
 FROM nginx:alpine
 
+# Copier le fichier de configuration Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copier les certificats SSL
 COPY mycert.crt /etc/ssl/certs/mycert.crt
 COPY mykey.key /etc/ssl/private/mykey.key
+
+# Créer le répertoire pour les fichiers statiques
+RUN mkdir -p /app/srcs/transendence/static/
+
+# Copier les fichiers statiques de votre application Django
+COPY ./srcs/staticfiles /app/srcs/transendence/static/

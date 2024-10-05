@@ -33,6 +33,8 @@ services:
       - ./blockchain/srcs:/app/blockchain_v
     ports:
       - "8000:8000"
+    expose:
+      - "8000"
     depends_on:
       blockchain:
         condition: service_healthy
@@ -46,6 +48,7 @@ services:
       - .env
   
   nginx:
+    container_name: nginx
     build:
       context: ./website
       dockerfile: dockerfile.nginx

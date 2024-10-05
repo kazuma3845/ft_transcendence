@@ -16,7 +16,7 @@ export default class WebSocketModule {
         }
 
         // Créer une nouvelle connexion WebSocket pour cette session
-        this.socket = new WebSocket(`ws://10.18.203.86:8000/ws/game/sessions/${sessionId}/`);
+        this.socket = new WebSocket(`ws://10.0.0.7:8000/ws/game/sessions/${sessionId}/`);
 
         // Connexion ouverte
         this.socket.onopen = (e) => {
@@ -76,7 +76,7 @@ export default class WebSocketModule {
     }
 }
 window.addEventListener('message', (event) => {
-    if (event.origin !== 'http://10.18.203.86:8000') {
+    if (event.origin !== 'http://10.0.0.7:8000') {
         return;
     }
     // Récupérer l'ID de la session de jeu
@@ -93,7 +93,7 @@ window.addEventListener('message', (event) => {
 
 //     function startWebSocket(sessionId) {
 //         // Créer une connexion WebSocket
-//         socket = new WebSocket(`ws://10.18.203.86:8000/ws/game/sessions/${sessionId}/`);
+//         socket = new WebSocket(`ws://10.0.0.7:8000/ws/game/sessions/${sessionId}/`);
 
 //         // Connexion ouverte
 //         socket.onopen = function(e) {
@@ -140,7 +140,7 @@ window.addEventListener('message', (event) => {
 //     }
 //     // Écoute le message venant du frontend principal
 //     window.addEventListener('message', (event) => {
-//         if (event.origin !== 'http://10.18.203.86:8000') {
+//         if (event.origin !== 'http://10.0.0.7:8000') {
 //             return;
 //         }
 //         // Récupérer l'ID de la session de jeu
