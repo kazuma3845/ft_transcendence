@@ -119,7 +119,7 @@ export default class Pong {
     async sendDataForID() {
         let sessionId = localStorage.getItem('game_session_id');
         try {
-            const response = await fetch(`http://10.0.0.7:8000/api/game/sessions/${sessionId}/start_single/`, {
+            const response = await fetch(`https://10.0.0.7:8000/api/game/sessions/${sessionId}/start_single/`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -150,7 +150,7 @@ export default class Pong {
             player1_points: this.score[0],
             player2_points: this.score[1],
         };
-        fetch(`http://10.0.0.7:8000/api/game/sessions/${this.id}/update_score/`, {
+        fetch(`https://10.0.0.7:8000/api/game/sessions/${this.id}/update_score/`, {
             method: 'POST',
             credentials: 'include',
             headers: {

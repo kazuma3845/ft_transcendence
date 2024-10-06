@@ -69,35 +69,6 @@ function attachGameFormSubmitListener() {
     });
 }
 
-// function createGameSession() {
-//     fetch('/api/game/sessions/', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
-//         },
-//         body: JSON.stringify({
-//             // Vous pouvez passer des données supplémentaires ici si nécessaire
-//         })
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();  // Convertir la réponse en JSON
-//     })
-//     .then(data => {
-//         console.log('Game session created:', data);
-//         const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
-//         if (sessionId) {
-//             startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
-//         }
-//     })
-//     .catch(error => {
-//         console.error('There was a problem with the fetch operation:', error);
-//     });
-// }
-
 function loadGame() {
   return new Promise((resolve, reject) => {
     fetch("/static/game/html/game.html")
@@ -273,7 +244,7 @@ async function joinGame(sessionId) {
             const iframe = document.querySelector('iframe');
             if (iframe) {
                 iframe.onload = function() {
-                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, `http://10.0.0.7:8080`);
+                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, `https://10.0.0.7:8080`);
                 };
             } else {
                 console.error('Iframe not found');
@@ -293,7 +264,7 @@ async function joinGame(sessionId) {
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`ws://10.0.0.7:8000/ws/game/sessions/${sessionId}/`);
+    const socket = new WebSocket(`wss://10.0.0.7:8000/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");
