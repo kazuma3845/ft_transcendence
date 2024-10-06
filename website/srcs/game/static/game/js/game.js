@@ -47,7 +47,7 @@ function attachGameFormSubmitListener() {
                     const iframe = document.querySelector('iframe');
                     if (iframe) {
                         iframe.onload = function() {
-                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, '*');
+                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, "https://10.0.0.7:8080");
                         };
                     } else {
                         console.error('Iframe not found');
@@ -244,7 +244,7 @@ async function joinGame(sessionId) {
             const iframe = document.querySelector('iframe');
             if (iframe) {
                 iframe.onload = function() {
-                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, `https://10.0.0.7:8080`);
+                    iframe.contentWindow.postMessage({ gameSessionId: sessionId }, `https://transcendence/pong/`);
                 };
             } else {
                 console.error('Iframe not found');
