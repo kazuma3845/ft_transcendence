@@ -5,52 +5,6 @@
 // 5.	sendMessage : Envoie un message via WebSocket.
 // 6.	displayNewMessage : Affiche un nouveau message dans la zone de chat.
 
-
-// Bloquage
-
-let blockedUsers;
-
-
-function updateBlockedUsers() {
-    fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
-    .then(response => response.json())
-    .then(data => {
-        blockedUsers = data.blocked_users;  // Stocker les utilisateurs bloqués dans une variable
-    })
-    .catch(error => console.error('Erreur lors de la récupération des utilisateurs bloqués:', error));
-}
-
-
-function toggleBlockUser() {
-    const blockButton = document.getElementById('block-user-btn');
-
-    // Appeler l'API pour bloquer/débloquer l'utilisateur
-    fetch(`/api/messaging/conversations/${activeConversationId}/toggle-block/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()  // Assure-toi de bien gérer le token CSRF
-        },
-        body: JSON.stringify({
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.blocked) {
-            blockButton.textContent = 'Débloquer';
-            blockButton.classList.remove('btn-danger');
-            blockButton.classList.add('btn-secondary');
-        } else {
-            blockButton.textContent = 'Bloquer';
-            blockButton.classList.remove('btn-secondary');
-            blockButton.classList.add('btn-danger');
-        }
-        updateBlockedUsers();
-        console.log(`Ils sont parmis ${blockedUsers}`);
-    })
-    .catch(error => console.error('Erreur lors du changement de l\'état du blocage:', error));
-}
-
 // Fonction pour afficher la modal
 let selectedUserId = null;
 
@@ -238,8 +192,8 @@ function loadMessages(conversationId) {
         return;
     }
 
-    // Requête pour obtenir les participants de la conversation
-    fetch(`/api/messaging/conversations/${conversationId}/`)
+    // Requête pour obtenir les participants
+    fetch(`/api/messaging/conversations/${conversationId}/`)  // API pour récupérer les participants
         .then(response => response.json())
         .then(conversation => {
             const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
@@ -253,7 +207,7 @@ function loadMessages(conversationId) {
             chatWindow.style.display = 'block';
 
             // Requête pour obtenir les messages
-            fetch(`/api/messaging/conversations/${conversationId}/messages/`)
+            fetch(`/api/messaging/conversations/${conversationId}/messages/`)  // API pour récupérer les messages
                 .then(response => response.json())
                 .then(messages => {
                     const messagesList = document.getElementById('chat-messages');
@@ -280,24 +234,6 @@ function loadMessages(conversationId) {
                     messagesList.scrollTop = messagesList.scrollHeight;
                 })
                 .catch(error => console.error('Erreur lors de la récupération des messages:', error));
-
-            // Requête pour vérifier l'état de blocage
-            fetch(`/api/messaging/conversations/${conversationId}/check-block-status/`)
-                .then(response => response.json())
-                .then(data => {
-                    const blockButton = document.getElementById('block-user-btn');
-                    if (data.blocked) {
-                        blockButton.textContent = 'Débloquer';
-                        blockButton.classList.remove('btn-danger');
-                        blockButton.classList.add('btn-secondary');
-                    } else {
-                        blockButton.textContent = 'Bloquer';
-                        blockButton.classList.remove('btn-secondary');
-                        blockButton.classList.add('btn-danger');
-                    }
-                    blockButton.style.display = 'inline-block';  // Afficher le bouton
-                })
-                .catch(error => console.error('Erreur lors de la récupération de l\'état de blocage:', error));
         })
         .catch(error => console.error('Erreur lors de la récupération des participants:', error));
 }
@@ -353,20 +289,14 @@ function connectWebSocket() {
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
+
         // Vérifier le type du message reçu
         if (data.type === "upload_message") {
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
-            const messageSender = data.content.sender;  // Le nom d'utilisateur de l'expéditeur
-
-            // Vérifier si le message provient d'un utilisateur bloqué
-            if (blockedUsers.includes(messageSender)) {
-                console.log(`Message de ${messageSender} bloqué parmis ${blockedUsers}`);
-                return;  // Ne pas traiter ce message
-            }
             // const message = data.content.message;  // Récupérer le contenu du message
             // Afficher le message dans la boîte de la conversation correspondante
 			console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
-			if (activeConversationId === conversationId)
+			if (activeConversationId === data.content.conversation_id)
 				displayNewMessage(data.content);
 			// loadMessages(conversationId);
         } else {
@@ -432,7 +362,6 @@ function setupChatInterface(socket) {
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Connexion WebSocket
     const socket = connectWebSocket();
-    updateBlockedUsers();
 
     // 2. Configuration de l'interface de chat
     // setupChatInterface(socket);

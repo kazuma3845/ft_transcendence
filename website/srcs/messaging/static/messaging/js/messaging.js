@@ -5,10 +5,65 @@
 // 5.	sendMessage : Envoie un message via WebSocket.
 // 6.	displayNewMessage : Affiche un nouveau message dans la zone de chat.
 
+
+// Bloquage
+
+let blockedUsers;
+
+
+function updateBlockedUsers() {
+    fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
+    .then(response => response.json())
+    .then(data => {
+        blockedUsers = data.blocked_users;  // Stocker les utilisateurs bloqués dans une variable
+    })
+    .catch(error => console.error('Erreur lors de la récupération des utilisateurs bloqués:', error));
+}
+
+
+function toggleBlockUser() {
+    const blockButton = document.getElementById('block-user-btn');
+
+    // Appeler l'API pour bloquer/débloquer l'utilisateur
+    fetch(`/api/messaging/conversations/${activeConversationId}/toggle-block/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()  // Assure-toi de bien gérer le token CSRF
+        },
+        body: JSON.stringify({
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.blocked) {
+            blockButton.textContent = 'Débloquer';
+            blockButton.classList.remove('btn-danger');
+            blockButton.classList.add('btn-secondary');
+        } else {
+            blockButton.textContent = 'Bloquer';
+            blockButton.classList.remove('btn-secondary');
+            blockButton.classList.add('btn-danger');
+        }
+        updateBlockedUsers();
+        console.log(`Ils sont parmis ${blockedUsers}`);
+    })
+    .catch(error => console.error('Erreur lors du changement de l\'état du blocage:', error));
+}
+
 // Fonction pour afficher la modal
+let selectedUserId = null;
+
 function openSearchUserModal() {
+    selectedUserId = null;
+    const button = document.getElementById('start-conversation-btn');
+    button.style.display = 'none';  // Rendre le bouton visible
     const modal = document.getElementById('newConversationModal');
     modal.style.display = 'flex';  // Afficher la modal en mode flex pour centrer le contenu
+    const input = document.getElementById('searchUserInput');  // Sélectionne l'input (en supposant que l'id est 'searchUserInput')
+    input.value = '';
+    const resultsList = document.getElementById('searchResults');
+    resultsList.innerHTML = '';  // Réinitialiser les résultats
 }
 
 // Fonction pour fermer la modal
@@ -19,7 +74,6 @@ function closeSearchUserModal() {
 
 // Fermer la modal si l'utilisateur clique en dehors du contenu
 window.onclick = function(event) {
-    console.log("ourter")
     const modal = document.getElementById('newConversationModal');
     if (event.target === modal) {
         modal.style.display = 'none';
@@ -40,7 +94,7 @@ function searchUser() {
                 if (user.username !== currentUser) {  // Exclure l'utilisateur actuel
                     const userItem = document.createElement('li');
                     userItem.textContent = user.username;
-                    userItem.onclick = () => selectUser(user.id, user.username);  // Sélectionner un utilisateur
+                    userItem.onclick = () => selectUser(user.username);  // Sélectionner un utilisateur
                     resultsList.appendChild(userItem);
                 }
             });
@@ -73,6 +127,8 @@ function startConversation() {
         // Charger les conversations et fermer la modal
         connectWebSocket();
         loadConversations();
+        console.log(` data.id :${data.id}`);
+        loadMessages(data.id);
         closeSearchUserModal();
     })
     .catch(error => {
@@ -81,12 +137,16 @@ function startConversation() {
 }
 
 // Fonction pour sélectionner un utilisateur et démarrer la conversation
-let selectedUserId = null;
 
-function selectUser(userId, username) {
+function selectUser(username) {
     selectedUserId = username;  // Stocke l'ID de l'utilisateur sélectionné
     console.log(`Utilisateur sélectionné : ${username}`);
+    // Afficher le bouton
+    const button = document.getElementById('start-conversation-btn');
+    button.style.display = 'block';  // Rendre le bouton visible
 
+    // Mettre à jour le texte du bouton avec le nom d'utilisateur sélectionné
+    button.textContent = `Démarrer la conversation avec ${username}`;
     // Appeler la fonction pour démarrer la conversation avec l'utilisateur sélectionné
     // startConversation(selectedUserId);
 }
@@ -137,6 +197,9 @@ function loadChat() {
 }
 
 let activeConversationId = 0;  // Variable globale pour stocker l'ID de la conversation active
+function getActiveConversationId() {
+    return activeConversationId;  // Retourner l'ID de la conversation active
+}
 
 function loadConversations() {
     fetch('/api/messaging/conversations/')
@@ -147,13 +210,16 @@ function loadConversations() {
 
         conversations.forEach(conversation => {
             const convItem = document.createElement('div');
+            const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
+            // Si un seul participant, l'afficher seul, sinon les séparer par des '/'
+            const participantsText = otherParticipants.join(', ');
             convItem.classList.add('user-conversation', 'bg-primary', 'p-2', 'mb-2', 'rounded');
-            convItem.textContent = `Conversation avec ${conversation.participants}`;
+            convItem.textContent = `Conversation avec ${participantsText}`;
 
             // Ajouter un event listener pour charger les messages et définir la conversation active
             convItem.addEventListener('click', () => {
-                activeConversationId = conversation.id;  // Stocker l'ID de la conversation active
                 loadMessages(conversation.id);  // Charger les messages de cette conversation
+                  // Stocker l'ID de la conversation active
                 // openWebSocket(conversation.id);  // Ouvrir la WebSocket pour cette conversation
             });
 
@@ -162,39 +228,78 @@ function loadConversations() {
     });
 }
 
-function getActiveConversationId() {
-    return activeConversationId;  // Retourner l'ID de la conversation active
-}
-
 function loadMessages(conversationId) {
-    fetch(`/api/messaging/conversations/${conversationId}/messages/`)  // API pour récupérer les messages
-    .then(response => response.json())
-    .then(messages => {
-        const messagesList = document.getElementById('chat-messages');
-        messagesList.innerHTML = '';  // Réinitialiser la zone des messages
+    const chatWindow = document.getElementById('chat_window');
+    console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
 
-        messages.forEach(message => {
-            const messageItem = document.createElement('div');
+    if (activeConversationId === conversationId) {
+        chatWindow.style.display = 'none';
+        activeConversationId = null;
+        return;
+    }
 
-            // Vérifier si le message appartient à l'utilisateur actuel
-            const isUserMessage = message.sender === currentUser;
+    // Requête pour obtenir les participants de la conversation
+    fetch(`/api/messaging/conversations/${conversationId}/`)
+        .then(response => response.json())
+        .then(conversation => {
+            const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
+            const participantsText = otherParticipants.join(', ');
 
-            // Ajout des classes pour l'alignement à droite ou à gauche
-            messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
+            // Met à jour le titre de la conversation
+            const chatTitle = document.getElementById('chat_title');
+            chatTitle.textContent = `Discussion avec ${participantsText}`;
 
-            const messageContent = document.createElement('div');
+            // Rendre visible la fenêtre de chat
+            chatWindow.style.display = 'block';
 
-            // Styles des messages : vert pour les messages de l'utilisateur, autre pour les autres
-            messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
-            messageContent.textContent = message.content;
+            // Requête pour obtenir les messages
+            fetch(`/api/messaging/conversations/${conversationId}/messages/`)
+                .then(response => response.json())
+                .then(messages => {
+                    const messagesList = document.getElementById('chat-messages');
+                    messagesList.innerHTML = '';  // Réinitialiser la zone des messages
 
-            messageItem.appendChild(messageContent);
-            messagesList.appendChild(messageItem);
-        });
+                    messages.forEach(message => {
+                        const messageItem = document.createElement('div');
+                        const isUserMessage = message.sender === currentUser;
 
-        // Scroller en bas de la zone de messages pour voir les nouveaux messages
-        messagesList.scrollTop = messagesList.scrollHeight;
-    });
+                        // Ajout des classes pour alignement
+                        messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
+
+                        const messageContent = document.createElement('div');
+                        messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
+                        messageContent.textContent = message.content;
+
+                        messageItem.appendChild(messageContent);
+                        messagesList.appendChild(messageItem);
+                    });
+
+                    activeConversationId = conversationId;
+
+                    // Scroller en bas de la zone de messages
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                })
+                .catch(error => console.error('Erreur lors de la récupération des messages:', error));
+
+            // Requête pour vérifier l'état de blocage
+            fetch(`/api/messaging/conversations/${conversationId}/check-block-status/`)
+                .then(response => response.json())
+                .then(data => {
+                    const blockButton = document.getElementById('block-user-btn');
+                    if (data.blocked) {
+                        blockButton.textContent = 'Débloquer';
+                        blockButton.classList.remove('btn-danger');
+                        blockButton.classList.add('btn-secondary');
+                    } else {
+                        blockButton.textContent = 'Bloquer';
+                        blockButton.classList.remove('btn-secondary');
+                        blockButton.classList.add('btn-danger');
+                    }
+                    blockButton.style.display = 'inline-block';  // Afficher le bouton
+                })
+                .catch(error => console.error('Erreur lors de la récupération de l\'état de blocage:', error));
+        })
+        .catch(error => console.error('Erreur lors de la récupération des participants:', error));
 }
 
 function displayNewMessage(data) {
@@ -248,14 +353,20 @@ function connectWebSocket() {
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-
         // Vérifier le type du message reçu
         if (data.type === "upload_message") {
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
+            const messageSender = data.content.sender;  // Le nom d'utilisateur de l'expéditeur
+
+            // Vérifier si le message provient d'un utilisateur bloqué
+            if (blockedUsers.includes(messageSender)) {
+                console.log(`Message de ${messageSender} bloqué parmis ${blockedUsers}`);
+                return;  // Ne pas traiter ce message
+            }
             // const message = data.content.message;  // Récupérer le contenu du message
             // Afficher le message dans la boîte de la conversation correspondante
 			console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
-			if (activeConversationId === data.content.conversation_id)
+			if (activeConversationId === conversationId)
 				displayNewMessage(data.content);
 			// loadMessages(conversationId);
         } else {
@@ -321,6 +432,7 @@ function setupChatInterface(socket) {
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Connexion WebSocket
     const socket = connectWebSocket();
+    updateBlockedUsers();
 
     // 2. Configuration de l'interface de chat
     // setupChatInterface(socket);

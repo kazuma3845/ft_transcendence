@@ -45,10 +45,9 @@ function toggleBlockUser() {
             blockButton.classList.remove('btn-secondary');
             blockButton.classList.add('btn-danger');
         }
-        updateBlockedUsers();
-        console.log(`Ils sont parmis ${blockedUsers}`);
     })
     .catch(error => console.error('Erreur lors du changement de l\'état du blocage:', error));
+    updateBlockedUsers();
 }
 
 // Fonction pour afficher la modal
@@ -360,7 +359,7 @@ function connectWebSocket() {
 
             // Vérifier si le message provient d'un utilisateur bloqué
             if (blockedUsers.includes(messageSender)) {
-                console.log(`Message de ${messageSender} bloqué parmis ${blockedUsers}`);
+                console.log(`Message de ${messageSender} bloqué.`);
                 return;  // Ne pas traiter ce message
             }
             // const message = data.content.message;  // Récupérer le contenu du message

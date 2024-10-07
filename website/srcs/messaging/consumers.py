@@ -119,40 +119,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_content = event['message']
         sender_username = event['sender']
 
-        # UserProfile = apps.get_model('users', 'UserProfile')
-        # Conversation = apps.get_model('messaging', 'Conversation')
-        # Message = apps.get_model('messaging', 'Message')
-        # User = get_user_model()  # Assurer la compatibilité avec les User personnalisés
-
-        # # Récupérer l'utilisateur User à partir de son nom d'utilisateur
-        # try:
-        #     sender_user = await database_sync_to_async(User.objects.get)(username=sender_username)
-        # except User.DoesNotExist:
-        #     print(f"User {sender_username} does not exist")
-        #     return  # Si l'utilisateur n'existe pas, on arrête
-
-        # # Récupérer le profil UserProfile à partir de l'utilisateur
-        # try:
-        #     sender_profile = await database_sync_to_async(UserProfile.objects.get)(user=sender_user)
-        # except UserProfile.DoesNotExist:
-        #     print(f"UserProfile for user {sender_username} does not exist")
-        #     return
-
-        # # Récupérer la conversation
-        # try:
-        #     conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
-        # except Conversation.DoesNotExist:
-        #     print(f"Conversation {conversation_id} does not exist")
-        #     return
-
-        # # Créer et sauvegarder le nouveau message
-        # new_message = await database_sync_to_async(Message.objects.create)(
-        #     conversation=conversation,
-        #     sender=sender_profile,
-        #     content=message_content
-        # )
-        # print(f"NEW CREATION CHAT")
-        # Envoyer le message au client WebSocket
         await self.send(text_data=json.dumps({
             'type': 'upload_message',
             'content': {
@@ -161,21 +127,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'sender': sender_username
             }
         }))
-
-    # async def chat_message(self, event):
-    #     conversation_id = event['conversation_id']
-    #     message_content = event['message']
-    #     sender_username = event['sender']
-
-    #     # Envoyer le message à tous les clients WebSocket connectés
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'chat_message',
-    #         'content': {
-    #             'conversation_id': conversation_id,
-    #             'message': message_content,
-    #             'sender': sender_username
-    #         }
-    #     }))
 
     # Méthodes auxiliaires pour gérer les requêtes synchrone en mode async
     @database_sync_to_async

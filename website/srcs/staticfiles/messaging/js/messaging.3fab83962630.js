@@ -7,25 +7,12 @@
 
 
 // Bloquage
-
-let blockedUsers;
-
-
-function updateBlockedUsers() {
-    fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
-    .then(response => response.json())
-    .then(data => {
-        blockedUsers = data.blocked_users;  // Stocker les utilisateurs bloqués dans une variable
-    })
-    .catch(error => console.error('Erreur lors de la récupération des utilisateurs bloqués:', error));
-}
-
-
 function toggleBlockUser() {
+    const conversationId = activeConversationId;  // Obtenir l'ID de la conversation active
     const blockButton = document.getElementById('block-user-btn');
 
     // Appeler l'API pour bloquer/débloquer l'utilisateur
-    fetch(`/api/messaging/conversations/${activeConversationId}/toggle-block/`, {
+    fetch(`/api/messaging/conversations/${conversationId}/toggle-block/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -45,8 +32,6 @@ function toggleBlockUser() {
             blockButton.classList.remove('btn-secondary');
             blockButton.classList.add('btn-danger');
         }
-        updateBlockedUsers();
-        console.log(`Ils sont parmis ${blockedUsers}`);
     })
     .catch(error => console.error('Erreur lors du changement de l\'état du blocage:', error));
 }
@@ -353,20 +338,14 @@ function connectWebSocket() {
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
+
         // Vérifier le type du message reçu
         if (data.type === "upload_message") {
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
-            const messageSender = data.content.sender;  // Le nom d'utilisateur de l'expéditeur
-
-            // Vérifier si le message provient d'un utilisateur bloqué
-            if (blockedUsers.includes(messageSender)) {
-                console.log(`Message de ${messageSender} bloqué parmis ${blockedUsers}`);
-                return;  // Ne pas traiter ce message
-            }
             // const message = data.content.message;  // Récupérer le contenu du message
             // Afficher le message dans la boîte de la conversation correspondante
 			console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
-			if (activeConversationId === conversationId)
+			if (activeConversationId === data.content.conversation_id)
 				displayNewMessage(data.content);
 			// loadMessages(conversationId);
         } else {
@@ -432,7 +411,6 @@ function setupChatInterface(socket) {
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Connexion WebSocket
     const socket = connectWebSocket();
-    updateBlockedUsers();
 
     // 2. Configuration de l'interface de chat
     // setupChatInterface(socket);

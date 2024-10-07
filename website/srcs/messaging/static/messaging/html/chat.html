@@ -12,20 +12,12 @@
 			<!-- Liste des discussions existantes ici -->
 		</div>
 	</div>
-	<!-- Modal structure -->
-	<div id="newConversationModal" class="modal">
-		<div class="modal-content">
-			<span class="close" onclick="closeSearchUserModal()">&times;</span> <!-- Bouton pour fermer la modal -->
-			<h3>Nouvelle Discussion</h3>
-			<input type="text" id="searchUserInput" placeholder="Rechercher un utilisateur..." oninput="searchUser()">
-			<ul id="searchResults"></ul> <!-- Affichage des résultats de la recherche -->
-			<button class="btn btn-primary" onclick="startConversation()">Démarrer la conversation</button>
-		</div>
-	</div>
-	  <!-- Zone de chat active (gauche) -->
-	  <div class="col-9 bg-lightblue p-3">
-		<div class="chat-header mb-3">
-		  <h5>Discussion avec User #</h5>
+	<!-- Zone de chat active (gauche) -->
+	<div id="chat_window" class="col-9 bg-lightblue p-3" style="display: none;">
+		<div class="chat-header mb-3 d-flex justify-content-between align-items-center">
+			<h5 id="chat_title">Discussion avec </h5>
+		  <button id="block-user-btn" class="btn btn-danger" onclick="toggleBlockUser()" style="display: none;">Bloquer</button>
+
 		</div>
 
 		<div class="chat-messages mb-3" id="chat-messages" style="height: 60vh; overflow-y: auto;">
@@ -41,7 +33,17 @@
 			</div>
 		  </div>
 		</div>
-	  </div>
+	</div>
 
 	</div>
-  </div>
+</div>
+	<!-- Modal structure -->
+	<div id="newConversationModal" class="modal">
+		<div class="modal-content">
+			<span class="close" onclick="closeSearchUserModal()">&times;</span> <!-- Bouton pour fermer la modal -->
+			<h3>Nouvelle Discussion</h3>
+			<input type="text" id="searchUserInput" placeholder="Rechercher un utilisateur..." oninput="searchUser()">
+			<ul id="searchResults"></ul> <!-- Affichage des résultats de la recherche -->
+			<button id="start-conversation-btn" class="btn btn-primary" onclick="startConversation()" style="display: none;">Démarrer la conversation</button>
+		</div>
+	</div>

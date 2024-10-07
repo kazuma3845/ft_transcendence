@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 
+
 # ViewSet pour les conversations
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -31,17 +32,14 @@ class ConversationViewSet(viewsets.ModelViewSet):
     # Action personnalisée pour créer une conversation
     @action(detail=False, methods=['post'], url_path='create_conversation')
     def create_conversation(self, request):
-        print("Log error Step to debug")
         # Récupérer les IDs des participants envoyés dans le corps de la requête
         participant_ids = request.data.get('participants', [])
         if not participant_ids:
             return Response({'error': 'La liste des participants est requise'}, status=status.HTTP_400_BAD_REQUEST)
-        print("2 Log error Step to debug")
         # Récupérer les profils des participants
         participants = []
         for participant_id in participant_ids:
             try:
-                print(f"Tentative de récupération du participant avec le username: {participant_id}")
                 # Cherche le UserProfile en fonction du username du user
                 participant_profile = UserProfile.objects.get(user__username=participant_id)
                 participants.append(participant_profile)
@@ -57,15 +55,72 @@ class ConversationViewSet(viewsets.ModelViewSet):
         for conversation in conversations:
             conversation_participants = set(conversation.participants.all())
             if conversation_participants == set(participants):  # Vérifier si les deux ensembles sont identiques
-                return Response({'message': 'Conversation déjà existante', 'conversation_id': conversation.id}, status=status.HTTP_200_OK)
+                return Response({'message': 'Conversation déjà existante', 'id': conversation.id}, status=status.HTTP_200_OK)
         # Créer une nouvelle conversation
         conversation = Conversation.objects.create()
         conversation.participants.add(*participants)  # Ajouter les participants à la conversation
         conversation.save()
-        print("5 Log error Step to debug")
         # Sérialiser la nouvelle conversation et la renvoyer
         serializer = self.get_serializer(conversation)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['post'], url_path='toggle-block')
+    def toggle_block(self, request, pk=None):
+        print(f"Test du BLOCKAGE");
+        try:
+            # Utiliser self.get_object() pour récupérer la conversation liée au pk de l'URL
+            conversation = self.get_object()  # Récupérer la conversation avec l'ID donné
+            blocker_profile = request.user.userprofile  # Profil de l'utilisateur qui bloque
+
+            # Récupérer tous les participants de la conversation, sauf l'utilisateur courant
+            participants = conversation.participants.exclude(id=blocker_profile.id)
+
+            # Parcourir chaque participant pour bloquer ou débloquer
+            for participant_profile in participants:
+                blocked = BlockedUser.objects.filter(blocker=blocker_profile, blocked=participant_profile)
+
+                if blocked.exists():
+                    # Si l'utilisateur est déjà bloqué, le débloquer
+                    blocked.delete()
+                    blockedStatus = False;
+                    message = f"{participant_profile.user.username} a été débloqué."
+                else:
+                    # Si l'utilisateur n'est pas encore bloqué, le bloquer
+                    BlockedUser.objects.create(blocker=blocker_profile, blocked=participant_profile)
+                    blockedStatus = True;
+                    message = f"{participant_profile.user.username} a été bloqué."
+            return Response({'blocked': blockedStatus, 'message': message})
+
+        except Conversation.DoesNotExist:
+            return Response({'error': 'Conversation non trouvée'}, status=404)
+
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Utilisateur non trouvé'}, status=404)
+
+    @action(detail=True, methods=['get'], url_path='check-block-status')
+    def check_block_status(self, request, pk=None):
+        conversation = self.get_object()
+        blocker_profile = request.user.userprofile
+        participants = conversation.participants.exclude(id=blocker_profile.id)
+
+        # Vérifier si un des participants est bloqué
+        for participant_profile in participants:
+            blocked = BlockedUser.objects.filter(blocker=blocker_profile, blocked=participant_profile).exists()
+            if blocked:
+                return Response({'blocked': True})
+
+        return Response({'blocked': False})
+
+    @action(detail=False, methods=['get'], url_path='blocked-users')
+    def get_blocked_users(self, request):
+        # Récupérer le profil utilisateur de l'utilisateur connecté
+        blocker_profile = request.user.userprofile
+
+        # Récupérer tous les utilisateurs que l'utilisateur connecté a bloqués
+        blocked_users = BlockedUser.objects.filter(blocker=blocker_profile).values_list('blocked__user__username', flat=True)
+
+        # Retourner la liste des noms d'utilisateur bloqués
+        return Response({'blocked_users': list(blocked_users)})
 
 # ViewSet pour les messages
 class MessageViewSet(viewsets.ModelViewSet):
