@@ -149,7 +149,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     'http://localhost:8000',
     f"https://{config('IP_LOCAL')}:8000",
-    f"https://{config('IP_LOCAL')}:8080",
+    f"http://{config('IP_LOCAL')}:8080",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -159,7 +159,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     'http://localhost:8000',
     f"https://{config('IP_LOCAL')}:8000",
-    f"https://{config('IP_LOCAL')}:8080",
+    f"http://{config('IP_LOCAL')}:8080",
 ]
 
 # Static files (CSS, JavaScript, Images)

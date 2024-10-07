@@ -47,7 +47,7 @@ function attachGameFormSubmitListener() {
                     const iframe = document.querySelector('iframe');
                     if (iframe) {
                         iframe.onload = function() {
-                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, "https://10.0.0.7:8080");
+                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, "https://transcendence/pong/");
                         };
                     } else {
                         console.error('Iframe not found');
@@ -264,7 +264,7 @@ async function joinGame(sessionId) {
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`wss://10.0.0.7:8000/ws/game/sessions/${sessionId}/`);
+    const socket = new WebSocket(`wss://transcendence/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");
