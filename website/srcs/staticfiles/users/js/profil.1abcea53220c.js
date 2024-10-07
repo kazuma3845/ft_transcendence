@@ -1,37 +1,16 @@
 let userInfo = null;
-let externUserInfo = null;
 
 async function fetchUserStats() {
-  fetch("/api/users/profiles/game-sessions/")
-    .then((response) => response.json())
-    .then((games) => {
-      games.forEach((game) => {
-        console.log(game.id);
-        fetch(`/api/blockchain/get_score/?game_session_id=${game.id}`)
-          .then((blockchain_response) => blockchain_response.json())
-          .then((results) => {
-            console.log(results);
-          });
-      });
-    })
-    .catch((error) => {
-      console.error(
-        "Erreur lors de la recuperation des sessions de jeu:",
-        error
-      );
-    });
-
-  //127.0.0.1:8000/api/blockchain/get_score/?game_session_id=1
-  // http: return {
-  //   win: 12,
-  //   loss: 5,
-  //   nemesis: "Martin",
-  //   winStreak: 5,
-  //   matchHistory: [
-  //     { opponent: "Martin", result: "Win", date: "2024-10-01" },
-  //     { opponent: "Alice", result: "Loss", date: "2024-09-28" },
-  //   ],
-  // };
+  return {
+    win: 12,
+    loss: 5,
+    nemesis: "Martin",
+    winStreak: 2,
+    matchHistory: [
+      { opponent: "Martin", result: "Win", date: "2024-10-01" },
+      { opponent: "Alice", result: "Loss", date: "2024-09-28" },
+    ],
+  };
 }
 
 // Fonction pour récupérer les infos utilisateur
@@ -40,6 +19,7 @@ async function fetchUserInfo() {
     const response = await fetch("/api/users/profiles/info-user");
     const data = await response.json();
     userInfo = data;
+
     userInfo.stats = await fetchUserStats();
   }
   return userInfo;
@@ -110,7 +90,7 @@ function createWinStreakBlock() {
 }
 
 function createMatchHistoryBlock() {
-  const matchHistory = userInfo.stats.matchHistory || [];
+  const matchHistory = userInfo.stats.matchHistory || []; 
   const historyContainer = document.getElementById("user-match-history");
 
   historyContainer.innerHTML = "<h3>Match History</h3>";
@@ -119,7 +99,7 @@ function createMatchHistoryBlock() {
     historyContainer.innerHTML += "<p>No matches played yet.</p>";
   } else {
     const table = document.createElement("table");
-    table.classList.add("table", "table-striped");
+    table.classList.add("table", "table-striped"); 
 
     const headerRow = table.insertRow();
     headerRow.innerHTML = `
@@ -150,7 +130,7 @@ function createNemesisBlock() {
 
   nemesisAvatar.src = userInfo.nemesis_avatar_url
     ? userInfo.nemesis_avatar_url
-    : "/static/users/avatars/default_nemesis.png";
+    : "/static/users/avatars/default_nemesis.png"; 
 }
 
 // Fonction pour créer le bloc WinRate
