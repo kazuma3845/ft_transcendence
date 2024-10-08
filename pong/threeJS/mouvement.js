@@ -10,6 +10,7 @@ export default class Pong {
         this.lastExecTime = 1
         this.score = [0, 0]
 
+        this.enter = false;
         this.ballPaused = true;
         this.keysPressed = {};
 
@@ -25,6 +26,17 @@ export default class Pong {
 
     handleKeyUp(event) {
         this.keysPressed[event.key] = false;
+    }
+    
+    handleKeyPress(event) {
+        if (event.key === 'Enter' && this.ballPaused) {
+            this.enter = true;
+            this.ballPaused = false;
+            if (this.botActivated) {
+                if (this.form.ball.position.x < 0)
+                    this.bot.handleBallHit();
+            }
+        }
     }
 
     deplacerRaquette() {
@@ -60,61 +72,52 @@ export default class Pong {
             left_up: this.left_up,
             right_back: this.right_back,
             right_up: this.right_up,
-            ballPaused: this.ballPaused
+            ballPaused: this.ballPaused,
+            enter: this.enter
         };
+        // console.log("First UPDATE: ", this.ballPaused, this.score)
         this.websocket.sendMessage("update_position", key_position);
+        this.enter = false;
     }
 
-    handleKeyPress(event) {
-        let key_launch = {
-            ballPaused: false,
-        };
 
-        if (event.key === 'Enter' && this.ballPaused) {
-            this.websocket.sendMessage("launch_ball", key_launch);
-            if (this.botActivated) {
-                if (this.form.ball.position.x < 0)
-                    this.bot.handleBallHit();
-            }
+    updatePosition(data)
+    {
+        // console.log("LAST UPDATE: ", data.content.ballPaused, data.content.score)
+        this.ballPaused = data.content.ballPaused
+        if (this.ballPaused) {
+            this.form.ball.rotation.x += 0
+            this.form.ball.rotation.y += 0
         }
+        else {
+            this.form.ball.rotation.x += -data.content.rotatey * 0.1
+            this.form.ball.rotation.y += data.content.rotatex * 0.1
+        }
+        if (this.powerActive) {
+            this.power.bonus.position.x = data.content.bonusPosx;
+            this.power.bonus.position.y = data.content.bonusPosy;
+            this.form.paddle_left_size[1] = data.content.bonuspadleLsize;
+            this.form.paddle_right_size[1] = data.content.bonuspadleRsize;
+            this.power.updatePaddleGeometry(this.form.paddleLeft, this.form.paddle_left_size);
+            this.power.updatePaddleGeometry(this.form.paddleRight, this.form.paddle_right_size);
+        }
+        if (this.botActivated) {
+            this.ball_angle = data.content.ball_angle;
+            if (data.content.replaceBot)
+                this.bot.replaceBot();
+            if (data.content.botStartGame)
+                // this.enter = true;
+                this.bot.startGame();
+            if (data.content.handleBallHit)
+                this.bot.handleBallHit();
+        }
+        this.score = data.content.score;
+        this.form.paddleRight.position.y = data.content.player_right_pos;
+        this.form.paddleLeft.position.y = data.content.player_left_pos;
+        this.form.ball.position.x = data.content.posx;
+        this.form.ball.position.y = data.content.posy;
+        this.sendDataToScore()
     }
-
-        updatePosition(data)
-        {
-            // console.log("LAST UPDATE: ", data.content)
-            if (this.ballPaused) {
-                this.form.ball.rotation.x += 0
-                this.form.ball.rotation.y += 0
-            }
-            else {
-                this.form.ball.rotation.x += -data.content.rotatey * 0.1
-                this.form.ball.rotation.y += data.content.rotatex * 0.1
-            }
-            if (this.powerActive) {
-                this.power.bonus.position.x = data.content.bonusPosx;
-                this.power.bonus.position.y = data.content.bonusPosy;
-                this.form.paddle_left_size[1] = data.content.bonuspadleLsize;
-                this.form.paddle_right_size[1] = data.content.bonuspadleRsize;
-                this.power.updatePaddleGeometry(this.form.paddleLeft, this.form.paddle_left_size);
-                this.power.updatePaddleGeometry(this.form.paddleRight, this.form.paddle_right_size);
-            }
-            if (this.botActivated) {
-                this.ball_angle = data.content.ball_angle;
-                if (data.content.replaceBot)
-                    this.bot.replaceBot();
-                if (data.content.botStartGame)
-                    this.bot.startGame();
-                if (data.content.handleBallHit)
-                    this.bot.handleBallHit();
-            }
-            this.ballPaused = data.content.ballPaused;
-            this.score = data.content.score;
-            this.form.paddleRight.position.y = data.content.player_right_pos;
-            this.form.paddleLeft.position.y = data.content.player_left_pos;
-            this.form.ball.position.x = data.content.posx;
-            this.form.ball.position.y = data.content.posy;
-            this.sendDataToScore()
-        }
 
     async sendDataForID() {
         let sessionId = localStorage.getItem('game_session_id');

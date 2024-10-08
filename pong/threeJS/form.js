@@ -12,10 +12,9 @@ export default class Form {
 
         //------------------ball-----------------------------------------
         const ballGeometry = new THREE.SphereGeometry(this.ballRayon, 30, 30);
-        // const textureLoader = new THREE.TextureLoader();
-        // const texture = textureLoader.load('/texture/ball.jpg');
-        // const ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
-        const ballMaterial = new THREE.MeshBasicMaterial({ color: 0xf8347f });
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('texture/ball.jpg');
+        const ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
         this.ball = new THREE.Mesh(ballGeometry, ballMaterial);
 
         this.ball.position.set(-(this.paddle_pos - this.ballRayon - (this.paddle_right_size[0] / 2)), 0, this.ballRayon);

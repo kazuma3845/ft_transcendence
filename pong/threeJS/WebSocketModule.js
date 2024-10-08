@@ -35,12 +35,7 @@ export default class WebSocketModule {
                     // console.log(`start_game = ${data.message}`)
                     // Appel de la fonction du jeu pour mettre à jour la position
                     startGameDual();
-                }
-                if (data.type === 'launch_ball') {
-                    console.log(`launch_ball = ${data.content}`)
-                    // Appel de la fonction du jeu pour mettre à jour la position
-                    this.pong.ballPaused = false;
-                }                
+                }               
                 // if (data.type === 'readBeforeStart') {
                 //     // Appel de la fonction du jeu pour mettre à jour la position
                 // }
@@ -76,7 +71,7 @@ export default class WebSocketModule {
     }
 }
 window.addEventListener('message', (event) => {
-    if (event.origin !== 'https://10.0.0.7:8000') {
+    if (event.origin !== 'https://transcendence/') {
         return;
     }
     // Récupérer l'ID de la session de jeu
