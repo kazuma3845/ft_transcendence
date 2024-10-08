@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 	'channels',
 	'corsheaders',
     'blockchain',
+	'messaging',
 ]
 
 MIDDLEWARE = [
@@ -174,6 +175,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'game', 'static'),
     os.path.join(BASE_DIR, 'users', 'static'),
     os.path.join(BASE_DIR, 'tournaments', 'static'),
+    os.path.join(BASE_DIR, 'messaging', 'static'),
 ]
 
 STATIC_URL = 'static/'
@@ -186,4 +188,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/users/login/'
-

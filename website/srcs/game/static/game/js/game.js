@@ -1,5 +1,7 @@
 const allowedValues = [1, 3, 5, 7, 9, 11];
 
+
+
 function loadGameForm() {
   fetch("/static/game/html/game-form.html")
     .then((response) => response.text())
@@ -69,35 +71,6 @@ function attachGameFormSubmitListener() {
     });
 }
 
-// function createGameSession() {
-//     fetch('/api/game/sessions/', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRFToken': getCSRFToken()  // Si nécessaire pour les requêtes POST
-//         },
-//         body: JSON.stringify({
-//             // Vous pouvez passer des données supplémentaires ici si nécessaire
-//         })
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json();  // Convertir la réponse en JSON
-//     })
-//     .then(data => {
-//         console.log('Game session created:', data);
-//         const sessionId = data.id;  // Supposons que l'ID de la session soit renvoyé dans `data.id`
-//         if (sessionId) {
-//             startWebSocket(sessionId);  // Appeler une fonction pour gérer la session créée avec l'ID
-//         }
-//     })
-//     .catch(error => {
-//         console.error('There was a problem with the fetch operation:', error);
-//     });
-// }
-
 function loadGame() {
   return new Promise((resolve, reject) => {
     fetch("/static/game/html/game.html")
@@ -109,12 +82,6 @@ function loadGame() {
       })
       .then((html) => {
         document.getElementById("app").innerHTML = html;
-
-        // Si tu veux démarrer la WebSocket ou attacher des listeners après le chargement de la page, tu peux les appeler ici.
-        // startWebSocket(sessionId);
-        // attachLoginFormSubmitListener();
-        // attachSingleGameListener();
-
         resolve(); // Résoudre la promesse une fois que tout est chargé
       })
       .catch((error) => {

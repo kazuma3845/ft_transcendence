@@ -1,8 +1,10 @@
 <div
-  class="d-flex profile-page-div w-100 h-100 flex-row justify-content-evenly align-items-center"
+  id="profile-page-div"
+  class="d-flex w-100 h-100 flex-row justify-content-evenly align-items-center"
 >
   <div
-    class="d-flex profile-block glassmorphism-block w-30 border-12 flex-column"
+    id="profile-block"
+    class="d-flex glassmorphism-block border-12 flex-column"
   >
     <div class="div-banner w-100">
       <img src="" id="user-banner" class="" />
@@ -19,5 +21,60 @@
       <p id="bio">Biographie</p>
     </div>
   </div>
-
+  <div
+    id="right-profile-block"
+    class="d-flex flex-column justify-content-evenly"
+  >
+    <div
+      id="upper-stats-block"
+      class="d-flex glassmorphism-block border-12 flex-row"
+    >
+      <div id="user-match-history" class="upper-blocks"></div>
+      <div id="leaderboard" class="upper-blocks"></div>
+    </div>
+    <div
+      id="lower-stats-block"
+      class="d-flex flex-row justify-content-evenly align-items-center"
+    >
+      <div
+        id="winrate-block"
+        class="d-flex lower-blocks justify-content-center align-items-center flex-column"
+      >
+        <h2>Winrate</h2>
+        <canvas id="winrateChart"></canvas>
+      </div>
+      <div
+        id="win-streack-block"
+        class="d-flex lower-blocks justify-content-center align-items-center flex-column"
+      >
+        <h2>Current win streak</h2>
+        <div
+          id="giphy-flame"
+          style="
+            width: 100%;
+            height: 0;
+            padding-bottom: 56%;
+            position: relative;
+          "
+        >
+          <iframe
+            id="flame-iframe"
+            src="https://giphy.com/embed/NTur7XlVDUdqM"
+            width="100%"
+            height="100%"
+            style="position: absolute"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+      <div
+        id="nemesis-block"
+        class="d-flex lower-blocks d-flex justify-content-center align-items-center flex-column"
+      >
+        <h2>Nemesis</h2>
+        <img src="" id="nemesis-avatar" class="img-fluid rounded-circle w-50" />
+      </div>
+    </div>
+  </div>
 </div>

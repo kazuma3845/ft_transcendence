@@ -1,17 +1,22 @@
 import os
+import django
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from game.routing import websocket_urlpatterns
+from game.routing import websocket_urlpatterns as game_websocket_urlpatterns
+from messaging.routing import websocket_urlpatterns as messaging_websocket_urlpatterns
 
-
+# Charger les settings Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'transendence.settings')
+
+# Initialiser Django pour s'assurer que les applications sont chargées
+django.setup()
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),  # Gérer les requêtes HTTP normales
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            websocket_urlpatterns
+            game_websocket_urlpatterns + messaging_websocket_urlpatterns
         )
     ),
 })

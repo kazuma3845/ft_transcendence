@@ -1,5 +1,5 @@
 async function router() {
-  const hash = window.location.hash;
+  const hash = window.location.hash; // Récupère le fragment d'URL
   // console.log("Hash actuel : ", hash);
 
   try {
@@ -26,6 +26,9 @@ async function router() {
         break;
       case "#tournaments":
         loadTournamentsForm();
+          break;
+      case "#chat":
+          loadChat();
         break;
       case "#createTournament":
         loadCreatTournamentsForm();
