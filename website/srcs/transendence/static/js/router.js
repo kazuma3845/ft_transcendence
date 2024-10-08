@@ -2,46 +2,48 @@ function router() {
   const hash = window.location.hash; // Récupère le fragment d'URL
   // console.log("Hash actuel : ", hash);
 
-  checkAuthentication()
-    .then((isAuthenticated) => {
-      console.log("Utilisateur authentifié : ", isAuthenticated);
-      switch (hash) {
-        case "#signup":
-          loadSignupForm();
-          break;
-        case "#login":
-          console.log("Chargement du formulaire de connexion");
+  try {
+    const isAuthenticated = await checkAuthentication();
+    console.log("Utilisateur authentifié : ", isAuthenticated);
+    if (isAuthenticated && !userInfo) {
+      await fetchUserInfo();
+      updateUsername();
+    }
+    switch (hash) {
+      case "#signup":
+        loadSignupForm();
+        break;
+      case "#login":
+        loadLoginForm();
+        break;
+      case "#game":
+        if (isAuthenticated) {
+          loadGameForm();
+          fetchAvailableSessions();
+        } else {
           loadLoginForm();
+        }
+        break;
+      case "#tournaments":
+        loadTournamentsForm();
           break;
-        case "#game":
-          if (isAuthenticated) {
-            loadGameForm();
-            fetchAvailableSessions();
-          } else {
-            loadLoginForm();
-          }
-          break;
-        case "#tournaments":
-          loadTournamentsForm();
-          break;
-          case "#chat":
-            loadChat();
-            break;
-        case "#createTournament":
-          loadCreatTournamentsForm();
-          break;
-        case "#profile":
-          if (isAuthenticated) loadProfil();
-          else loadLoginForm();
-          break;
-        default:
-          loadHome();
-          break;
-      }
-    })
-    .catch((error) => {
-      console.error("Erreur dans le routeur : ", error);
-    });
+      case "#chat":
+          loadChat();
+        break;
+      case "#createTournament":
+        loadCreatTournamentsForm();
+        break;
+      case "#profile":
+        if (isAuthenticated) loadProfil();
+        else loadLoginForm();
+        break;
+      default:
+        loadHome();
+        break;
+    }
+  } catch (error) {
+    console.error("Erreur dans le routeur : ", error);
+  }
 }
 
 window.addEventListener("hashchange", router);
