@@ -95,28 +95,29 @@ function animate(timestamp) {
 function checkWinCondition() {
   if (pong.score[0] === pong.winScore) {
     showWinScreen(pong.playerLeft, "Wins! ", pong.score[0], pong.score[1]);
+    registerScores(pong.playerLeft, false);
   }
   if (pong.score[1] === pong.winScore) {
     showWinScreen(pong.playerRight, "Wins! ", pong.score[0], pong.score[1]);
+    registerScores(pong.playerRight, false);
   }
 }
 
 function showWinScreen(player, message, score1, score2) {
   const winScreen = document.getElementById("winScreen");
   winScreen.style.display = "block";
-
-  registerScores();
-
   renderer.setAnimationLoop(null);
 }
 
-function registerScores() {
+function registerScores(winner, forfeit) {
   const url = "http://127.0.0.1:8000/api/blockchain/set_score/";
 
   const gameData = {
     game_session_id: pong.id,
     players: [pong.playerLeft, pong.playerRight],
     scores: pong.score,
+    winner: winner,
+    forfeit: forfeit,
   };
 
   const fetchOptions = {

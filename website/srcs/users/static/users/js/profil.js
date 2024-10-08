@@ -1,19 +1,90 @@
 let userInfo = null;
 let externUserInfo = null;
 
+function fetchBlockchainResults(games) {
+  const fetchPromises = games.map(async (game) => {
+    try {
+      const response = await fetch(
+        `/api/blockchain/get_score/?game_session_id=${game.id}`
+      );
+      return await response.json();
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des scores pour le jeu",
+        error
+      );
+      return null;
+    }
+  });
+  return Promise.all(fetchPromises).catch((error) => {
+    console.error("Erreur lors de la gestion globale des résultats:", error);
+  });
+}
+
+async function computeStats(results) {
+  console.log("Current username:", userInfo.user.username);
+  const gamePlayed = results.length;
+  const matchWon = results.filter(
+    (result) => result.winner === userInfo.user.username
+  );
+  const winNumber = matchWon.length;
+  console.log("Match joués:", gamePlayed);
+  console.log("Match won:", winNumber);
+  const winRate = Math.round((winNumber / gamePlayed) * 100);
+  console.log("winRate:", winRate);
+  const allForfeitWon = matchWon.filter(
+    (forfeitWon) => forfeitWon.forfeit === true
+  );
+  const forfeitWonNumber = allForfeitWon.length;
+  console.log("Win by forfeit:", forfeitWonNumber);
+
+  let currentWinStreak = 0;
+  for (let i = results.length - 1; i >= 0; i--) {
+    if (results[i].winner === userInfo.user.username) {
+      currentWinStreak++;
+    } else {
+      break;
+    }
+  }
+  console.log("Current win streak:", currentWinStreak);
+
+  const lossCounter = {};
+  results.forEach((result) => {
+    if (result.winner !== userInfo.user.username) {
+      const opponent = result.winner;
+      if (lossCounter[opponent]) {
+        lossCounter[opponent]++;
+      } else {
+        lossCounter[opponent] = 1;
+      }
+    }
+  });
+  let nemesis = null;
+  let maxLosses = 0;
+  for (const [opponent, losses] of Object.entries(lossCounter)) {
+    if (losses > maxLosses) {
+      maxLosses = losses;
+      nemesis = opponent;
+    }
+  }
+  console.log("Nemesis:", nemesis, "with losses:", maxLosses);
+
+  return {
+    gamePlayed,
+    winNumber,
+    winRate,
+    forfeitWonNumber,
+    currentWinStreak,
+    nemesis,
+    maxLosses,
+  };
+}
+
 async function fetchUserStats() {
   fetch("/api/users/profiles/game-sessions/")
     .then((response) => response.json())
-    .then((games) => {
-      games.forEach((game) => {
-        console.log(game.id);
-        fetch(`/api/blockchain/get_score/?game_session_id=${game.id}`)
-          .then((blockchain_response) => blockchain_response.json())
-          .then((results) => {
-            console.log(results);
-          });
-      });
-    })
+    .then((games) => fetchBlockchainResults(games))
+    .then((results) => computeStats(results))
     .catch((error) => {
       console.error(
         "Erreur lors de la recuperation des sessions de jeu:",
@@ -21,17 +92,16 @@ async function fetchUserStats() {
       );
     });
 
-  //127.0.0.1:8000/api/blockchain/get_score/?game_session_id=1
-  // http: return {
-  //   win: 12,
-  //   loss: 5,
-  //   nemesis: "Martin",
-  //   winStreak: 5,
-  //   matchHistory: [
-  //     { opponent: "Martin", result: "Win", date: "2024-10-01" },
-  //     { opponent: "Alice", result: "Loss", date: "2024-09-28" },
-  //   ],
-  // };
+  return {
+    win: 12,
+    loss: 5,
+    nemesis: "Martin",
+    winStreak: 5,
+    matchHistory: [
+      { opponent: "Martin", result: "Win", date: "2024-10-01" },
+      { opponent: "Alice", result: "Loss", date: "2024-09-28" },
+    ],
+  };
 }
 
 // Fonction pour récupérer les infos utilisateur
@@ -40,6 +110,7 @@ async function fetchUserInfo() {
     const response = await fetch("/api/users/profiles/info-user");
     const data = await response.json();
     userInfo = data;
+    console.log(userInfo);
     userInfo.stats = await fetchUserStats();
   }
   return userInfo;
