@@ -31,6 +31,8 @@ services:
     volumes:
       - ./website/srcs:/app/srcs
       - ./blockchain/srcs:/app/blockchain_v
+      - static_volume:/app/srcs/staticfiles
+
     ports:
       - "8000:8000"
     depends_on:
@@ -44,8 +46,21 @@ services:
       - django_network
     env_file:
       - .env
-    environment:
-      - DJANGO_SETTINGS_MODULE=transendence.settings
+  
+  nginx:
+    container_name: nginx
+    build:
+      context: ./website
+      dockerfile: dockerfile.nginx
+    volumes:
+      - static_volume:/app/srcs/transendence/static
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    networks:
+      - django_network
 
   bot:
     container_name: bot
@@ -59,7 +74,7 @@ services:
       - "8081:8081"
 
   pong:
-    container_name: pong
+    container_name: pong_game
     image: pong:transcendance
     build:
       context: ./pong
@@ -93,3 +108,4 @@ networks:
 
 volumes:
   postgres_data:
+  static_volume:

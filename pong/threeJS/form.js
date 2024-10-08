@@ -13,7 +13,7 @@ export default class Form {
         //------------------ball-----------------------------------------
         const ballGeometry = new THREE.SphereGeometry(this.ballRayon, 30, 30);
         const textureLoader = new THREE.TextureLoader();
-        const texture = textureLoader.load('/texture/ball.jpg');
+        const texture = textureLoader.load('texture/ball.jpg');
         const ballMaterial = new THREE.MeshBasicMaterial({ map: texture });
         this.ball = new THREE.Mesh(ballGeometry, ballMaterial);
 

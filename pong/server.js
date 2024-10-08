@@ -15,5 +15,5 @@ app.get('/api/config', (req, res) => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server is running on http://0.0.0.0:${PORT}`);
+  console.log(`Server is running on https://0.0.0.0:${PORT}`);
 });

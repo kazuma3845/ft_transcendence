@@ -32,13 +32,16 @@ class GameCalculator:
         self.bonusPadleR = 40
         self.bonusPadleL = 40
         self.coordBefore = 0
+        self.ballPaused = True
         self.randomPos()
 
     def perform_calculation(self, content):
         initialSpeed = content['moveSpeed']
-        ballPaused = content['ballPaused']
         botActivated = content['bot']
         ball_angle = 90
+
+        if content['enter']:
+            self.ballPaused = content['ballPaused']
 
         if self.i != 1:
             self.ballSpeedX = initialSpeed
@@ -82,7 +85,7 @@ class GameCalculator:
             else:
                 self.player_right_pos = halfArenaHeight - halfRaquetteHeight2
 
-        if ballPaused:
+        if self.ballPaused:
             if self.posx < 0:
                 self.posy = self.player_left_pos
                 self.speedDir = 1
@@ -98,7 +101,7 @@ class GameCalculator:
                 self.posx = paddle_pos - self.paddle_right_size[0] / 2 - ballRayon
                 self.posy = self.player_right_pos
                 self.ballSpeedX = -initialSpeed
-                ballPaused = True
+                self.ballPaused = True
                 self.score[0] += 1
                 self.rebond = 0
 
@@ -106,7 +109,7 @@ class GameCalculator:
                 self.posx = -(paddle_pos - self.paddle_left_size[0] / 2 - ballRayon)
                 self.posy = self.player_left_pos
                 self.ballSpeedX = initialSpeed
-                ballPaused = True
+                self.ballPaused = True
                 self.score[1] += 1
                 self.rebond = 0
 
@@ -132,7 +135,7 @@ class GameCalculator:
                     angleRadians = math.atan2(self.ballSpeedY, self.ballSpeedX)
                     angleDegrees = angleRadians * (180 / 3.14)
                     ball_angle = 90 - angleDegrees
-                    if not ballPaused:
+                    if not self.ballPaused:
                         handleBallHit = True
                     else:
                         replaceBot = True
@@ -147,7 +150,7 @@ class GameCalculator:
                 self.ballSpeedX = -abs(self.ballSpeedX) * math.cos(bounceAngle)
                 self.ballSpeedY = abs(self.ballSpeedX) * math.sin(bounceAngle)
                 if botActivated:
-                    if not ballPaused:
+                    if not self.ballPaused:
                         replaceBot = True
                 self.rebond = 0
 
@@ -170,7 +173,7 @@ class GameCalculator:
             'posy': self.posy,
             'player_right_pos': self.player_right_pos,
             'player_left_pos': self.player_left_pos,
-            'ballPaused': ballPaused,
+            'ballPaused': self.ballPaused,
             'score': self.score,
         }
 

@@ -25,10 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c*j8g&nc=%j!j(%8$5(h-2b$yqs=x7#@n-^x3-z=-_#eg^ka0*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = (config('IP_LOCAL'), '127.0.0.1')
-
+ALLOWED_HOSTS = ['transcendence', config('IP_LOCAL'), '127.0.0.1']
 
 # Application definition
 
@@ -150,7 +149,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
     "http://127.0.0.1:8000",
     'http://localhost:8000',
-    f"http://{config('IP_LOCAL')}:8000",
+    f"https://{config('IP_LOCAL')}:8000",
     f"http://{config('IP_LOCAL')}:8080",
 ]
 CORS_ALLOW_CREDENTIALS = True
@@ -160,7 +159,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8080',
     "http://127.0.0.1:8000",
     'http://localhost:8000',
-    f"http://{config('IP_LOCAL')}:8000",
+    f"https://{config('IP_LOCAL')}:8000",
     f"http://{config('IP_LOCAL')}:8080",
 ]
 
@@ -178,7 +177,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'messaging', 'static'),
 ]
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -188,3 +187,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/users/login/'
+
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000  # Force HTTPS for 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Assure que les cookies (comme le cookie de session) sont uniquement envoyés via HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True

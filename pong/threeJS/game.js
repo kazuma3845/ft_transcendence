@@ -35,7 +35,8 @@ scene.add(form.line);
 const cameraPositions = {
     default: { x: 0, y: 0, z: 180 },
     top: { x: 0, y: -150, z: 150, rotationX: 45 * Math.PI / 180 },
-    behindPaddle: { x: -205, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180}
+    behindPaddleLeft: { x: -205, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180},
+    behindPaddleRight: { x: 205, y: 0, z: 100, rotationZ: 90 * Math.PI / 180, rotationY: 60 * Math.PI / 180}
 };
 
 function updateCameraPosition(position) {
@@ -56,7 +57,10 @@ document.addEventListener('keydown', (event) => {
             updateCameraPosition(cameraPositions.top);
             break;
         case '3':
-            updateCameraPosition(cameraPositions.behindPaddle);
+            if (pong.player == pong.playerLeft)
+                updateCameraPosition(cameraPositions.behindPaddleLeft);
+            else
+                updateCameraPosition(cameraPositions.behindPaddleRight);
             break;
     }
 });
@@ -96,7 +100,7 @@ function showWinScreen(player, message, score1, score2) {
 }
 
 function registerScores() {
-    const url = `http://10.18.203.86:8000/api/blockchain/set_score/`;
+    const url = `/api/blockchain/set_score/`;
 
     const gameData = {
         game_session_id: pong.id,
