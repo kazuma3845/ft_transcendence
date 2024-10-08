@@ -1,0 +1,16 @@
+iframe {
+  width: 90%;
+  height: 90%;
+  border: none;
+}
+
+.scoreboard {
+  font-weight: 300;
+  font-size: 34px;
+  letter-spacing: 10px;
+  color: rgba(57, 67, 175, 0.74);
+}
+
+.game-form-container {
+  border-radius: 12px;
+}

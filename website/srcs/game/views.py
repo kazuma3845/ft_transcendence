@@ -46,36 +46,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Retourner la session sérialisée
         return Response(GameSessionSerializer(session).data, status=status.HTTP_201_CREATED)
 
-    # @action(detail=False, methods=['post', 'get'], url_path='start_single')
-    # def start_single_game(self, request):
-    #     # Récupérer l'utilisateur connecté
-    #     player1 = request.user
-
-    #     # Chercher la session de jeu la plus récente où l'utilisateur est player1
-    #     session = GameSession.objects.filter(player1=player1).order_by('-id').first()
-
-    #     session.start_time = timezone.now();
-
-    #     if not session:
-    #         # Si aucune session n'est trouvée, retourner une réponse vide ou un message d'erreur
-    #         return Response({"detail": "No active game session found."}, status=status.HTTP_404_NOT_FOUND)
-
-    #     channel_layer = get_channel_layer()
-    #     async_to_sync(channel_layer.group_send)(
-    #         f'game_{session.id}',
-    #         {
-    #             'type': 'display_player1',
-    #             'player1': session.player1.username,
-    #             'player2': 'Bot',
-    #         }
-    #     )
-
-    #     # Sérialiser la session pour renvoyer les informations au frontend
-    #     serializer = GameSessionSerializer(session)
-    #     data = serializer.data
-    #     data['currentPlayer'] = request.user.username
-    #     return Response(data, status=status.HTTP_200_OK)
-
     @action(detail=True, methods=['post', 'get'], url_path='start_single')
     def start_single_game(self, request, pk=None):
         # Récupérer la session de jeu par l'ID dans l'URL
@@ -94,16 +64,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             session.player2_started = True
         else:
             return Response({"detail": "You are not a player in this game."}, status=status.HTTP_403_FORBIDDEN)
-
-        # channel_layer = get_channel_layer()
-        # async_to_sync(channel_layer.group_send)(
-        #     f'game_{session.id}',
-        #     {
-        #         'type': 'display_player',
-        #         'player1': session.player1.username,
-        #         'player2': session.player2.username,
-        #     }
-        # )
 
         # Si bot est activé, configurer le jeu contre le bot
         if session.bot:
