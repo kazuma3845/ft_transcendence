@@ -134,6 +134,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer = GameSessionSerializer(game_sessions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['get'], url_path='search')
+    def search(self, request):
+        query = request.query_params.get('query', None)
+        if query is not None:
+            # Rechercher dans le modèle User
+            users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
+            serializer = UserSerializer(users, many=True)  # Utiliser le UserSerializer ici
+            return Response(serializer.data)
+        return Response([])
 
 @login_required
 def index(request):

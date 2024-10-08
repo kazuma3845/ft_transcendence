@@ -2,19 +2,19 @@
 	font-size: 20px;
 }
 
-/* Styles pour la modal */
-.modal {
-    display: none; /* La modal est cachée par défaut */
+/* Styles pour la modal.modal {
     position: fixed;
     z-index: 1;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+    background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
-}
+}   */
+
+
 
 .modal-content {
     background-color: white;
