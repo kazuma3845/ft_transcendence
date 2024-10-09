@@ -35,7 +35,7 @@ export default class WebSocketModule {
                     // console.log(`start_game = ${data.message}`)
                     // Appel de la fonction du jeu pour mettre à jour la position
                     startGameDual();
-                }               
+                }
                 // if (data.type === 'readBeforeStart') {
                 //     // Appel de la fonction du jeu pour mettre à jour la position
                 // }
@@ -70,12 +70,12 @@ export default class WebSocketModule {
         }
     }
 }
-window.addEventListener('message', (event) => {
-    if (event.origin !== 'https://transcendence/') {
-        return;
-    }
-    // Récupérer l'ID de la session de jeu
-    localStorage.setItem('game_session_id', event.data.gameSessionId);
-    console.log(`Dans addEvent : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
+// window.addEventListener('message', (event) => {
+//     if (event.origin !== 'https://transcendence/') {
+//         return;
+//     }
+//     // Récupérer l'ID de la session de jeu
+//     localStorage.setItem('game_session_id', event.data.gameSessionId);
+//     console.log(`Dans addEvent : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
 
-});
+// });

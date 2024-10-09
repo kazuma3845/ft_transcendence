@@ -97,6 +97,7 @@ export default class Bot {
             this.pong.ballPaused = false;
             this.pong.enter = true;
             this.bot_in_place = false;
+            this.pong.enter = true
         }, delay);
     }
   }

@@ -132,9 +132,11 @@ async function startGame() {
     const startScreen = document.getElementById('startScreen');
     const loader = document.getElementById('loader');
     const websocket = new WebSocketModule(pong);
-    // console.log(`Avant : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
+    const urlParams = new URLSearchParams(window.location.search);
+    let sessionId = urlParams.get('sessionid');
+    console.log(`Avant : sessionId(${sessionId})`)
     pong.websocket = websocket;
-    pong.websocket.startWebSocket(localStorage.getItem('game_session_id'));
+    pong.websocket.startWebSocket(sessionId);
     await pong.sendDataForID();
     startScreen.style.display = 'none';
     if (pong.botActivated === true) {

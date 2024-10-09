@@ -34,7 +34,7 @@ export default class Pong {
     handleKeyUp(event) {
         this.keysPressed[event.key] = false;
     }
-    
+
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
             this.enter = true;
@@ -166,7 +166,8 @@ export default class Pong {
     }
 
     async sendDataForID() {
-        let sessionId = localStorage.getItem('game_session_id');
+        const urlParams = new URLSearchParams(window.location.search);
+        let sessionId = urlParams.get('sessionid');
         try {
             const response = await fetch(`/api/game/sessions/${sessionId}/start_single/`, {
                 method: 'POST',
