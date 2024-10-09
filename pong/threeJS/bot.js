@@ -96,6 +96,7 @@ export default class Bot {
         setTimeout(() => {
             this.pong.ballPaused = false;
             this.bot_in_place = false;
+            this.pong.enter = true
         }, delay);
     }
   }

@@ -10,6 +10,26 @@ function loadGameForm() {
       attachGameFormSubmitListener();
     });
 }
+async function createGameSession(data, player1 = null, player2 = null) {
+  // Ajoute player1 et player2 s'ils sont définis
+  if (player1) data["player1"] = player1;
+  if (player2) data["player2"] = player2;
+
+  // Envoie les données à l'API pour créer une nouvelle session de jeu
+  const response = await fetch('/api/game/sessions/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCSRFToken(), // Assure-toi que cette fonction est bien définie
+    },
+    body: JSON.stringify(data),
+  });
+  const data_1 = await response.json();
+  if (data_1.error) {
+    throw new Error(data_1.error);
+  }
+  return data_1;
+}
 
 function attachGameFormSubmitListener() {
   document
@@ -24,71 +44,135 @@ function attachGameFormSubmitListener() {
         data[key] = value;
       });
 
+      // Ajoute les valeurs de checkbox dans les données
       data["power"] = document.getElementById("power").checked;
       data["bot"] = document.getElementById("bot").checked;
 
-        fetch('/api/game/sessions/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById('error-message').textContent = data.error;
-                document.getElementById('error-message').style.display = 'block';
-            } else {
-                let sessionId = data.id;
-                localStorage.setItem('game_session_id', sessionId);
-                console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
-                // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
-                loadGame().then(() => {
-                    const iframe = document.querySelector('iframe');
-                    if (iframe) {
-                        iframe.onload = function() {
-                            iframe.contentWindow.postMessage({ gameSessionId: sessionId }, "https://transcendence/pong/");
-                        };
-                    } else {
-                        console.error('Iframe not found');
-                    }
+      // Appelle la fonction pour créer une session de jeu
+      createGameSession(data)
+        .then((sessionData) => {
+          let sessionId = sessionData.id;
 
-                if (sessionId) {
-                  startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
-                }
-              })
-              .catch((error) => {
-                console.error(
-                  "Erreur lors du chargement du formulaire de jeu:",
-                  error
+          // Charger le jeu avec loadGameForm() et attendre le chargement
+          loadGame(sessionId).then(() => {
+            const iframe = document.querySelector('iframe');
+            if (iframe) {
+              iframe.onload = function () {
+                iframe.contentWindow.postMessage(
+                  { gameSessionId: sessionId },
+                  "https://transcendence/pong/"
                 );
-              });
-          }
+              };
+            } else {
+              console.error('Iframe not found');
+            }
+
+            if (sessionId) {
+              startWebSocket(sessionId); // Gérer la session WebSocket avec l'ID de session
+            }
+          }).catch((error) => {
+            console.error("Erreur lors du chargement du formulaire de jeu:", error);
+          });
         })
-        .catch((error) => console.error("Erreur:", error));
+        .catch((error) => {
+          console.error("Erreur lors de la création de la session de jeu:", error);
+          document.getElementById('error-message').textContent = error.message;
+          document.getElementById('error-message').style.display = 'block';
+        });
     });
 }
 
-function loadGame() {
-  return new Promise((resolve, reject) => {
-    fetch("/static/game/html/game.html")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.text();
-      })
-      .then((html) => {
-        document.getElementById("app").innerHTML = html;
-        resolve(); // Résoudre la promesse une fois que tout est chargé
-      })
-      .catch((error) => {
-        console.error("Erreur lors du chargement de la page de jeu:", error);
-        reject(error); // Rejeter la promesse en cas d'erreur
-      });
-  });
+// function attachGameFormSubmitListener() {
+//   document
+//     .getElementById("game-form")
+//     .addEventListener("submit", function (event) {
+//       event.preventDefault(); // Empêche le rechargement de la page
+
+//       const formData = new FormData(this);
+//       const data = {};
+
+//       formData.forEach((value, key) => {
+//         data[key] = value;
+//       });
+
+//       data["power"] = document.getElementById("power").checked;
+//       data["bot"] = document.getElementById("bot").checked;
+
+//         fetch('/api/game/sessions/', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRFToken': getCSRFToken(),
+//             },
+//             body: JSON.stringify(data)
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.error) {
+//                 document.getElementById('error-message').textContent = data.error;
+//                 document.getElementById('error-message').style.display = 'block';
+//             } else {
+//                 let sessionId = data.id;
+//                 // localStorage.setItem('game_session_id', sessionId);
+//                 // console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
+//                 // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
+//                 loadGame(sessionId).then(() => {
+//                     const iframe = document.querySelector('iframe');
+//                     if (iframe) {
+//                         iframe.onload = function() {
+//                             iframe.contentWindow.postMessage({ gameSessionId: sessionId }, "https://transcendence/pong/");
+//                         };
+//                     } else {
+//                         console.error('Iframe not found');
+//                     }
+
+//                 if (sessionId) {
+//                   startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
+//                 }
+//               })
+//               .catch((error) => {
+//                 console.error(
+//                   "Erreur lors du chargement du formulaire de jeu:",
+//                   error
+//                 );
+//               });
+//           }
+//         })
+//         .catch((error) => console.error("Erreur:", error));
+//     });
+// }
+
+function loadGame(sessionId) {
+    localStorage.setItem('game_session_id', sessionId);
+    const currentUrl = window.location.href;
+    if (currentUrl.includes('#')) {
+        const newUrl = currentUrl.split('#')[0] + '#game?sessionid=' + sessionId;
+        window.history.replaceState({}, '', newUrl);
+    }
+    console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
+    return new Promise((resolve, reject) => {
+      fetch("/static/game/html/game.html")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.text();
+        })
+        .then((html) => {
+          document.getElementById("app").innerHTML = html;
+          const iframe = document.getElementById("pongWin"); // Assurez-vous que l'iframe a cet ID
+          if (iframe) {
+              iframe.src = 'https://transcendence/pong/?sessionid=' + sessionId;
+          } else {
+              console.error("Iframe 'pongWin' introuvable dans le fichier HTML chargé.");
+          }
+          resolve(); // Résoudre la promesse une fois que tout est chargé
+        })
+        .catch((error) => {
+          console.error("Erreur lors du chargement de la page de jeu:", error);
+          reject(error); // Rejeter la promesse en cas d'erreur
+        });
+    });
 }
 
 function updateScore(sessionId, player1Points, player2Points) {
@@ -236,7 +320,7 @@ async function joinGame(sessionId) {
         localStorage.setItem('game_session_id', sessionId);
         // console.log("ENV VARIABLE: ", response.env_variable)
         // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
-        loadGame().then(() => {
+        loadGame(sessionId).then(() => {
             const iframe = document.querySelector('iframe');
             if (iframe) {
                 iframe.onload = function() {
