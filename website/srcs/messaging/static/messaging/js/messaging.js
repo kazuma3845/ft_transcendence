@@ -341,7 +341,7 @@ function connectWebSocket() {
 
     // Gérer l'ouverture de la WebSocket
     socket.onopen = function(e) {
-        console.log("Connexion WebSocket établie");
+        // console.log("Connexion WebSocket établie");
         // Optionnel : Informer le serveur que l'utilisateur est connecté
         socket.send(JSON.stringify({
             'type': 'new_connection',

@@ -82,7 +82,7 @@ services:
     volumes:
       - ./pong:/app
     ports:
-      - "8080:8080"
+      - "8080:80"
     networks:
       - django_network
     env_file:

@@ -106,7 +106,6 @@ export default class Pong {
             if (data.content.replaceBot)
                 this.bot.replaceBot();
             if (data.content.botStartGame)
-                // this.enter = true;
                 this.bot.startGame();
             if (data.content.handleBallHit)
                 this.bot.handleBallHit();

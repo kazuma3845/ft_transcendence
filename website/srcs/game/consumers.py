@@ -5,6 +5,7 @@ from .calcul import GameCalculator
 
 
 logger = logging.getLogger(__name__)
+calculators = {}
 
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -12,8 +13,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.session_id = self.scope['url_route']['kwargs']['session_id']
             self.room_group_name = f'game_{self.session_id}'
 
-            if not hasattr(self, 'calculator'):
-                self.calculator = GameCalculator() ####################################----------A CHECK---------####################
+            self.calculator = calculators.get(self.session_id, GameCalculator())
+            calculators[self.session_id] = self.calculator            
 
             # Rejoindre la salle de jeu
             await self.channel_layer.group_add(
