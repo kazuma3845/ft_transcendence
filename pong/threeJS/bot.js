@@ -38,7 +38,7 @@ export default class Bot {
       bot_lvl: this.pong.botLVL, // ! MOD THIS TO ADJUST BOT LVL
     };
     // console.log("Sending data:", JSON.stringify(data));
-    fetch("https://transcendence/bot/api/receive-data", {
+    fetch("/bot/api/receive-data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

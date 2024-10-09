@@ -147,7 +147,7 @@ function loadGame(sessionId) {
           document.getElementById("app").innerHTML = html;
           const iframe = document.getElementById("pongWin"); // Assurez-vous que l'iframe a cet ID
           if (iframe) {
-              iframe.src = 'https://transcendence/pong/?sessionid=' + sessionId;
+              iframe.src = '/pong/?sessionid=' + sessionId;
           } else {
               console.error("Iframe 'pongWin' introuvable dans le fichier HTML chargé.");
           }
@@ -317,7 +317,7 @@ async function joinGame(sessionId) {
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`wss://transcendence/ws/game/sessions/${sessionId}/`);
+    const socket = new WebSocket(`wss://10.0.0.40/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");

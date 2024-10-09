@@ -337,7 +337,7 @@ function connectWebSocket() {
     }
 
     // Ouvrir la WebSocket globale pour l'utilisateur
-    socket = new WebSocket(`wss://transcendence/ws/chat/`);  // Connexion WebSocket globale
+    socket = new WebSocket(`wss://10.0.0.40/ws/chat/`);  // Connexion WebSocket globale
 
     // Gérer l'ouverture de la WebSocket
     socket.onopen = function(e) {

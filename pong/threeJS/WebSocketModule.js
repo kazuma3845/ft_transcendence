@@ -16,7 +16,7 @@ export default class WebSocketModule {
         }
 
         // Créer une nouvelle connexion WebSocket pour cette session
-        this.socket = new WebSocket(`wss://transcendence/ws/game/sessions/${sessionId}/`);
+        this.socket = new WebSocket(`wss://10.0.0.40/ws/game/sessions/${sessionId}/`);
 
         // Connexion ouverte
         this.socket.onopen = (e) => {
