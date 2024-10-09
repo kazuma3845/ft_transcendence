@@ -14,15 +14,22 @@ export default class Pong {
         this.ballPaused = true;
         this.keysPressed = {};
 
+        this.touching = false;
+
+        // Ajout des événements clavier
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
         window.addEventListener('keyup', this.handleKeyUp.bind(this));
         window.addEventListener('keydown', this.handleKeyPress.bind(this));
+
+        // Ajout des événements tactiles
+        window.addEventListener('touchstart', this.handleTouchStart.bind(this));
+        window.addEventListener('touchmove', this.handleTouchMove.bind(this));
+        window.addEventListener('touchend', this.handleTouchEnd.bind(this));
     }
 
     handleKeyDown(event) {
         this.keysPressed[event.key] = true;
     }
-
 
     handleKeyUp(event) {
         this.keysPressed[event.key] = false;
@@ -39,15 +46,61 @@ export default class Pong {
         }
     }
 
+    // Gestion des événements tactiles
+    handleTouchStart(event) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        this.handleTouchMove(touch);
+        this.touching = true
+    }
+
+    handleTouchMove(event) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const touchY = touch.clientY;
+
+        // Mouvements tactiles pour les raquettes
+        if (this.player == this.playerLeft) {
+            if (touchY < this.form.paddleLeft.position.y) {
+                this.left_up = true;
+                this.left_back = false;
+            } else {
+                this.left_up = false;
+                this.left_back = true;
+            }
+        }
+        if (this.player == this.playerRight) {
+            if (touchY < this.form.paddleRight.position.y) {
+                this.right_up = true;
+                this.right_back = false;
+            } else {
+                this.right_up = false;
+                this.right_back = true;
+            }
+        }
+    }
+
+    handleTouchEnd(event) {
+        event.preventDefault();
+        this.left_up = false;
+        this.left_back = false;
+        this.right_up = false;
+        this.right_back = false;
+        this.touching = false;
+    }
+
     deplacerRaquette() {
 
-        this.left_back = false;
-        this.left_up = false;
+        if (!this.touching) {
+            this.left_back = false;
+            this.left_up = false;
+        }
         if (!this.botActivated) {
             this.right_back = false;
             this.right_up = false;
         }
 
+        // Gestion du clavier
         if (this.keysPressed['s']) {
             if (this.player == this.playerLeft)
                 this.left_back = true;
@@ -60,9 +113,8 @@ export default class Pong {
             if (this.player == this.playerRight)
                 this.right_up = true;
         }
-        let key_position
 
-        key_position = {
+        let key_position = {
             id: this.id,
             paddleSpeed: this.paddle_move_speed,
             moveSpeed: this.initialSpeed,
@@ -75,23 +127,18 @@ export default class Pong {
             ballPaused: this.ballPaused,
             enter: this.enter
         };
-        // console.log("First UPDATE: ", this.ballPaused, this.score)
         this.websocket.sendMessage("update_position", key_position);
         this.enter = false;
     }
 
-
-    updatePosition(data)
-    {
-        // console.log("LAST UPDATE: ", data.content.ballPaused, data.content.score)
-        this.ballPaused = data.content.ballPaused
+    updatePosition(data) {
+        this.ballPaused = data.content.ballPaused;
         if (this.ballPaused) {
-            this.form.ball.rotation.x += 0
-            this.form.ball.rotation.y += 0
-        }
-        else {
-            this.form.ball.rotation.x += -data.content.rotatey * 0.1
-            this.form.ball.rotation.y += data.content.rotatex * 0.1
+            this.form.ball.rotation.x += 0;
+            this.form.ball.rotation.y += 0;
+        } else {
+            this.form.ball.rotation.x += -data.content.rotatey * 0.1;
+            this.form.ball.rotation.y += data.content.rotatex * 0.1;
         }
         if (this.powerActive) {
             this.power.bonus.position.x = data.content.bonusPosx;
@@ -115,7 +162,7 @@ export default class Pong {
         this.form.paddleLeft.position.y = data.content.player_left_pos;
         this.form.ball.position.x = data.content.posx;
         this.form.ball.position.y = data.content.posy;
-        this.sendDataToScore()
+        this.sendDataToScore();
     }
 
     async sendDataForID() {
