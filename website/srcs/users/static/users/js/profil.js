@@ -28,6 +28,10 @@ async function computeStats(results) {
     (result) => result.winner === userInfo.user.username
   );
   const winNumber = matchWon.length;
+  const matchLost = results.filter(
+    (result) => result.winner != userInfo.user.username
+  );
+  const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
   console.log("Match won:", winNumber);
   const winRate = Math.round((winNumber / gamePlayed) * 100);
@@ -70,18 +74,19 @@ async function computeStats(results) {
   console.log("Nemesis:", nemesis, "with losses:", maxLosses);
 
   return {
-    gamePlayed,
-    winNumber,
-    winRate,
-    forfeitWonNumber,
-    currentWinStreak,
-    nemesis,
-    maxLosses,
+    total: gamePlayed || 0,
+    win: winNumber || 0,
+    loss: loseNumber || 0,
+    nemesis: nemesis || "Aucun",
+    winStreak: currentWinStreak || 0,
+    winrate: winRate || 0,
+    forfeit: forfeitWonNumber || 0,
+    matchHistory: results || [],
   };
 }
 
 async function fetchUserStats() {
-  fetch("/api/users/profiles/game-sessions/")
+  return fetch("/api/users/profiles/game-sessions/")
     .then((response) => response.json())
     .then((games) => fetchBlockchainResults(games))
     .then((results) => computeStats(results))
@@ -91,20 +96,8 @@ async function fetchUserStats() {
         error
       );
     });
-
-  return {
-    win: 12,
-    loss: 5,
-    nemesis: "Martin",
-    winStreak: 5,
-    matchHistory: [
-      { opponent: "Martin", result: "Win", date: "2024-10-01" },
-      { opponent: "Alice", result: "Loss", date: "2024-09-28" },
-    ],
-  };
 }
 
-// Fonction pour récupérer les infos utilisateur
 async function fetchUserInfo() {
   if (!userInfo) {
     const response = await fetch("/api/users/profiles/info-user");
@@ -129,6 +122,7 @@ function loadProfil() {
         createWinStreakBlock();
         createNemesisBlock();
         createMatchHistoryBlock();
+        createLeaderboard();
       });
     })
     .catch((error) => {
@@ -181,32 +175,63 @@ function createWinStreakBlock() {
 }
 
 function createMatchHistoryBlock() {
-  const matchHistory = userInfo.stats.matchHistory || [];
+  const matchHistory = userInfo.stats.matchHistory;
+  console.log(
+    "Current match history is :",
+    matchHistory,
+    "with a length of:",
+    matchHistory.length
+  );
   const historyContainer = document.getElementById("user-match-history");
-
-  historyContainer.innerHTML = "<h3>Match History</h3>";
 
   if (matchHistory.length === 0) {
     historyContainer.innerHTML += "<p>No matches played yet.</p>";
   } else {
     const table = document.createElement("table");
-    table.classList.add("table", "table-striped");
+    table.classList.add("table", "table-hover", "table-responsive");
 
     const headerRow = table.insertRow();
     headerRow.innerHTML = `
       <th>Opponent</th>
-      <th>Result</th>
+      <th>Scores</th>
       <th>Date</th>
+      <th>Result</th>
+      <th>Winner</th>
     `;
 
-    matchHistory.forEach((match) => {
-      const row = table.insertRow();
-      row.innerHTML = `
-        <td>${match.opponent}</td>
-        <td>${match.result}</td>
+    matchHistory
+      .slice()
+      .reverse()
+      .forEach((match) => {
+        const row = table.insertRow();
+        const userScore = match.scores[userInfo.user.username] || 0;
+        const opponentName = Object.keys(match.scores).find(
+          (name) => name !== userInfo.user.username
+        );
+        const opponentScore = match.scores[opponentName] || 0;
+
+        let resultText = "";
+        let rowColor = "";
+
+        if (match.forfeit) {
+          resultText = "Forfeit";
+          rowColor = "white";
+        } else if (match.winner === userInfo.user.username) {
+          resultText = "Win";
+          rowColor = "rgba(91, 188, 186, 0.3)";
+        } else {
+          resultText = "Loss";
+          rowColor = "rgba(148, 91, 188, 0.3)";
+        }
+        row.style.backgroundColor = rowColor;
+        row.innerHTML = `
+        <td>${opponentName}</td>
+        <td>${userScore} - ${opponentScore}</td>
         <td>${match.date}</td>
+        <td>${resultText}</td>
+        <td>${match.winner}</td>
       `;
-    });
+      });
 
     historyContainer.appendChild(table);
   }
@@ -221,20 +246,17 @@ function createNemesisBlock() {
 
   nemesisAvatar.src = userInfo.nemesis_avatar_url
     ? userInfo.nemesis_avatar_url
-    : "/static/users/avatars/default_nemesis.png";
+    : "/static/users/avatars/bot.gif";
 }
 
 // Fonction pour créer le bloc WinRate
 function createWinRateBlock() {
-  const stats = userInfo.stats || { win: 0, loss: 0 };
-
+  const stats = userInfo.stats;
   const wins = stats.win;
   const losses = stats.loss;
-  const totalGames = wins + losses;
-  const winrate = totalGames > 0 ? (wins / totalGames) * 100 : 0;
 
   const winrateTitle = document.querySelector("#winrate-block h2");
-  winrateTitle.textContent = `Winrate: ${winrate.toFixed(2)}%`;
+  winrateTitle.textContent = `Winrate: ${userInfo.stats.winrate}%`;
 
   createWinrateChart(wins, losses);
 }
@@ -264,4 +286,45 @@ function createWinrateChart(wins, losses) {
       maintainAspectRatio: false,
     },
   });
+}
+
+function createLeaderboard() {
+  //getLeaderBoard()
+  const leaderboardContainer = document.getElementById("top-three-leaderboard");
+  leaderboardContainer.innerHTML = "";
+  leaderboardData = [];
+  if (leaderboardData.length === 0) {
+    leaderboardContainer.innerHTML = "<p>No leaderboard data available.</p>";
+    return;
+  }
+
+  leaderboardData.slice(0, 3).forEach((player, index) => {
+    const playerDiv = document.createElement("div");
+    playerDiv.classList.add("d-flex", "align-items-center", "mb-2");
+
+    const avatarSize = index === 0 ? "70px" : index === 1 ? "60px" : "50px";
+
+    playerDiv.innerHTML = `
+      <img src="${player.avatar_url}" class="rounded-circle" style="width: ${avatarSize}; height: ${avatarSize}; margin-right: 10px;">
+      <div>
+        <strong>${player.username}</strong>
+        <p>Points: ${player.score}</p>
+      </div>
+    `;
+
+    leaderboardContainer.appendChild(playerDiv);
+  });
+
+  const currentRankingContainer = document.getElementById("current-ranking");
+  const userRank = leaderboardData.find(
+    (player) => player.username === userInfo.user.username
+  );
+
+  if (userRank && userRank.rank > 3) {
+    currentRankingContainer.innerHTML = `
+      <p>Your Current Rank: ${userRank.rank} (Points: ${userRank.score})</p>
+    `;
+  } else {
+    currentRankingContainer.innerHTML = `<p>You are in the Top 3!</p>`;
+  }
 }

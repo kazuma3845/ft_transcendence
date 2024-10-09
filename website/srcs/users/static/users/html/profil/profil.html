@@ -30,18 +30,22 @@
       class="d-flex glassmorphism-block border-12 flex-row"
     >
       <div id="user-match-history" class="upper-blocks"></div>
-      <div id="leaderboard" class="upper-blocks"></div>
+      <div id="winrate-block" class="align-items-center justify-content-center">
+        <h2>Winrate</h2>
+        <canvas id="winrateChart"></canvas>
+      </div>
     </div>
     <div
       id="lower-stats-block"
       class="d-flex flex-row justify-content-evenly align-items-center"
     >
       <div
-        id="winrate-block"
+        id="leaderboard-block"
         class="d-flex lower-blocks justify-content-center align-items-center flex-column"
       >
-        <h2>Winrate</h2>
-        <canvas id="winrateChart"></canvas>
+        <h2>Leaderboard</h2>
+        <div id="top-three-leaderboard"></div>
+        <div id="current-ranking"></div>
       </div>
       <div
         id="win-streack-block"

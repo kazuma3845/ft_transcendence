@@ -3,7 +3,7 @@
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(10px);
   /* border: 1px solid rgba(255, 255, 255, 0.3);  Pour Safari */
-  box-shadow: 0 8px 32px rgba(227, 228, 236, 0.646);
+  box-shadow: 0 8px 32px rgba(85, 62, 187, 0.646);
   border-radius: 12px;
   height: 90%;
   width: 35%;
@@ -14,18 +14,15 @@
 }
 
 #upper-stats-block {
-  background: rgba(250, 250, 250, 0.876);
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(10px);
-  /* border: 1px solid rgba(255, 255, 255, 0.3);  Pour Safari */
-  box-shadow: 0 8px 32px rgba(73, 46, 194, 0.646);
+  box-shadow: none;
   border-radius: 12px;
   height: 50%;
-  background-color: lightblue;
 }
 #lower-stats-block {
   height: 40%;
-  background-color: rgba(255, 255, 255, 0.449); /* ou une autre couleur temporaire */
+  background-color: rgba(196, 17, 17, 0);
 }
 .upper-blocks {
   background-color: white;
