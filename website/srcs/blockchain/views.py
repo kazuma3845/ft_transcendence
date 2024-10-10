@@ -2,6 +2,7 @@ from web3 import Web3
 from django.http import JsonResponse
 import json
 import os
+from datetime import date
 
 web3 = Web3(Web3.HTTPProvider("http://ganache:8545"))  # FIXME: A ADAPTER
 
@@ -17,7 +18,7 @@ chain_id = web3.eth.chain_id
 
 
 # --------------------------------------------------------- Interaction WEB3
-def set_game_session_scores(game_session_id, players, scores, winner, forfeit):
+def set_game_session_scores(game_session_id, players, scores, winner, forfeit, date):
     try:
         print(
             f"Building transaction for game session ID: {game_session_id} with players: {players} and scores: {scores}"
@@ -32,7 +33,7 @@ def set_game_session_scores(game_session_id, players, scores, winner, forfeit):
         print(f"Current chain ID: {chain_id}")
 
         transaction = contract.functions.setGameSessionScores(
-            game_session_id, players, scores, winner, forfeit
+            game_session_id, players, scores, winner, forfeit, date
         ).build_transaction(
             {
                 "from": account,
@@ -63,11 +64,11 @@ def set_game_session_scores(game_session_id, players, scores, winner, forfeit):
 
 def get_scores_by_game_session(game_session_id):
     try:
-        usernames, scores, winner, forfeit = contract.functions.getScoresByGameSession(
-            game_session_id
-        ).call()
+        usernames, scores, winner, forfeit, date = (
+            contract.functions.getScoresByGameSession(game_session_id).call()
+        )
         player_scores = dict(zip(usernames, scores))
-        return player_scores, winner, forfeit
+        return player_scores, winner, forfeit, date
     except Exception as e:
         return str(e)
 
@@ -87,12 +88,14 @@ def register_game_session_scores(request):
             print(
                 f"Received data: game_session_id={game_session_id}, players={players}, scores={scores}"
             )
-
+            today = date.today()  # Recupere la date du jour pour la db
+            today = today.strftime("%Y-%m-%d")
+            print("Current date is:", today)
             if not game_session_id or not players or not scores:
                 return JsonResponse({"error": "Données manquantes"}, status=400)
 
             receipt = set_game_session_scores(
-                game_session_id, players, scores, winner, forfeit
+                game_session_id, players, scores, winner, forfeit, today
             )
             if isinstance(receipt, str):
                 return JsonResponse({"status": "error", "message": receipt}, status=500)
@@ -118,7 +121,9 @@ def retrieve_game_session_scores(request):
 
         if not game_session_id:
             return JsonResponse({"error": "ID de session manquant"}, status=400)
-        player_scores, winner, forfeit = get_scores_by_game_session(game_session_id)
+        player_scores, winner, forfeit, date = get_scores_by_game_session(
+            game_session_id
+        )
         if isinstance(player_scores, str):
             return JsonResponse(
                 {"status": "error", "message": player_scores}, status=500
@@ -130,6 +135,7 @@ def retrieve_game_session_scores(request):
                 "scores": player_scores,
                 "winner": winner,
                 "forfeit": forfeit,
+                "date": date,
             }
         )
     return JsonResponse({"error": "Invalid request method"}, status=405)
