@@ -3,7 +3,7 @@ from django.http import JsonResponse
 import json
 import os
 
-web3 = Web3(Web3.HTTPProvider("http://ganache:8545"))  # FIXME: A ADAPTER
+web3 = Web3(Web3.HTTPProvider("http://ganache:8545/"))  # FIXME: A ADAPTER
 
 api_path = "/app/blockchain_v/output/PongScores.abi"
 with open(api_path, "r") as abi_file:

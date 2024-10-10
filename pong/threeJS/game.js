@@ -134,7 +134,6 @@ async function startGame() {
     const websocket = new WebSocketModule(pong);
     const urlParams = new URLSearchParams(window.location.search);
     let sessionId = urlParams.get('sessionid');
-    console.log(`Avant : sessionId(${sessionId})`)
     pong.websocket = websocket;
     pong.websocket.startWebSocket(sessionId);
     await pong.sendDataForID();
@@ -145,6 +144,8 @@ async function startGame() {
     if (pong.botActivated === false && (pong.player1_started != true || pong.player2_started != true)) {
         loader.style.display = 'flex';
     }
+    else
+        renderer.setAnimationLoop(animate);
 }
 
 export function startGameDual() {
@@ -154,5 +155,6 @@ export function startGameDual() {
 }
 
 document.getElementById('startButton').addEventListener('click', startGame);
+document.getElementById('startButton').addEventListener('touchstart', startGame);
 
 export default pong;

@@ -68,66 +68,6 @@ function attachGameFormSubmitListener() {
     });
 }
 
-// function attachGameFormSubmitListener() {
-//   document
-//     .getElementById("game-form")
-//     .addEventListener("submit", function (event) {
-//       event.preventDefault(); // Empêche le rechargement de la page
-
-//       const formData = new FormData(this);
-//       const data = {};
-
-//       formData.forEach((value, key) => {
-//         data[key] = value;
-//       });
-
-//       data["power"] = document.getElementById("power").checked;
-//       data["bot"] = document.getElementById("bot").checked;
-
-//         fetch('/api/game/sessions/', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'X-CSRFToken': getCSRFToken(),
-//             },
-//             body: JSON.stringify(data)
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.error) {
-//                 document.getElementById('error-message').textContent = data.error;
-//                 document.getElementById('error-message').style.display = 'block';
-//             } else {
-//                 let sessionId = data.id;
-//                 // localStorage.setItem('game_session_id', sessionId);
-//                 // console.log('Current session ID in Local Storage:', localStorage.getItem('game_session_id'));
-//                 // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
-//                 loadGame(sessionId).then(() => {
-//                     const iframe = document.querySelector('iframe');
-//                     if (iframe) {
-//                         iframe.onload = function() {
-//                             iframe.contentWindow.postMessage({ gameSessionId: sessionId }, "https://transcendence/pong/");
-//                         };
-//                     } else {
-//                         console.error('Iframe not found');
-//                     }
-
-//                 if (sessionId) {
-//                   startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
-//                 }
-//               })
-//               .catch((error) => {
-//                 console.error(
-//                   "Erreur lors du chargement du formulaire de jeu:",
-//                   error
-//                 );
-//               });
-//           }
-//         })
-//         .catch((error) => console.error("Erreur:", error));
-//     });
-// }
-
 function loadGame(sessionId) {
     // localStorage.setItem('game_session_id', sessionId);
     const currentUrl = window.location.href;
@@ -317,7 +257,7 @@ async function joinGame(sessionId) {
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
-    const socket = new WebSocket(`wss://10.0.0.40/ws/game/sessions/${sessionId}/`);
+    const socket = new WebSocket(`/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");

@@ -157,12 +157,14 @@ export default class Pong {
             if (data.content.handleBallHit)
                 this.bot.handleBallHit();
         }
-        this.score = data.content.score;
         this.form.paddleRight.position.y = data.content.player_right_pos;
         this.form.paddleLeft.position.y = data.content.player_left_pos;
         this.form.ball.position.x = data.content.posx;
         this.form.ball.position.y = data.content.posy;
-        this.sendDataToScore();
+        if (this.score.some((score, index) => score !== data.content.score[index])) {
+            this.score = data.content.score;
+            this.sendDataToScore();
+        }
     }
 
     async sendDataForID() {
