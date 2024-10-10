@@ -1,6 +1,6 @@
 async function router() {
   const hash = window.location.hash; // Récupère le fragment d'URL
-  // console.log("Hash actuel : ", hash);
+  console.log("Hash actuel : ", hash);
 
   try {
     const isAuthenticated = await checkAuthentication();
@@ -9,7 +9,7 @@ async function router() {
       await fetchUserInfo();
       updateUsername();
     }
-    switch (hash) {
+    switch (hash.split('?')[0]) {
       case "#signup":
         loadSignupForm();
         break;
@@ -18,8 +18,21 @@ async function router() {
         break;
       case "#game":
         if (isAuthenticated) {
-          loadGameForm();
-          fetchAvailableSessions();
+          const params = new URLSearchParams(window.location.hash.split('?')[1]);
+          const sessionId = params.get('sessionid'); // Récupère le paramètre 'sessionid'
+          console.log("sessionId actuel : ", sessionId);
+
+          if (sessionId) {
+            // Charger le jeu avec le sessionId et démarrer le WebSocket
+            loadGame(sessionId).then(() => {
+              startWebSocket(sessionId); // Démarre la session WebSocket
+            }).catch((error) => {
+              console.error("Erreur lors du chargement du jeu:", error);
+            });
+          } else {
+            loadGameForm();
+            fetchAvailableSessions();
+          }
         } else {
           loadLoginForm();
         }

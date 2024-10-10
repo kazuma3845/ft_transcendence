@@ -11,6 +11,9 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import User
+from rest_framework import viewsets
 
 @login_required
 def index(request):
@@ -20,7 +23,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
     queryset = GameSession.objects.all()
     serializer_class = GameSessionSerializer
     permission_classes = [IsAuthenticated]
-
     def create(self, request, *args, **kwargs):
         # Initialiser le serializer avec les données de la requête
         serializer = self.get_serializer(data=request.data)
@@ -28,12 +30,31 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Valider les données
         serializer.is_valid(raise_exception=True)
 
-        # Récupérer l'utilisateur connecté
-        player1 = request.user
+        print(f"serializer data", serializer)
+        # Récupérer le username de player1 depuis les données validées
+        player1_username = serializer.validated_data.get('player1', None)
+        player2_username = serializer.validated_data.get('player2', None)
+
+        # Récupérer l'objet User correspondant au username de player1
+        player1 = None
+        if player1_username:
+            try:
+                player1 = User.objects.get(username=player1_username)
+            except User.DoesNotExist:
+                raise ValidationError(f"L'utilisateur {player1_username} n'existe pas.")
+
+        # Récupérer l'objet User correspondant au username de player2
+        player2 = None
+        if player2_username:
+            try:
+                player2 = User.objects.get(username=player2_username)
+            except User.DoesNotExist:
+                raise ValidationError(f"L'utilisateur {player2_username} n'existe pas.")
 
         # Créer une nouvelle session de jeu avec les données validées
         session = GameSession.objects.create(
-            player1=player1,
+            player1=player1,  # player1 peut être None si non fourni
+            player2=player2,  # player2 peut être None si non fourni
             move_speed_ball=serializer.validated_data.get('move_speed_ball', 6),
             move_speed_paddle=serializer.validated_data.get('move_speed_paddle', 4),
             power=serializer.validated_data.get('power', False),

@@ -251,7 +251,8 @@ function loadMessages(conversationId) {
 
             // Rendre visible la fenêtre de chat
             chatWindow.style.display = 'block';
-
+        // pour le bouton d invite
+            attachGameFormSubmitListener(currentUser, otherParticipants[0], true);
             // Requête pour obtenir les messages
             fetch(`/api/messaging/conversations/${conversationId}/messages/`)
                 .then(response => response.json())

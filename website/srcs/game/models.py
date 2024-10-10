@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
 
 class GameSession(models.Model):
-    player1 = models.ForeignKey(User, related_name='player1_sessions', on_delete=models.CASCADE)
+    player1 = models.ForeignKey(User, related_name='player1_sessions', null=True, blank=True, on_delete=models.CASCADE)
     player2 = models.ForeignKey(User, related_name='player2_sessions', null=True, blank=True, on_delete=models.CASCADE)
     # created_time = models.DateTimeField(auto_now_add=True)
     start_time = models.DateTimeField(null=True, blank=True)
