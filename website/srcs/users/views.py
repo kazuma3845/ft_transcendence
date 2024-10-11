@@ -23,10 +23,11 @@ from rest_framework.response import Response
 from users.models import UserProfile
 from .serializers import UserProfileSerializer, UserSerializer
 
-
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    # permission_classes = [IsAuthenticated]
+
 
     def create(self, request, *args, **kwargs):
         username = request.data.get("username")

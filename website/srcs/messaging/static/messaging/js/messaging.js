@@ -273,14 +273,14 @@ function loadMessages(conversationId) {
                         if (message.invitation) {
                             const invitationLink = document.createElement('a');
                             invitationLink.href = `/#game?sessionid=${message.invitation}`;  // Créer l'URL
-                            invitationLink.textContent = "Rejoindre la partie";  // Texte du lien
+                            invitationLink.textContent = "partie";  // Texte du lien
 
                             // Optionnel : Si tu ne veux pas utiliser href, tu peux utiliser un gestionnaire d'événement de clic.
                             invitationLink.addEventListener('click', function(event) {
                                 event.preventDefault();  // Empêche le comportement par défaut du lien
                                 window.location.href = `/#game?sessionid=${message.invitation}`;
                             });
-
+                            messageContent.textContent = "Rejoindre la ";
                             messageContent.appendChild(invitationLink);
                         }
 

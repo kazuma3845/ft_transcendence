@@ -38,8 +38,13 @@ async function router() {
         }
         break;
       case "#tournaments":
-        loadTournamentsForm();
-          break;
+        if (isAuthenticated) {
+            loadTourForm();
+            fetchAvailableTours();
+        } else {
+          loadLoginForm();
+        }
+        break;
       case "#chat":
           loadChat();
         break;

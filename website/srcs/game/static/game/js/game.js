@@ -11,22 +11,22 @@ fetch("/static/game/html/game-form.html")
     });
 }
 
-async function createGameSession(data) {
-
-// Envoie les données à l'API pour créer une nouvelle session de jeu
-const response = await fetch('/api/game/sessions/', {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    'X-CSRFToken': getCSRFToken(), // Assure-toi que cette fonction est bien définie
-    },
-    body: JSON.stringify(data),
-});
-const data_1 = await response.json();
-if (data_1.error) {
-    throw new Error(data_1.error);
-}
-return data_1;
+async function createGameSession(data, tourDataId = null) {
+    // Envoie les données à l'API pour créer une nouvelle session de jeu
+    data["tour"] = tourDataId;
+    const response = await fetch('/api/game/sessions/', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken(), // Assure-toi que cette fonction est bien définie
+        },
+        body: JSON.stringify(data),
+    });
+    const data_1 = await response.json();
+    if (data_1.error) {
+        throw new Error(data_1.error);
+    }
+    return data_1;
 }
 
 function attachGameFormSubmitListener(player1 = null, player2 = null, invited = null) {
@@ -61,7 +61,8 @@ function attachGameFormSubmitListener(player1 = null, player2 = null, invited = 
                 .then((sessionData) => {
                     let sessionId = sessionData.id;
                     window.location.href = `/#game?sessionid=${sessionId}`;
-                    sendInvitation(activeConversationId, sessionId);
+                    if (invited)
+                        sendInvitation(activeConversationId, sessionId);
                 })
                 .catch((error) => {
                     console.error("Erreur lors de la création de la session de jeu:", error);

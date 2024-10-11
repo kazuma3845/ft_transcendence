@@ -1,119 +1,111 @@
-function loadTournamentsForm() {
-    fetch('/static/tournaments/html/tournaments.html')
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('app').innerHTML = html;
-        test();
+function loadTourForm() {
+    fetch("/static/tournaments/html/tour-form.html")
+        .then((response) => response.text())
+        .then((html) => {
+        document.getElementById("app").innerHTML = html;
+        attachTourFormSubmitListener(currentUser);
+        });
+    }
+
+async function createTourSession(data) {
+    // Envoie les données à l'API pour créer une nouvelle session de jeu
+    const response = await fetch('/api/tournaments/tour/', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken(), // Assure-toi que cette fonction est bien définie
+        },
+        body: JSON.stringify(data),
     });
-}
+    const data_1 = await response.json();
+    if (data_1.error) {
+        throw new Error(data_1.error);
+    }
+    return data_1;
+    }
 
-function test() {
-    document.getElementById('tournaments').addEventListener('submit', async function(event) {
-        event.preventDefault();
+    function attachTourFormSubmitListener(player1 = null) {
+        document
+            .getElementById("tour-form")
+            .addEventListener("submit", function (event) {
+                event.preventDefault(); // Empêche le rechargement de la page
 
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData.entries());
+                const formData = new FormData(this);
+                const data = {};
 
-        data['power'] = document.getElementById('power').checked;
-        data['bot'] = false;
+                // Convertit le formulaire en un objet JS
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
 
-        try {
-            const response = await fetch('/api/game/sessions/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken(),
-                },
-                body: JSON.stringify(data)
+                // Ajoute player1 et player2 dans les données s'ils sont définis
+                if (player1) data["player1"] = player1;
+
+                // Appelle la fonction pour créer une session de jeu avec les données
+                createTourSession(data)
+                    .then((tourData) => {
+                        createGameSession(data, tourData.id)
+                            .then((sessionData) => {
+                                createGameSession(data);
+                                let sessionId = sessionData.id;
+                                window.location.href = `/#game?sessionid=${sessionId}`;
+
+                            })
+                            .catch((error) => {
+                                console.error("Erreur lors de la création de la session de jeu:", error);
+                                document.getElementById('error-message').textContent = error.message;
+                                document.getElementById('error-message').style.display = 'block';
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("Erreur lors de la création du tournoi:", error);
+                        document.getElementById('error-message').textContent = error.message;
+                        document.getElementById('error-message').style.display = 'block';
+                    });
             });
-
-            const result = await response.json();
-
-            if (result.error) {
-                displayError(result.error);
-            } else {
-                handleSuccess(result.id);
-            }
-        } catch (error) {
-            console.error('Erreur:', error);
-        }
-    });
-}
-
-function displayError(errorMessage) {
-    const errorElement = document.getElementById('error-message');
-    errorElement.textContent = errorMessage;
-    errorElement.style.display = 'block';
-}
-
-async function handleSuccess(tournamentsId) {
-    localStorage.setItem('tournament_session_id', tournamentsId);
-    console.log('Current session ID in Local Storage:', localStorage.getItem('tournament_session_id'));
-
-    try {
-        await loadtournament();
-        if (tournamentsId) {
-            startWebSocket(tournamentsId);
-        }
-    } catch (error) {
-        console.error('Erreur lors du chargement du formulaire de jeu:', error);
     }
+
+// Fonction pour appeler l'API et afficher les GameSessions disponibles
+async function fetchAvailableTours() {
+    // try {
+    //     // Effectuer un appel GET à l'API
+    //     const response = await fetch("/api/game/sessions/available_sessions/");
+
+    //     // Vérifier si la requête a réussi
+    //     if (!response.ok) {
+    //     throw new Error(`Erreur: ${response.status}`);
+    //     }
+
+    //     const sessions = await response.json();
+
+    //     const sessionList = document.getElementById("session-list");
+
+    //     // Vider le contenu précédent
+    //     sessionList.innerHTML = "";
+
+    //     if (sessions.length === 0) {
+    //     document.getElementById("current-game-rooms").textContent =
+    //         "No room available";
+    //     }
+    //     // Parcourir les sessions et créer un lien pour chacune
+    //     sessions.forEach((session) => {
+    //     const listItem = document.createElement("li"); // Créer un élément <li>
+    //     const link = document.createElement("a"); // Créer un élément <a> pour le lien
+
+    //     // Définir l'URL du lien et son texte
+    //     link.href = `#`; // Pas de redirection directe
+    //     link.textContent = `Rejoindre la session ${session.id}`;
+
+    //     // Ajouter un événement de clic pour le lien
+    //     link.addEventListener("click", function (event) {
+    //         event.preventDefault(); // Empêcher la redirection par défaut
+    //         joinGame(session.id); // Appeler la fonction pour rejoindre le jeu
+    //     });
+
+    //     listItem.appendChild(link);
+    //     sessionList.appendChild(listItem);
+    //     });
+    // } catch (error) {
+    //     console.error("Erreur lors de la récupération des sessions:", error);
+    // }
 }
-
-function loadtournament() {
-    fetch('/static/tournaments/html/startTournaments.html')
-    .then(response => response.text())
-    .then(html => {
-        document.getElementById('app').innerHTML = html;
-        // loadTournamentsGame();
-        console.log("Tounarmanent start")
-    });
-}
-
-function start_tournament() {
-    document.getElementById('start-tournaments').addEventListener('submit', async function(event) {
-        event.preventDefault();
-
-        loadTournamentsGame();
-    });
-}
-
-function displayError(errorMessage) {
-    const errorElement = document.getElementById('error-message');
-    errorElement.textContent = errorMessage;
-    errorElement.style.display = 'block';
-}
-
-async function handleSuccess(tournamentsId) {
-    localStorage.setItem('tournament_session_id', tournamentsId);
-    console.log('Current session ID in Local Storage:', localStorage.getItem('tournament_session_id'));
-
-    try {
-        await loadTournamentsGame();
-        if (tournamentsId) {
-            startWebSocket(tournamentsId);
-        }
-    } catch (error) {
-        console.error('Erreur lors du chargement du formulaire de jeu:', error);
-    }
-}
-
-// function loadTournamentsGame() {
-//     return new Promise((resolve, reject) => {
-//         fetch('/static/game/html/game.html')
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             return response.text();
-//         })
-//         .then(html => {
-//             document.getElementById('app').innerHTML = html;
-//             resolve();
-//         })
-//         .catch(error => {
-//             console.error('Erreur lors du chargement de la page de jeu:', error);
-//             reject(error);
-//         });
-//     });
-// }

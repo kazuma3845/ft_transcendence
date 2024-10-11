@@ -6,12 +6,13 @@ from .serializers import ConversationSerializer, MessageSerializer, BlockedUserS
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework.permissions import IsAuthenticated
 
 # ViewSet pour les conversations
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         # Renvoyer les conversations où le currentUser est un participant
@@ -126,8 +127,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated]
+
 
 # ViewSet pour les utilisateurs bloqués
 class BlockedUserViewSet(viewsets.ModelViewSet):
     queryset = BlockedUser.objects.all()
     serializer_class = BlockedUserSerializer
+    permission_classes = [IsAuthenticated]
