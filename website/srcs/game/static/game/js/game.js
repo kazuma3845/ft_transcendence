@@ -61,12 +61,7 @@ function attachGameFormSubmitListener(player1 = null, player2 = null, invited = 
                 .then((sessionData) => {
                     let sessionId = sessionData.id;
                     window.location.href = `/#game?sessionid=${sessionId}`;
-                    // Charger le jeu avec loadGame() et attendre le chargement
-                    // loadGame(sessionId).then(() => {
-                    //     startWebSocket(sessionId); // Gérer la session WebSocket avec l'ID de session
-                    // }).catch((error) => {
-                    //     console.error("Erreur lors du chargement du formulaire de jeu:", error);
-                    // });
+                    sendInvitation(activeConversationId, sessionId);
                 })
                 .catch((error) => {
                     console.error("Erreur lors de la création de la session de jeu:", error);

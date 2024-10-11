@@ -38,6 +38,9 @@ function attachLoginFormSubmitListener() {
               "Logged In Successfully",
               `Welcome back ${userInfo.user.username}, you've been missed 💜`
             );
+            console.log("currentUser before : ", currentUser);
+            currentUser = userInfo.user.username;
+            console.log("currentUser after : ", currentUser);
             updateHeader();
             if (window.location.hash === "#login") window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
             router(); // Recharge l'interface pour refléter l'état connecté

@@ -269,11 +269,44 @@ function loadMessages(conversationId) {
 
                         const messageContent = document.createElement('div');
                         messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
-                        messageContent.textContent = message.content;
+
+                        if (message.invitation) {
+                            const invitationLink = document.createElement('a');
+                            invitationLink.href = `/#game?sessionid=${message.invitation}`;  // Créer l'URL
+                            invitationLink.textContent = "Rejoindre la partie";  // Texte du lien
+
+                            // Optionnel : Si tu ne veux pas utiliser href, tu peux utiliser un gestionnaire d'événement de clic.
+                            invitationLink.addEventListener('click', function(event) {
+                                event.preventDefault();  // Empêche le comportement par défaut du lien
+                                window.location.href = `/#game?sessionid=${message.invitation}`;
+                            });
+
+                            messageContent.appendChild(invitationLink);
+                        }
+
+                        if (message.content) {
+                            messageContent.textContent = message.content;
+                        }
 
                         messageItem.appendChild(messageContent);
                         messagesList.appendChild(messageItem);
                     });
+                    // messages.forEach(message => {
+                    //     const messageItem = document.createElement('div');
+                    //     const isUserMessage = message.sender === currentUser;
+
+                    //     // Ajout des classes pour alignement
+                    //     messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
+
+                    //     const messageContent = document.createElement('div');
+                    //     messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
+                    //     if (message.invitation)
+                    //         messageContent.textContent = "Rejoindre la partie";
+                    //     if (message.content)
+                    //         messageContent.textContent = message.content;
+                    //     messageItem.appendChild(messageContent);
+                    //     messagesList.appendChild(messageItem);
+                    // });
 
                     activeConversationId = conversationId;
 
@@ -370,7 +403,11 @@ function connectWebSocket() {
 			if (activeConversationId === conversationId)
 				displayNewMessage(data.content);
 			// loadMessages(conversationId);
-        } else {
+        }
+        else if (data.type === "upload_invitation") {
+            console.log(data);
+        }
+        else {
             console.log(`Type de message non géré : ${data.type}`);
         }
     };
@@ -394,7 +431,18 @@ function sendMessage(conversationId, message) {
             conversation_id: conversationId,
             message: message,
 			sender: currentUser,
-			from: 'front'
+        }
+    }));
+}
+
+function sendInvitation(conversationId, invitation) {
+    // Envoi du message à travers la WebSocket
+    socket.send(JSON.stringify({
+        type: 'newInvitation',
+        content: {
+            conversation_id: conversationId,
+			sender: currentUser,
+            invitation: invitation,
         }
     }));
 }

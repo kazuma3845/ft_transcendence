@@ -12,7 +12,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'timestamp', 'is_read', 'conversation', 'sender']  # Inclure les champs souhaités
+        fields = ['id', 'content', 'timestamp', 'is_read', 'conversation', 'sender', 'invitation']  # Inclure les champs souhaités
 
 class BlockedUserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import UserProfile
+from game.models import GameSession
 
 # Modèle Conversation
 class Conversation(models.Model):
@@ -16,6 +17,8 @@ class Message(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    invitation = models.ForeignKey(GameSession, on_delete=models.SET_NULL, null=True, blank=True)  # Ajouter l'attribut invitation
+
 
     def __str__(self):
         return f"Message de {self.sender.user.username} dans la conversation {self.conversation.id}"
