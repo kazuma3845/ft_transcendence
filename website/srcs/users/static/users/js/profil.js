@@ -2,7 +2,8 @@ let userInfo = null;
 let externUserInfo = null;
 
 function fetchBlockchainResults(games) {
-  const fetchPromises = games.map(async (game) => {
+  const sortedGames = games.sort((a, b) => b.id - a.id);
+  const fetchPromises = sortedGames.map(async (game) => {
     try {
       const response = await fetch(
         `/api/blockchain/get_score/?game_session_id=${game.id}`
@@ -43,7 +44,7 @@ async function computeStats(results) {
   console.log("Win by forfeit:", forfeitWonNumber);
 
   let currentWinStreak = 0;
-  for (let i = results.length - 1; i >= 0; i--) {
+  for (let i = 0; i <= results.length; i++) {
     if (results[i].winner === userInfo.user.username) {
       currentWinStreak++;
     } else {
@@ -150,28 +151,28 @@ function createProfilBlock() {
 
   document.querySelector(".div-banner img").src = data.banner
     ? data.banner
-    : "/static/users/banners/ping-pong.gif";
+    : "/static/users/banners/banner.webp";
+  loadFriends();
 }
 
 function createWinStreakBlock() {
   const winStreak = userInfo.stats.winStreak;
   const winStreakTitle = document.querySelector("#win-streack-block h2");
   winStreakTitle.textContent = `Win Streak: ${winStreak}`;
-  const flameIframe = document.getElementById("flame-iframe");
+  const flameIMG = document.getElementById("winstreak-gif");
   let flameGif;
   if (winStreak === 0) {
-    flameGif = "https://giphy.com/embed/NTur7XlVDUdqM"; // GIF pour streak = 0 (exemple)
+    flameGif = "/static/users/scores/dog.webp";
   } else if (winStreak >= 1 && winStreak <= 3) {
-    flameGif = "https://giphy.com/embed/lE6MQFHe6NREA"; // GIF pour streak entre 1 et 3
+    flameGif = "/static/users/scores/aspi.webp";
   } else if (winStreak >= 4 && winStreak <= 6) {
-    flameGif = "https://giphy.com/embed/bP0y34GHtOzp6"; // GIF pour streak supérieure à 3 (par exemple)
+    flameGif = "/static/users/scores/man.webp";
   } else if (winStreak >= 7 && winStreak != 42) {
-    flameGif = "https://giphy.com/embed/3o72FfM5HJydzafgUE";
+    flameGif = "/static/users/scores/fire.webp";
   } else if (winStreak === 42) {
-    flameGif = "https://giphy.com/embed/qPVzemjFi150Q";
+    flameGif = "/static/users/scores/42.webp";
   }
-
-  flameIframe.src = flameGif;
+  flameIMG.src = flameGif;
 }
 
 function createMatchHistoryBlock() {
@@ -199,39 +200,36 @@ function createMatchHistoryBlock() {
       <th>Winner</th>
     `;
 
-    matchHistory
-      .slice()
-      .reverse()
-      .forEach((match) => {
-        const row = table.insertRow();
-        const userScore = match.scores[userInfo.user.username] || 0;
-        const opponentName = Object.keys(match.scores).find(
-          (name) => name !== userInfo.user.username
-        );
-        const opponentScore = match.scores[opponentName] || 0;
+    matchHistory.forEach((match) => {
+      const row = table.insertRow();
+      const userScore = match.scores[userInfo.user.username] || 0;
+      const opponentName = Object.keys(match.scores).find(
+        (name) => name !== userInfo.user.username
+      );
+      const opponentScore = match.scores[opponentName] || 0;
 
-        let resultText = "";
-        let rowColor = "";
+      let resultText = "";
+      let rowColor = "";
 
-        if (match.forfeit) {
-          resultText = "Forfeit";
-          rowColor = "white";
-        } else if (match.winner === userInfo.user.username) {
-          resultText = "Win";
-          rowColor = "rgba(91, 188, 186, 0.3)";
-        } else {
-          resultText = "Loss";
-          rowColor = "rgba(148, 91, 188, 0.3)";
-        }
-        row.style.backgroundColor = rowColor;
-        row.innerHTML = `
+      if (match.forfeit) {
+        resultText = "Forfeit";
+        rowColor = "white";
+      } else if (match.winner === userInfo.user.username) {
+        resultText = "Win";
+        rowColor = "rgba(59, 93, 223, 0.45)";
+      } else {
+        resultText = "Loss";
+        rowColor = "rgba(223, 59, 59, 0.45)";
+      }
+      row.style.backgroundColor = rowColor;
+      row.innerHTML = `
         <td>${opponentName}</td>
         <td>${userScore} - ${opponentScore}</td>
         <td>${match.date}</td>
         <td>${resultText}</td>
         <td>${match.winner}</td>
       `;
-      });
+    });
 
     historyContainer.appendChild(table);
   }
@@ -272,18 +270,17 @@ function createWinrateChart(wins, losses) {
           label: "Winrate",
           data: [wins, losses],
           backgroundColor: [
-            "rgba(91, 188, 186, 0.3)",
-            "rgba(148, 91, 188, 0.3)",
+            "rgba(59, 93, 223, 0.30)",
+            "rgba(223, 59, 59, 0.30)",
           ],
-          borderColor: ["rgba(91, 188, 186, 1)", "rgba(148, 91, 188, 1)"],
+          borderColor: ["rgba(59, 93, 223, 0.8)", "rgba(223, 59, 59, 0.8)"],
           borderWidth: 3,
         },
       ],
     },
     options: {
-      cutout: 35,
       responsive: true,
-      maintainAspectRatio: false,
+      maintainAspectRatio: true,
     },
   });
 }
@@ -326,5 +323,27 @@ function createLeaderboard() {
     `;
   } else {
     currentRankingContainer.innerHTML = `<p>You are in the Top 3!</p>`;
+  }
+}
+
+async function loadFriends() {
+  try {
+    const response = await fetch("/api/friends"); // Remplace '/api/friends' par l'URL réelle de ton API
+    const friends = await response.json();
+
+    const friendsListBlock = document.getElementById("friend-list-block");
+    friendsListBlock.innerHTML = "";
+
+    friends.forEach((friend) => {
+      const friendImg = document.createElement("img");
+      friendImg.src = friend.avatar_url;
+      friendImg.alt = `Avatar de ${friend.name}`;
+      friendImg.className = "img-fluid rounded-circle friends-avatar";
+      friendsListBlock.appendChild(friendImg);
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des amis:", error);
+    document.getElementById("friend-list-block").innerHTML =
+      "<p>Erreur de chargement des amis.</p>";
   }
 }

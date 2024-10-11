@@ -8,7 +8,7 @@ from users.models import UserProfile
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets
-from .models import UserProfile
+from .models import Friendship, UserProfile
 from .serializers import UserProfileSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -87,12 +87,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["GET"], url_path="info-user")
     def info_user(self, request):
-        
+
         username = request.query_params.get("username")
         if username:
             user = get_object_or_404(User, username=username)
         else:
-            user = request.user        
+            user = request.user
         try:
             user_profile = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
@@ -101,10 +101,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        # Sérialiser le profil utilisateur
         serializer = UserProfileSerializer(user_profile)
-
-        # Retourner les données sérialisées
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["GET"], url_path="game-sessions")
@@ -126,6 +123,60 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         serializer = GameSessionSerializer(game_sessions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"], url_path="send-friend-request")
+    def send_friend_request(self, request, pk=None):
+        to_user_profile = self.get_object()
+        from_user_profile = request.user.userprofile
+
+        if from_user_profile == to_user_profile:
+            return Response(
+                {"error": "Cannot add yourself as a friend"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if Friendship.objects.filter(
+            from_user=from_user_profile, to_user=to_user_profile
+        ).exists():
+            return Response(
+                {"error": "Friend request already sent"},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        Friendship.objects.create(
+            from_user=from_user_profile, to_user=to_user_profile, accepted=False
+        )
+        return Response(
+            {"message": "Friend request sent"}, status=status.HTTP_201_CREATED
+        )
+
+    @action(detail=True, methods=["post"], url_path="accept-friend-request")
+    def accept_friend_request(self, request, pk=None):
+        friendship = get_object_or_404(
+            Friendship, pk=pk, to_user=request.user.userprofile
+        )
+
+        if friendship.accepted:
+            return Response(
+                {"error": "This request has already been accepted"},
+                status=status.HTTP_409_CONFLICT,
+            )
+
+        friendship.accepted = True
+        friendship.save()
+        return Response(
+            {"message": "Friend request accepted"}, status=status.HTTP_200_OK
+        )
+
+    @action(detail=True, methods=["post"], url_path="reject-friend-request")
+    def reject_friend_request(self, request, pk=None):
+        friendship = get_object_or_404(
+            Friendship, pk=pk, to_user=request.user.userprofile
+        )
+        friendship.delete()
+        return Response(
+            {"message": "Friend request rejected"}, status=status.HTTP_204_NO_CONTENT
+        )
 
 
 @login_required
