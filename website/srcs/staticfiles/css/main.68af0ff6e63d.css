@@ -21,13 +21,11 @@
   color: rgba(255, 255, 255, 0.965);
   text-shadow: 2px 2px 0 rgb(26 99 221 / 80%);
 }
-
 #friend-request-badge {
-  position: absolute;
+  transform: translate(50%, -50%);  /* Centre le badge correctement */
   font-size: 0.75rem;
-  z-index: 10;
+  z-index: 10; 
 }
-
 .offcanvas.offcanva-custom {
   border-radius: 12px;
   height: 80vh;
@@ -120,7 +118,7 @@ footer p {
   border-color: rgba(108, 55, 242, 0.25);
 }
 
-.large-label {
+.large-label{
   font-weight: 300;
   letter-spacing: 10px;
   text-transform: uppercase;

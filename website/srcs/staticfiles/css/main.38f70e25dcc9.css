@@ -21,13 +21,14 @@
   color: rgba(255, 255, 255, 0.965);
   text-shadow: 2px 2px 0 rgb(26 99 221 / 80%);
 }
-
 #friend-request-badge {
-  position: absolute;
-  font-size: 0.75rem;
-  z-index: 10;
+  top: -10px;  /* Positionne légèrement au-dessus */
+  right: -5px; /* Positionne légèrement à droite pour être au bord */
+  transform: translate(50%, -50%);  /* Centre le badge correctement */
+  font-size: 0.75rem;  /* Taille plus petite pour s'adapter à l'icône */
+  padding: 0.25em 0.5em;  /* Ajuster le padding pour un badge compact */
+  z-index: 10;  /* Assure-toi que le badge est au-dessus de l'icône */
 }
-
 .offcanvas.offcanva-custom {
   border-radius: 12px;
   height: 80vh;
@@ -120,7 +121,7 @@ footer p {
   border-color: rgba(108, 55, 242, 0.25);
 }
 
-.large-label {
+.large-label{
   font-weight: 300;
   letter-spacing: 10px;
   text-transform: uppercase;

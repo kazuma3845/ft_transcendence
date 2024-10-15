@@ -107,30 +107,18 @@ async function fetchUserStats(username) {
 async function fetchFriendRequests() {
   const response = await fetch("/api/users/profiles/friend-requests/");
   const data = await response.json();
-  return data.friend_requests;
+  return data.friends_requests;
 }
 
 async function fetchUserInfo() {
-  // if (!userInfo) { //a remette si on veut que le truc se fasse pas a chaque fois
-  const response = await fetch("/api/users/profiles/info-user");
-  const data = await response.json();
-  userInfo = data;
-  userInfo.friends_requests = await fetchFriendRequests();
-  console.log("Current user is:", userInfo);
-  udpateFRbadge(userInfo.friends_requests.length);
-  // }
-  return userInfo;
-}
-
-function udpateFRbadge(frLength) {
-  const badge = document.getElementById("friend-request-badge");
-
-  if (frLength > 0) {
-    badge.classList.remove("d-none");
-    badge.textContent = frLength;
-  } else {
-    badge.classList.add("d-none");
+  if (!userInfo) {
+    const response = await fetch("/api/users/profiles/info-user");
+    const data = await response.json();
+    userInfo = data;
+    userInfo.friends_requests = await fetchFriendRequests();
+    console.log("Current user is:", userInfo);
   }
+  return userInfo;
 }
 
 async function fetchUserProfileInfo(username) {
@@ -201,7 +189,7 @@ function createProfilBlock(user) {
   } else {
     document.getElementById("send-friend-request-btn").style.display = "none";
   }
-  // loadFriends();
+  loadFriends();
 }
 async function sendFriendRequest(userId) {
   try {

@@ -65,7 +65,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
     @action(detail=False, methods=["GET"], url_path="info-user")
     def info_user(self, request):
 
@@ -157,6 +156,28 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         friendship.delete()
         return Response(
             {"message": "Friend request rejected"}, status=status.HTTP_204_NO_CONTENT
+        )
+
+    @action(detail=False, methods=["get"], url_path="friend-requests")
+    def get_friend_requests(self, request):
+        user_profile = request.user.userprofile
+
+        friend_requests = Friendship.objects.filter(
+            to_user=user_profile, accepted=False
+        )
+
+        return Response(
+            {
+                "friend_requests": [
+                    {
+                        "from_user": friendship.from_user.user.username,
+                        "created_at": friendship.created,
+                        "id": friendship.id,
+                    }
+                    for friendship in friend_requests
+                ]
+            },
+            status=status.HTTP_200_OK,
         )
 
 
