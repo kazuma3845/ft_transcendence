@@ -1,5 +1,10 @@
 let userInfo = null;
-let externUserInfo = null;
+let requestedUserInfo = null;
+
+function getRequestedUsername(params) {
+  const queryUsername = params.get("username");
+  return queryUsername ? queryUsername : userInfo?.user?.username;
+}
 
 function fetchBlockchainResults(games) {
   const sortedGames = games.sort((a, b) => b.id - a.id);
@@ -86,8 +91,8 @@ async function computeStats(results) {
   };
 }
 
-async function fetchUserStats() {
-  return fetch("/api/users/profiles/game-sessions/")
+async function fetchUserStats(username) {
+  return fetch(`/api/users/profiles/game-sessions/?username=${username}`)
     .then((response) => response.json())
     .then((games) => fetchBlockchainResults(games))
     .then((results) => computeStats(results))
@@ -105,26 +110,41 @@ async function fetchUserInfo() {
     const data = await response.json();
     userInfo = data;
     console.log(userInfo);
-    userInfo.stats = await fetchUserStats();
   }
   return userInfo;
 }
 
+async function fetchUserProfileInfo(username) {
+  if (username != userInfo.user.username) {
+    const response = await fetch(
+      `/api/users/profiles/info-user/?username=${username}`
+    );
+    const data = await response.json();
+    requestedUserInfo = data;
+    requestedUserInfo.stats = await fetchUserStats(username);
+    return requestedUserInfo;
+  } else {
+    userInfo.stats = await fetchUserStats(username);
+    return userInfo;
+  }
+}
+
 // Fonction pour charger la page de profil
-function loadProfil() {
+function loadProfil(params) {
   fetch("/static/users/html/profil/profil.html")
     .then((response) => response.text())
-    .then((html) => {
+    .then(async (html) => {
       document.getElementById("app").innerHTML = html;
 
-      fetchUserInfo().then(() => {
-        createProfilBlock();
-        createWinRateBlock();
-        createWinStreakBlock();
-        createNemesisBlock();
-        createMatchHistoryBlock();
-        createLeaderboard();
-      });
+      const username = getRequestedUsername(params);
+      const user = await fetchUserProfileInfo(username);
+      createProfilBlock(user);
+      createWinRateBlock(user);
+      createWinStreakBlock(user);
+      createNemesisBlock(user);
+      createMatchHistoryBlock(user);
+      createLeaderboard(user);
+      
     })
     .catch((error) => {
       console.error("Erreur lors du chargement du profil:", error);
@@ -132,8 +152,8 @@ function loadProfil() {
 }
 
 // Fonction pour créer le bloc profil
-function createProfilBlock() {
-  const data = userInfo;
+function createProfilBlock(user) {
+  const data = user;
 
   if (!data || !data.user) {
     throw new Error("Données utilisateur non disponibles.");
@@ -155,8 +175,8 @@ function createProfilBlock() {
   loadFriends();
 }
 
-function createWinStreakBlock() {
-  const winStreak = userInfo.stats.winStreak;
+function createWinStreakBlock(user) {
+  const winStreak = user.stats.winStreak;
   const winStreakTitle = document.querySelector("#win-streack-block h2");
   winStreakTitle.textContent = `Win Streak: ${winStreak}`;
   const flameIMG = document.getElementById("winstreak-gif");
@@ -175,8 +195,8 @@ function createWinStreakBlock() {
   flameIMG.src = flameGif;
 }
 
-function createMatchHistoryBlock() {
-  const matchHistory = userInfo.stats.matchHistory;
+function createMatchHistoryBlock(user) {
+  const matchHistory = user.stats.matchHistory;
   console.log(
     "Current match history is :",
     matchHistory,
@@ -235,26 +255,26 @@ function createMatchHistoryBlock() {
   }
 }
 
-function createNemesisBlock() {
-  const nemesis = userInfo.stats.nemesis;
+function createNemesisBlock(user) {
+  const nemesis = user.stats.nemesis;
   const nemesisAvatar = document.getElementById("nemesis-avatar");
   const nemesisBlockTitle = document.querySelector("#nemesis-block h2");
 
   nemesisBlockTitle.textContent = `Nemesis: ${nemesis}`;
 
-  nemesisAvatar.src = userInfo.nemesis_avatar_url
-    ? userInfo.nemesis_avatar_url
+  nemesisAvatar.src = user.nemesis_avatar_url
+    ? user.nemesis_avatar_url
     : "/static/users/avatars/bot.gif";
 }
 
 // Fonction pour créer le bloc WinRate
-function createWinRateBlock() {
-  const stats = userInfo.stats;
+function createWinRateBlock(user) {
+  const stats = user.stats;
   const wins = stats.win;
   const losses = stats.loss;
 
   const winrateTitle = document.querySelector("#winrate-block h2");
-  winrateTitle.textContent = `Winrate: ${userInfo.stats.winrate}%`;
+  winrateTitle.textContent = `Winrate: ${user.stats.winrate}%`;
 
   createWinrateChart(wins, losses);
 }
@@ -285,7 +305,7 @@ function createWinrateChart(wins, losses) {
   });
 }
 
-function createLeaderboard() {
+function createLeaderboard(user) {
   //getLeaderBoard()
   const leaderboardContainer = document.getElementById("top-three-leaderboard");
   leaderboardContainer.innerHTML = "";
@@ -314,7 +334,7 @@ function createLeaderboard() {
 
   const currentRankingContainer = document.getElementById("current-ranking");
   const userRank = leaderboardData.find(
-    (player) => player.username === userInfo.user.username
+    (player) => player.username === user.user.username
   );
 
   if (userRank && userRank.rank > 3) {
@@ -326,10 +346,9 @@ function createLeaderboard() {
   }
 }
 
-async function loadFriends() {
+async function loadFriends(user) {
   try {
-    const response = await fetch("/api/friends"); // Remplace '/api/friends' par l'URL réelle de ton API
-    const friends = await response.json();
+    const friends = user.friends;
 
     const friendsListBlock = document.getElementById("friend-list-block");
     friendsListBlock.innerHTML = "";
