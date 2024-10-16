@@ -5,7 +5,6 @@ import Bot from './bot.js';
 import Power from './power.js';
 import WebSocketModule from './WebSocketModule.js';
 
-
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -36,7 +35,10 @@ const cameraPositions = {
     default: { x: 0, y: 0, z: 180 },
     top: { x: 0, y: -150, z: 150, rotationX: 45 * Math.PI / 180 },
     behindPaddleLeft: { x: -205, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: -60 * Math.PI / 180},
-    behindPaddleRight: { x: 205, y: 0, z: 100, rotationZ: 90 * Math.PI / 180, rotationY: 60 * Math.PI / 180}
+    behindPaddleRight: { x: 205, y: 0, z: 100, rotationZ: 90 * Math.PI / 180, rotationY: 60 * Math.PI / 180},
+
+    malusbehindPaddleLeft: { x: -205, y: 0, z: 100, rotationZ: 90 * Math.PI / 180, rotationY: -60 * Math.PI / 180},
+    malusbehindPaddleRight: { x: 205, y: 0, z: 100, rotationZ: -90 * Math.PI / 180, rotationY: 60 * Math.PI / 180},
 };
 
 function updateCameraPosition(position) {
@@ -51,52 +53,101 @@ updateCameraPosition(cameraPositions.default);
 document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case '1':
-            updateCameraPosition(cameraPositions.default);
+            if (pong.MalusCamLeft && pong.player == pong.playerLeft)
+                updateCameraPosition(cameraPositions.malusbehindPaddleLeft);
+            else if (pong.MalusCamRight)
+                updateCameraPosition(cameraPositions.malusbehindPaddleRight);
+            else
+                updateCameraPosition(cameraPositions.default);
             break;
         case '2':
-            updateCameraPosition(cameraPositions.top);
+            if (pong.MalusCamLeft && pong.player == pong.playerLeft)
+                updateCameraPosition(cameraPositions.malusbehindPaddleLeft);
+            else if (pong.MalusCamRight)
+                updateCameraPosition(cameraPositions.malusbehindPaddleRight);
+            else
+                updateCameraPosition(cameraPositions.top);
             break;
         case '3':
-            if (pong.player == pong.playerLeft)
-                updateCameraPosition(cameraPositions.behindPaddleLeft);
-            else
-                updateCameraPosition(cameraPositions.behindPaddleRight);
+            if (pong.MalusCamLeft)
+                updateCameraPosition(cameraPositions.malusbehindPaddleLeft);
+            else if (pong.MalusCamRight)
+                updateCameraPosition(cameraPositions.malusbehindPaddleRight);
+            else {
+                if (pong.player == pong.playerLeft)
+                    updateCameraPosition(cameraPositions.behindPaddleLeft);
+                else
+                    updateCameraPosition(cameraPositions.behindPaddleRight);
+            }
             break;
     }
 });
 
-let i = 0;
+let i = 0
+
+let fps = 60;
+let lastFrameTime = performance.now();
+const frameDuration = 1000 / fps;
+let isAnimating = true;
 
 function animate() {
-    if (pong.powerActive) {
-        if (i++ == 0)
-            scene.add(power.bonus);
+    if (!isAnimating) return;
+
+    const now = performance.now();
+    const deltaTime = now - lastFrameTime;
+
+    if (pong.MalusCamLeft && pong.player == pong.playerLeft)
+        updateCameraPosition(cameraPositions.malusbehindPaddleLeft)
+    if (pong.MalusCamRight && pong.player == pong.playerRight)
+        updateCameraPosition(cameraPositions.malusbehindPaddleRight)
+    if (deltaTime < frameDuration) {
+        requestAnimationFrame(animate);
+        return;
     }
-    if (pong.botActivated)
+    lastFrameTime = now;
+    if (pong.powerActive && i++ === 0) {
+        scene.add(power.bonus);
+    }
+    if (pong.botActivated) {
         bot.updateBotPosition();
+    }
     pong.deplacerRaquette();
     renderer.render(scene, camera);
-
-    checkWinCondition();
+    checkWinCondition()
+    requestAnimationFrame(animate);
 }
+
 
 function checkWinCondition() {
     if (pong.score[0] === pong.winScore) {
-        showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1]);
+        showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1], false);
     }
     if (pong.score[1] === pong.winScore) {
-        showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1]);
+        showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1], false);
     }
 }
 
+let winner = null
 
-function showWinScreen(player, message, score1, score2) {
-  const winScreen = document.getElementById("winScreen");
-  winScreen.style.display = "block";
+export function showWinScreen(player, message, score1, score2, forfait) {
+    const winScreen = document.getElementById("winScreen");
+    const winMessage = document.getElementById("winMessage");
+    winMessage.innerHTML = `${player} ${message} ${score1} - ${score2}`
+    winScreen.style.display = "block";
+    isAnimating = false;
 
-  registerScores();
+    console.log(player, message, score1, score2)
+    if (forfait)
+        if (player == pong.playerLeft)
+            winner = pong.playerRight
+        else
+            winner = pong.playerLeft
+    else
+        winner = player
+    pong.websocket.closeWebSocket();
+    // registerScores();
 
-  renderer.setAnimationLoop(null);
+    renderer.setAnimationLoop(null);
 }
 
 function registerScores() {
@@ -138,23 +189,20 @@ async function startGame() {
     pong.websocket.startWebSocket(sessionId);
     await pong.sendDataForID();
     startScreen.style.display = 'none';
-    if (pong.botActivated === true) {
-        renderer.setAnimationLoop(animate);
-    }
     if (pong.botActivated === false && (pong.player1_started != true || pong.player2_started != true)) {
         loader.style.display = 'flex';
-    }
-    else
+    } else {
+        lastFrameTime = performance.now()
         renderer.setAnimationLoop(animate);
+    }
 }
 
 export function startGameDual() {
     const loader = document.getElementById('loader');
     loader.style.display = 'none';
+    lastFrameTime = performance.now()
     renderer.setAnimationLoop(animate);
 }
 
 document.getElementById('startButton').addEventListener('click', startGame);
 document.getElementById('startButton').addEventListener('touchstart', startGame);
-
-export default pong;

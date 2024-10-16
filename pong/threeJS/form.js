@@ -21,7 +21,9 @@ export default class Form {
 
         //--------------------arene------------------------------------------
         const AreneGeomerty = new THREE.BoxGeometry(this.arene_size[0], this.arene_size[1], this.arene_size[2]);
-        const AreneMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const ArenetextureLoader = new THREE.TextureLoader();
+        const Arenetexture = ArenetextureLoader.load('texture/black-hole.jpg');
+        const AreneMaterial = new THREE.MeshBasicMaterial({ map: Arenetexture });
         this.Arene = new THREE.Mesh(AreneGeomerty, AreneMaterial);
         this.Arene.position.set(0, 0, -this.arene_size[2] / 2);
 

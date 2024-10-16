@@ -10,11 +10,16 @@ export default class Pong {
         this.lastExecTime = 1
         this.score = [0, 0]
 
-        this.enter = false;
+        this.enterright = false;
+        this.enterleft = false;
         this.ballPaused = true;
         this.keysPressed = {};
 
         this.touching = false;
+
+        this.MalusCamLeft = false
+        this.MalusCamRight = false
+
 
         // Ajout des événements clavier
         window.addEventListener('keydown', this.handleKeyDown.bind(this));
@@ -37,7 +42,10 @@ export default class Pong {
 
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
-            this.enter = true;
+            if (this.player == this.playerLeft)
+                this.enterleft = true;
+            else
+                this.enterright = true;
             this.ballPaused = false;
             if (this.botActivated) {
                 if (this.form.ball.position.x < 0)
@@ -113,9 +121,7 @@ export default class Pong {
             if (this.player == this.playerRight)
                 this.right_up = true;
         }
-
         let key_position = {
-            id: this.id,
             paddleSpeed: this.paddle_move_speed,
             moveSpeed: this.initialSpeed,
             power: this.powerActive,
@@ -125,10 +131,12 @@ export default class Pong {
             right_back: this.right_back,
             right_up: this.right_up,
             ballPaused: this.ballPaused,
-            enter: this.enter
+            enterright: this.enterright,
+            enterleft: this.enterleft
         };
-        this.websocket.sendMessage("update_position", key_position);
-        this.enter = false;
+        this.websocket.sendMessage("update_pos", key_position);
+        this.enterright = false;
+        this.enterleft = false;
     }
 
     updatePosition(data) {
@@ -147,6 +155,8 @@ export default class Pong {
             this.form.paddle_right_size[1] = data.content.bonuspadleRsize;
             this.power.updatePaddleGeometry(this.form.paddleLeft, this.form.paddle_left_size);
             this.power.updatePaddleGeometry(this.form.paddleRight, this.form.paddle_right_size);
+            this.MalusCamLeft = data.content.bonusChageCamLeft
+            this.MalusCamRight = data.content.bonusChageCamRight
         }
         if (this.botActivated) {
             this.ball_angle = data.content.ball_angle;

@@ -7,11 +7,11 @@ async function fetchUserStats() {
     .then((games) => {
       games.forEach((game) => {
         // console.log(game.id);
-        fetch(`/api/blockchain/get_score/?game_session_id=${game.id}`)
-          .then((blockchain_response) => blockchain_response.json())
-          .then((results) => {
+        // fetch(`/api/blockchain/get_score/?game_session_id=${game.id}`)
+          // .then((blockchain_response) => blockchain_response.json())
+          // .then((results) => {
             // console.log(results);
-          });
+          // });
       });
     })
     .catch((error) => {

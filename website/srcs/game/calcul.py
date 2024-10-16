@@ -18,11 +18,22 @@ class GameCalculator:
         self.arenaHeight = 225
         self.paddle_left_size = [5, 40, 10]
         self.paddle_right_size = [5, 40, 10]
+        self.initialSpeed = 0
+        self.botActivated = True
+        self.moveSpeed = 0
+
+        self.right_back = False
+        self.left_back = False
+        self.left_up = False
+        self.right_up = False
 
         self.i = 0
 
         # power
-        self.powerSpeedBall = False
+        self.power = False
+        self.powerChageCamLeft = False
+        self.powerChageCamRight = False
+        self.ChangeCam = False
         self.powerPaddleSize = False
         self.powerReverse = False
         self.sizebase = 40
@@ -36,18 +47,31 @@ class GameCalculator:
         self.randomPos()
 
     def perform_calculation(self, content):
-        initialSpeed = content['moveSpeed']
-        botActivated = content['bot']
-        ball_angle = 90
 
-        if content['enter']:
-            self.ballPaused = content['ballPaused']
+        if content['enterright'] and self.posx > 0:
+            self.ballPaused = False
+        if content['enterleft'] and self.posx < 0:
+            self.ballPaused = False
 
         if self.i != 1:
-            self.ballSpeedX = initialSpeed
-            self.speedBall = initialSpeed
+            self.power = content['power']
+            self.initialSpeed = content['moveSpeed']
+            self.botActivated = content['bot']
+            self.moveSpeed = content['paddleSpeed']
+            self.ballSpeedX = self.initialSpeed
+            self.speedBall = self.initialSpeed
             self.i = 1
 
+        #move
+        self.right_back = content['right_back']
+        self.left_back = content['left_back']
+        self.left_up = content['left_up']
+        self.right_up = content['right_up']
+
+
+    def Calcul_loop(self):
+
+        ball_angle = 90
         handleBallHit = False
         replaceBot = False
         botStartGame = False
@@ -55,33 +79,32 @@ class GameCalculator:
         ballRayon = 6
         paddle_pos = 140
 
-        moveSpeed = content['paddleSpeed']
 
         halfArenaHeight = self.arenaHeight / 2
         halfRaquetteHeight = self.paddle_left_size[1] / 2
         halfRaquetteHeight2 = self.paddle_right_size[1] / 2
 
-        if content['left_back']:
-            if (self.player_left_pos - halfRaquetteHeight - moveSpeed) > -halfArenaHeight:
-                self.player_left_pos -= moveSpeed
+        if self.left_back:
+            if (self.player_left_pos - halfRaquetteHeight - self.moveSpeed) > -halfArenaHeight:
+                self.player_left_pos -= self.moveSpeed
             else:
                 self.player_left_pos = -(halfArenaHeight - halfRaquetteHeight)
 
-        if content['right_back']:
-            if (self.player_right_pos - halfRaquetteHeight2 - moveSpeed) > -halfArenaHeight:
-                self.player_right_pos -= moveSpeed
+        if self.right_back:
+            if (self.player_right_pos - halfRaquetteHeight2 - self.moveSpeed) > -halfArenaHeight:
+                self.player_right_pos -= self.moveSpeed
             else:
                 self.player_right_pos = -(halfArenaHeight - halfRaquetteHeight2)
 
-        if content['left_up']:
-            if (self.player_left_pos + halfRaquetteHeight + moveSpeed) < halfArenaHeight:
-                self.player_left_pos += moveSpeed
+        if self.left_up:
+            if (self.player_left_pos + halfRaquetteHeight + self.moveSpeed) < halfArenaHeight:
+                self.player_left_pos += self.moveSpeed
             else:
                 self.player_left_pos = halfArenaHeight - halfRaquetteHeight
 
-        if content['right_up']:
-            if (self.player_right_pos + halfRaquetteHeight2 + moveSpeed) < halfArenaHeight:
-                self.player_right_pos += moveSpeed
+        if self.right_up:
+            if (self.player_right_pos + halfRaquetteHeight2 + self.moveSpeed) < halfArenaHeight:
+                self.player_right_pos += self.moveSpeed
             else:
                 self.player_right_pos = halfArenaHeight - halfRaquetteHeight2
 
@@ -92,23 +115,23 @@ class GameCalculator:
             if self.posx > 0:
                 self.posy = self.player_right_pos
                 self.speedDir = -1
-                if botActivated:
+                if self.botActivated:
                     botStartGame = True
         else:
             halfArenaWidth = self.arenaWidth / 2
 
             if (self.posx + ballRayon) >= halfArenaWidth:
-                self.posx = paddle_pos - self.paddle_right_size[0] / 2 - ballRayon
+                self.posx = paddle_pos - ballRayon
                 self.posy = self.player_right_pos
-                self.ballSpeedX = -initialSpeed
+                self.ballSpeedX = -self.initialSpeed
                 self.ballPaused = True
                 self.score[0] += 1
                 self.rebond = 0
 
             if (self.posx - ballRayon) <= -halfArenaWidth:
-                self.posx = -(paddle_pos - self.paddle_left_size[0] / 2 - ballRayon)
+                self.posx = -(paddle_pos - ballRayon)
                 self.posy = self.player_left_pos
-                self.ballSpeedX = initialSpeed
+                self.ballSpeedX = self.initialSpeed
                 self.ballPaused = True
                 self.score[1] += 1
                 self.rebond = 0
@@ -131,7 +154,7 @@ class GameCalculator:
                 bounceAngle = normalizedImpactY * (3.14 / 4)
                 self.ballSpeedX = abs(self.ballSpeedX) * math.cos(bounceAngle)
                 self.ballSpeedY = abs(self.ballSpeedX) * math.sin(bounceAngle)
-                if botActivated:
+                if self.botActivated:
                     angleRadians = math.atan2(self.ballSpeedY, self.ballSpeedX)
                     angleDegrees = angleRadians * (180 / 3.14)
                     ball_angle = 90 - angleDegrees
@@ -149,20 +172,20 @@ class GameCalculator:
                 bounceAngle = normalizedImpactY * (3.14 / 4)
                 self.ballSpeedX = -abs(self.ballSpeedX) * math.cos(bounceAngle)
                 self.ballSpeedY = abs(self.ballSpeedX) * math.sin(bounceAngle)
-                if botActivated:
+                if self.botActivated:
                     if not self.ballPaused:
                         replaceBot = True
                 self.rebond = 0
 
             speed = math.sqrt(self.ballSpeedX * self.ballSpeedX + self.ballSpeedY * self.ballSpeedY)
-            self.ballSpeedX = (self.ballSpeedX / speed) * initialSpeed
-            self.ballSpeedY = (self.ballSpeedY / speed) * initialSpeed
+            self.ballSpeedX = (self.ballSpeedX / speed) * self.initialSpeed
+            self.ballSpeedY = (self.ballSpeedY / speed) * self.initialSpeed
 
             self.coordBefore = self.posx
             self.posx += self.ballSpeedX
             self.posy += self.ballSpeedY
         
-        if content['power']:
+        if self.power:
             self.activePower()
 
         # BONUS
@@ -177,7 +200,7 @@ class GameCalculator:
             'score': self.score,
         }
 
-        if botActivated:
+        if self.botActivated:
             result.update({
                 'ball_angle': ball_angle,
                 'replaceBot': replaceBot,
@@ -185,23 +208,34 @@ class GameCalculator:
                 'handleBallHit': handleBallHit,
             })
 
-        if content['power']:
+        if self.power:
             result.update({
                 'bonusPosx': self.bonusposx,
                 'bonusPosy': self.bonusposy,
                 'bonuspadleLsize': self.bonusPadleL,
                 'bonuspadleRsize': self.bonusPadleR,
+                'bonusChageCamRight': self.powerChageCamRight,
+                'bonusChageCamLeft': self.powerChageCamLeft,
+
             })
         return result
 
-    def augmentSpeedBall(self):
-        if self.powerSpeedBall:
-            self.initialSpeed = 1.3 * self.initialSpeed
-            self.powerSpeedBall = False
-            Timer(2.0, self.reset_speed_ball).start()
+    def ChangeCame(self):
+        if self.ChangeCam:
+            if self.coordBefore < self.posx and not self.powerChageCamRight:
+                self.powerChageCamRight = True
+                self.ChangeCam = False
+                Timer(5.0, self.reset_ChangeCamR).start()
+            elif not self.powerChageCamLeft :
+                self.powerChageCamLeft = True
+                self.ChangeCam = False
+                Timer(5.0, self.reset_ChangeCamL).start()
     
-    def reset_speed_ball(self):
-        self.initialSpeed = self.speedBall
+    def reset_ChangeCamL(self):
+        self.powerChageCamLeft = False
+
+    def reset_ChangeCamR(self):
+        self.powerChageCamRight = False
 
     def augment_paddle(self):
         if self.powerPaddleSize:
@@ -241,7 +275,7 @@ class GameCalculator:
             self.randomPower()
             self.rebond = 0
         self.augment_paddle()
-        self.augmentSpeedBall()
+        self.ChangeCame()
         self.reverseBall()
     
     def randomPos(self):
@@ -249,10 +283,10 @@ class GameCalculator:
         self.bonusposy = random.uniform(-105, 105)
 
     def randomPower(self):
-        power = random.randint(0, 1)
+        power = random.randint(0, 2)
         if power == 0:
             self.powerReverse = True
         elif power == 1:
             self.powerPaddleSize = True
-        # elif power == 2:
-        #     self.powerSpeedBall = True
+        elif power == 2:
+            self.ChangeCam = True

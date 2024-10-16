@@ -95,9 +95,8 @@ export default class Bot {
         const delay = (1 - this.pong.botLVL) * 500; // Calculer le délai basé sur la difficulté du bot
         setTimeout(() => {
             this.pong.ballPaused = false;
-            this.pong.enter = true;
+            this.pong.enterright = true;
             this.bot_in_place = false;
-            this.pong.enter = true
         }, delay);
     }
   }

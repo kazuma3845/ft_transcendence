@@ -1,11 +1,12 @@
 // Module WebSocket pour chaque instance de jeu Pong
 import {startGameDual} from './game.js';
+import  {showWinScreen} from './game.js';
 
 export default class WebSocketModule {
     constructor(pong) {
         this.pong = pong;
-        // this.sessionId = this.pong.id;
         this.socket = null;
+        this.pingInterval = null;  // Pour gérer l'intervalle de ping
     }
 
     startWebSocket(sessionId) {
@@ -28,17 +29,14 @@ export default class WebSocketModule {
             try {
                 const data = JSON.parse(e.data);
                 if (data.type === 'update_position') {
-                    // Appel de la fonction du jeu pour mettre à jour la position
                     this.pong.updatePosition(data);
                 }
                 if (data.type === 'start_game') {
-                    // console.log(`start_game = ${data.message}`)
-                    // Appel de la fonction du jeu pour mettre à jour la position
                     startGameDual();
                 }
-                // if (data.type === 'readBeforeStart') {
-                //     // Appel de la fonction du jeu pour mettre à jour la position
-                // }
+                if (data.type === 'player_disconnected') {
+                    showWinScreen(data.player, "quit game!", this.pong.score[0], this.pong.score[1], true);
+                }
             } catch (error) {
                 console.error('Error parsing message:', error);
             }
@@ -47,7 +45,7 @@ export default class WebSocketModule {
         // Fermeture de la connexion WebSocket
         this.socket.onclose = (e) => {
             console.log(`WebSocket closed for session ${sessionId}.`);
-            this.socket = null;  // Réinitialiser la connexion fermée
+            this.socket = null;
         };
 
         // Gestion des erreurs WebSocket
@@ -69,13 +67,13 @@ export default class WebSocketModule {
             return false;
         }
     }
+    // Méthode pour fermer la WebSocket proprement
+    closeWebSocket() {
+        const message = {
+            type: 'disconnect',
+            message: 'Client requested disconnect'
+        };
+        this.socket.send(JSON.stringify(message));
+        this.socket.close();
+    }
 }
-// window.addEventListener('message', (event) => {
-//     if (event.origin !== 'https://transcendence/') {
-//         return;
-//     }
-//     // Récupérer l'ID de la session de jeu
-//     localStorage.setItem('game_session_id', event.data.gameSessionId);
-//     console.log(`Dans addEvent : localStorage.getItem(${localStorage.getItem('game_session_id')})`)
-
-// });
