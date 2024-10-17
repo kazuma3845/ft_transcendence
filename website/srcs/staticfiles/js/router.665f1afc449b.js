@@ -12,7 +12,7 @@ async function router() {
     const isAuthenticated = await checkAuthentication();
     console.log("Utilisateur authentifié : ", isAuthenticated);
 
-    if (isAuthenticated && !currentUserInfo) {
+    if (isAuthenticated && !userInfo) {
       await fetchCurrentUserInfo();
       updateUsername();
     }

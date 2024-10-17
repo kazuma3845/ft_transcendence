@@ -1,9 +1,9 @@
-let userInfo = null;
-let requestedUserInfo = null;
+let currentUserInfo = null;
+let requestedUserProfile = null;
 
 function getRequestedUsername(params) {
   const queryUsername = params.get("username");
-  return queryUsername ? queryUsername : userInfo?.user?.username;
+  return queryUsername ? queryUsername : currentUserInfo?.user?.username;
 }
 
 function fetchBlockchainResults(games) {
@@ -28,14 +28,14 @@ function fetchBlockchainResults(games) {
 }
 
 async function computeStats(results) {
-  console.log("Current username:", userInfo.user.username);
+  console.log("Current username:", currentUserInfo.user.username);
   const gamePlayed = results.length;
   const matchWon = results.filter(
-    (result) => result.winner === userInfo.user.username
+    (result) => result.winner === currentUserInfo.user.username
   );
   const winNumber = matchWon.length;
   const matchLost = results.filter(
-    (result) => result.winner != userInfo.user.username
+    (result) => result.winner != currentUserInfo.user.username
   );
   const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
@@ -50,7 +50,7 @@ async function computeStats(results) {
 
   let currentWinStreak = 0;
   for (let i = 0; i <= results.length; i++) {
-    if (results[i].winner === userInfo.user.username) {
+    if (results[i].winner === currentUserInfo.user.username) {
       currentWinStreak++;
     } else {
       break;
@@ -60,7 +60,7 @@ async function computeStats(results) {
 
   const lossCounter = {};
   results.forEach((result) => {
-    if (result.winner !== userInfo.user.username) {
+    if (result.winner !== currentUserInfo.user.username) {
       const opponent = result.winner;
       if (lossCounter[opponent]) {
         lossCounter[opponent]++;
@@ -104,51 +104,22 @@ async function fetchUserStats(username) {
     });
 }
 
-async function fetchFriendRequests() {
-  const response = await fetch("/api/users/profiles/friend-requests/");
-  const data = await response.json();
-  return data.friend_requests;
-}
-
-async function fetchUserInfo() {
-  // if (!userInfo) { //a remette si on veut que le truc se fasse pas a chaque fois
-  const response = await fetch("/api/users/profiles/info-user");
-  const data = await response.json();
-  userInfo = data;
-  userInfo.friends_requests = await fetchFriendRequests();
-  console.log("Current user is:", userInfo);
-  udpateFRbadge(userInfo.friends_requests.length);
-  // }
-  return userInfo;
-}
-
-function udpateFRbadge(frLength) {
-  const badge = document.getElementById("friend-request-badge");
-
-  if (frLength > 0) {
-    badge.classList.remove("d-none");
-    if (frLength > 99) {
-      badge.textContent = "99+";
-    } else {
-      badge.textContent = frLength;
-    }
-  } else {
-    badge.classList.add("d-none");
-  }
-}
 
 async function fetchUserProfileInfo(username) {
-  if (username != userInfo.user.username) {
+  if (username != currentUserInfo.user.username) {
     const response = await fetch(
       `/api/users/profiles/info-user/?username=${username}`
     );
     const data = await response.json();
-    requestedUserInfo = data;
-    requestedUserInfo.stats = await fetchUserStats(username);
-    return requestedUserInfo;
+    requestedUserProfile
+   = data;
+    requestedUserProfile
+  .stats = await fetchUserStats(username);
+    return requestedUserProfile
+  ;
   } else {
-    userInfo.stats = await fetchUserStats(username);
-    return userInfo;
+    currentUserInfo.stats = await fetchUserStats(username);
+    return currentUserInfo;
   }
 }
 
@@ -194,7 +165,7 @@ function createProfilBlock(user) {
   document.querySelector(".div-banner img").src = data.banner
     ? data.banner
     : "/static/users/banners/banner.webp";
-  if (userInfo && userInfo.user.username !== data.user.username) {
+  if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
     document.getElementById("send-friend-request-btn").style.display = "block";
 
     document
@@ -207,6 +178,7 @@ function createProfilBlock(user) {
   }
   // loadFriends();
 }
+
 async function sendFriendRequest(userId) {
   try {
     const response = await fetch(
@@ -232,6 +204,11 @@ async function sendFriendRequest(userId) {
     alert("Une erreur est survenue lors de l'envoi de la demande d'ami.");
   }
 }
+
+// async function fetchUserInfoLight(username) {
+//   const response = await fetch(`/api/users/profiles/info-user/?username=${username}`);
+//   // const profile = await fetch()
+// }
 
 function createWinStreakBlock(user) {
   const winStreak = user.stats.winStreak;
@@ -280,9 +257,9 @@ function createMatchHistoryBlock(user) {
 
     matchHistory.forEach((match) => {
       const row = table.insertRow();
-      const userScore = match.scores[userInfo.user.username] || 0;
+      const userScore = match.scores[currentUserInfo.user.username] || 0;
       const opponentName = Object.keys(match.scores).find(
-        (name) => name !== userInfo.user.username
+        (name) => name !== currentUserInfo.user.username
       );
       const opponentScore = match.scores[opponentName] || 0;
 
@@ -292,7 +269,7 @@ function createMatchHistoryBlock(user) {
       if (match.forfeit) {
         resultText = "Forfeit";
         rowColor = "white";
-      } else if (match.winner === userInfo.user.username) {
+      } else if (match.winner === currentUserInfo.user.username) {
         resultText = "Win";
         rowColor = "rgba(59, 93, 223, 0.45)";
       } else {

@@ -22,8 +22,9 @@
   text-shadow: 2px 2px 0 rgb(26 99 221 / 80%);
 }
 
-#friend-request-badge {
-  position: absolute;
+.notification-badge {
+  background: #c1c1ff;
+  border: solid;
   font-size: 0.75rem;
   z-index: 10;
 }

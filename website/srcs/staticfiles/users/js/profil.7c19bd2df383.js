@@ -110,7 +110,7 @@ async function fetchFriendRequests() {
   return data.friend_requests;
 }
 
-async function fetchCurrentUserInfo() {
+async function fetchcurrentUserInfo() {
   const response = await fetch("/api/users/profiles/info-user");
   const data = await response.json();
   currentUserInfo = data;

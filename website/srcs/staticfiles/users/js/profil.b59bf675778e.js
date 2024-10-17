@@ -1,9 +1,9 @@
-let currentUserInfo = null;
-let requestedUserProfile = null;
+let userInfo = null;
+let requestedUserInfo = null;
 
 function getRequestedUsername(params) {
   const queryUsername = params.get("username");
-  return queryUsername ? queryUsername : currentUserInfo?.user?.username;
+  return queryUsername ? queryUsername : userInfo?.user?.username;
 }
 
 function fetchBlockchainResults(games) {
@@ -28,14 +28,14 @@ function fetchBlockchainResults(games) {
 }
 
 async function computeStats(results) {
-  console.log("Current username:", currentUserInfo.user.username);
+  console.log("Current username:", userInfo.user.username);
   const gamePlayed = results.length;
   const matchWon = results.filter(
-    (result) => result.winner === currentUserInfo.user.username
+    (result) => result.winner === userInfo.user.username
   );
   const winNumber = matchWon.length;
   const matchLost = results.filter(
-    (result) => result.winner != currentUserInfo.user.username
+    (result) => result.winner != userInfo.user.username
   );
   const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
@@ -50,7 +50,7 @@ async function computeStats(results) {
 
   let currentWinStreak = 0;
   for (let i = 0; i <= results.length; i++) {
-    if (results[i].winner === currentUserInfo.user.username) {
+    if (results[i].winner === userInfo.user.username) {
       currentWinStreak++;
     } else {
       break;
@@ -60,7 +60,7 @@ async function computeStats(results) {
 
   const lossCounter = {};
   results.forEach((result) => {
-    if (result.winner !== currentUserInfo.user.username) {
+    if (result.winner !== userInfo.user.username) {
       const opponent = result.winner;
       if (lossCounter[opponent]) {
         lossCounter[opponent]++;
@@ -110,14 +110,14 @@ async function fetchFriendRequests() {
   return data.friend_requests;
 }
 
-async function fetchCurrentUserInfo() {
+async function fetchUserInfo() {
   const response = await fetch("/api/users/profiles/info-user");
   const data = await response.json();
-  currentUserInfo = data;
-  currentUserInfo.friends_requests = await fetchFriendRequests();
-  console.log("Current user is:", currentUserInfo);
-  udpateFRbadge(currentUserInfo.friends_requests.length);
-  return currentUserInfo;
+  userInfo = data;
+  userInfo.friends_requests = await fetchFriendRequests();
+  console.log("Current user is:", userInfo);
+  udpateFRbadge(userInfo.friends_requests.length);
+  return userInfo;
 }
 
 function udpateFRbadge(frLength) {
@@ -136,20 +136,17 @@ function udpateFRbadge(frLength) {
 }
 
 async function fetchUserProfileInfo(username) {
-  if (username != currentUserInfo.user.username) {
+  if (username != userInfo.user.username) {
     const response = await fetch(
       `/api/users/profiles/info-user/?username=${username}`
     );
     const data = await response.json();
-    requestedUserProfile
-   = data;
-    requestedUserProfile
-  .stats = await fetchUserStats(username);
-    return requestedUserProfile
-  ;
+    requestedUserInfo = data;
+    requestedUserInfo.stats = await fetchUserStats(username);
+    return requestedUserInfo;
   } else {
-    currentUserInfo.stats = await fetchUserStats(username);
-    return currentUserInfo;
+    userInfo.stats = await fetchUserStats(username);
+    return userInfo;
   }
 }
 
@@ -195,7 +192,7 @@ function createProfilBlock(user) {
   document.querySelector(".div-banner img").src = data.banner
     ? data.banner
     : "/static/users/banners/banner.webp";
-  if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
+  if (userInfo && userInfo.user.username !== data.user.username) {
     document.getElementById("send-friend-request-btn").style.display = "block";
 
     document
@@ -282,9 +279,9 @@ function createMatchHistoryBlock(user) {
 
     matchHistory.forEach((match) => {
       const row = table.insertRow();
-      const userScore = match.scores[currentUserInfo.user.username] || 0;
+      const userScore = match.scores[userInfo.user.username] || 0;
       const opponentName = Object.keys(match.scores).find(
-        (name) => name !== currentUserInfo.user.username
+        (name) => name !== userInfo.user.username
       );
       const opponentScore = match.scores[opponentName] || 0;
 
@@ -294,12 +291,12 @@ function createMatchHistoryBlock(user) {
       if (match.forfeit) {
         resultText = "Forfeit";
         rowColor = "white";
-      } else if (match.winner === currentUserInfo.user.username) {
+      } else if (match.winner === userInfo.user.username) {
         resultText = "Win";
         rowColor = "rgba(59, 93, 223, 0.45)";
       } else {
         resultText = "Loss";
-        rowColor = "rgba(223, 59, 59, 0.45)";
+        rowColor = "rgba(200, 59, 59, 0.45)";
       }
       row.style.backgroundColor = rowColor;
       row.innerHTML = `
