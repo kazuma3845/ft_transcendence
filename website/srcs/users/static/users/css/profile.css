@@ -29,10 +29,34 @@
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
 }
+#friend-requests-block {
+  background-color: rgba(23, 23, 170, 0.22);
+  height: 40%;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+#nemesis-avatar {
+  aspect-ratio: 1 / 1;
+}
+
+.friend-request-icons {
+  font-size: 20px;
+  text-shadow: none;
+}
+
+.friend-request-icons:hover {
+  text-shadow: none;
+}
 
 .friends-avatar {
-  width: 100px;
+  width: 50px;
   margin: 5px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border: solid;
+  border-color: white;
+  border-width: 3px;
 }
 
 /*---------------- RIGHT PART ------------*/

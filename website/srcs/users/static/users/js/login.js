@@ -32,11 +32,11 @@ function attachLoginFormSubmitListener() {
             document.getElementById("error-message").textContent = data.error;
             document.getElementById("error-message").style.display = "block";
           } else {
-            await fetchUserInfo();
+            await fetchCurrentUserInfo();
             updateUsername();
             loadModal(
               "Logged In Successfully",
-              `Welcome back ${userInfo.user.username}, you've been missed 💜`
+              `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
             );
             updateHeader();
             if (window.location.hash === "#login") window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
@@ -122,9 +122,9 @@ function logoutUser() {
         window.location.href = "#"; // Redirige ou recharge l'application après la déconnexion
         loadModal(
           "Logged Out Successfully",
-          `Goodbye ${userInfo.user.username}, you will be missed...💔`
+          `Goodbye ${currentUserInfo.user.username}, you will be missed...💔`
         );
-        userInfo = null;
+        currentUserInfo = null;
         updateHeader();
         updateUsername();
         router(); // Recharge l'interface pour refléter l'état déconnecté

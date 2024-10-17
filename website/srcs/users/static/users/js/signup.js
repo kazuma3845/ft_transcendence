@@ -41,10 +41,10 @@ function attachSignupFormSubmitListener() {
           if (data.error) {
             alert(data.error);
           } else {
-            await fetchUserInfo();
+            await fetchCurrentUserInfo();
             loadModal(
               "Signed Up Successfully",
-              `Welcome ${userInfo.user.username}, it's nice having you here ✨`
+              `Welcome ${currentUserInfo.user.username}, it's nice having you here ✨`
             );
             window.location.href = "#";
             updateHeader();

@@ -104,19 +104,15 @@ async function fetchUserStats(username) {
     });
 }
 
-
 async function fetchUserProfileInfo(username) {
   if (username != currentUserInfo.user.username) {
     const response = await fetch(
       `/api/users/profiles/info-user/?username=${username}`
     );
     const data = await response.json();
-    requestedUserProfile
-   = data;
-    requestedUserProfile
-  .stats = await fetchUserStats(username);
-    return requestedUserProfile
-  ;
+    requestedUserProfile = data;
+    requestedUserProfile.stats = await fetchUserStats(username);
+    return requestedUserProfile;
   } else {
     currentUserInfo.stats = await fetchUserStats(username);
     return currentUserInfo;
@@ -176,7 +172,9 @@ function createProfilBlock(user) {
   } else {
     document.getElementById("send-friend-request-btn").style.display = "none";
   }
-  // loadFriends();
+  if (data.user.username === currentUserInfo.user.username) {
+    loadFriends();
+  }
 }
 
 async function sendFriendRequest(userId) {
@@ -205,10 +203,65 @@ async function sendFriendRequest(userId) {
   }
 }
 
-// async function fetchUserInfoLight(username) {
-//   const response = await fetch(`/api/users/profiles/info-user/?username=${username}`);
-//   // const profile = await fetch()
-// }
+async function rejectFriendRequest(userId) {
+  try {
+    const response = await fetch(
+      `/api/users/profiles/${userId}/reject-friend-request/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      alert(result.message);
+    } else {
+      const errorData = await response.json();
+      alert(`Erreur: ${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors du refus de demande d'ami :", error);
+    alert("Une erreur est survenue lors du refus de demande d'ami.");
+  }
+}
+
+async function acceptFriendRequest(userId) {
+  try {
+    const response = await fetch(
+      `/api/users/profiles/${userId}/accept-friend-request/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      alert(result.message);
+    } else {
+      const errorData = await response.json();
+      alert(`Erreur: ${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'acceptation de la demande d'ami :", error);
+    alert("Une erreur est survenue lors de l'acceptation de la demande d'ami.");
+  }
+}
+
+async function fetchUserInfoLight(username) {
+  const response = await fetch(
+    `/api/users/profiles/info-user/?username=${username}`
+  );
+  const profile = await response.json();
+  return profile;
+}
 
 function createWinStreakBlock(user) {
   const winStreak = user.stats.winStreak;
@@ -290,16 +343,19 @@ function createMatchHistoryBlock(user) {
   }
 }
 
-function createNemesisBlock(user) {
+async function createNemesisBlock(user) {
   const nemesis = user.stats.nemesis;
+  const nemesis_profile = await fetchUserInfoLight(nemesis);
+  const nemesisProfileLink = document.getElementById("nemesis-link");
   const nemesisAvatar = document.getElementById("nemesis-avatar");
   const nemesisBlockTitle = document.querySelector("#nemesis-block h2");
 
   nemesisBlockTitle.textContent = `Nemesis: ${nemesis}`;
 
-  nemesisAvatar.src = user.nemesis_avatar_url
-    ? user.nemesis_avatar_url
+  nemesisAvatar.src = nemesis_profile.avatar
+    ? nemesis_profile.avatar
     : "/static/users/avatars/bot.gif";
+  nemesisProfileLink.href = `#profile/?username=${nemesis}`;
 }
 
 // Fonction pour créer le bloc WinRate
@@ -381,23 +437,65 @@ function createLeaderboard(user) {
   }
 }
 
-async function loadFriends(user) {
+async function loadFriends() {
   try {
-    const friends = user.friends;
+    const friendsListBlock = document.createElement("div");
 
-    const friendsListBlock = document.getElementById("friend-list-block");
-    friendsListBlock.innerHTML = "";
-
-    friends.forEach((friend) => {
-      const friendImg = document.createElement("img");
-      friendImg.src = friend.avatar_url;
-      friendImg.alt = `Avatar de ${friend.name}`;
-      friendImg.className = "img-fluid rounded-circle friends-avatar";
-      friendsListBlock.appendChild(friendImg);
-    });
+    if (currentUserInfo.friendRequests.length > 0) {
+      loadFriendRequest();
+    }
   } catch (error) {
     console.error("Erreur lors de la récupération des amis:", error);
-    document.getElementById("friend-list-block").innerHTML =
+    document.getElementById("friend-requests-block").innerHTML =
       "<p>Erreur de chargement des amis.</p>";
+  }
+}
+
+async function loadFriendRequest() {
+  try {
+    const friendRequests = currentUserInfo.friends_requests;
+    friendRequests.forEach(async (request) => {
+      const friendRequestProfile = await fetchUserInfoLight(request.from_user);
+      const requestContainer = document.createElement("div");
+      requestContainer.className =
+        "friend-request position-relative d-inline-block";
+      const requestLink = document.createElement("a");
+      requestLink.href = `#profile/?username=${friendRequestProfile.user.username}`;
+      const requestImg = document.createElement("img");
+      requestImg.src = friendRequestProfile.avatar
+        ? friendRequestProfile.avatar
+        : "/static/users/avatars/avatar.png";
+      requestImg.alt = `Avatar de ${friendRequestProfile.user.username}`;
+      requestImg.className = "img-fluid rounded-circle friends-avatar";
+      requestLink.appendChild(requestImg);
+      requestContainer.appendChild(requestLink);
+
+      const acceptIcon = document.createElement("i");
+      acceptIcon.className =
+        "friend-request-icons fas fa-check-circle text-success position-absolute top-0 end-0";
+      acceptIcon.style.cursor = "pointer";
+      acceptIcon.style.top = "-10px";
+      acceptIcon.style.right = "5px";
+      acceptIcon.addEventListener("click", () => {
+        acceptFriendRequest(request.id);
+      });
+
+      const rejectIcon = document.createElement("i");
+      rejectIcon.className =
+        "friend-request-icons fas fa-times-circle text-danger position-absolute top-0 start-0";
+      rejectIcon.style.cursor = "pointer";
+      rejectIcon.style.top = "-10px";
+      rejectIcon.style.left = "5px";
+      rejectIcon.addEventListener("click", () => {
+        rejectFriendRequest(request.id);
+      });
+
+      requestContainer.appendChild(rejectIcon);
+      requestContainer.appendChild(acceptIcon);
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des demandes d'amis:", error);
+    document.getElementById("friend-requests-block").innerHTML =
+      "<p>Erreur de chargement des demandes d'amis.</p>";
   }
 }
