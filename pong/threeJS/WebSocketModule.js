@@ -69,6 +69,7 @@ export default class WebSocketModule {
     }
     // Méthode pour fermer la WebSocket proprement
     closeWebSocket() {
+        console.log("DISCONNECT ", this.pong.player)
         const message = {
             type: 'disconnect',
             message: 'Client requested disconnect'

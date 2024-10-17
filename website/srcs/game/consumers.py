@@ -19,22 +19,21 @@ class GameConsumer(AsyncWebsocketConsumer):
             while True:
                 current_time = asyncio.get_event_loop().time()
 
-                # Vérifier l'activité des joueurs
-                print("Acctual: ", self.actualurl['url'], " URL: ", self.Url)
-                if self.actualurl['url'] != self.Url:
-                    print("PLAYER DISCONNECTED")
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'player_disconnected',
-                            'player_id': self.actualurl['user']
-                        }
-                    )
+                for user, url in self.actualurl.items():
+                    print("User: ", user, " Acctual: ", url, " URL: ", self.Url)
+                    if url != self.Url:
+                        print("PLAYER DISCONNECTED")
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'player_disconnected',
+                                'player_id': user
+                            }
+                        )
                 print("PLAYER CONNECTED ID: ", self.session_id)
-                # Calculer la nouvelle position de la balle
+
                 updated_content = self.calculator.Calcul_loop()
 
-                # Envoyer les nouvelles positions aux clients
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -43,7 +42,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-                # Attendre 1/60e de seconde (environ 60 FPS)
                 await asyncio.sleep(0.01667)
         except asyncio.CancelledError:
             return
@@ -67,11 +65,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
             await self.accept()
-            
-            self.game_task = asyncio.create_task(self.game_loop())
+
+            # Ne lancer la game_loop que si elle n'est pas déjà en cours
+            if not hasattr(self.calculator, 'game_task') or self.calculator.game_task.done():
+                print(f"Starting game loop for session {self.session_id}")
+                self.calculator.game_task = asyncio.create_task(self.game_loop())
+
             print(f"WebSocket connection accepted for session {self.session_id}")
 
-            # Diffuser un message aux membres du groupe pour indiquer qu'un nouveau joueur a rejoint
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -80,15 +81,14 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
         except Exception as e:
-            # Log l'erreur pour déboguer
             logger.error(f"Error during WebSocket connection for session {self.session_id}: {e}")
             await self.close()  # Fermer la connexion WebSocket en cas d'erreur
 
     async def disconnect(self, close_code):
-        if hasattr(self, 'game_task'):
-            self.game_task.cancel()
+        if hasattr(self.calculator, 'game_task'):
+            self.calculator.game_task.cancel()
             try:
-                await self.game_task
+                await self.calculator.game_task
             except asyncio.CancelledError:
                 logger.info(f"Game task for session {self.session_id} was cancelled.")
         
@@ -96,6 +96,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+
 
 
     async def receive(self, text_data):
@@ -117,7 +118,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
         if message_type == 'url':
-            self.actualurl = text_data_json['content']
+            content = text_data_json['content']
+            user = content['user']
+            url = content['url']
+            self.actualurl[user] = url
             print("SEND URL: ", text_data_json['content'])
         
         if message_type == 'disconnect':

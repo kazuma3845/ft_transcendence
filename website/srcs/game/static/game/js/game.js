@@ -1,7 +1,6 @@
 const allowedValues = [1, 3, 5, 7, 9, 11];
 
 
-
 function loadGameForm() {
   fetch("/static/game/html/game-form.html")
     .then((response) => response.text())
@@ -330,7 +329,7 @@ function startWebSocket(sessionId) {
 		this.pingInterval = setInterval(() => {
 			const content = {
 				url: window.location.hash,
-				user: "KAZ"
+				user: currentUser
 			}
 			sendMessage('url', content);
 		}, 5000);
