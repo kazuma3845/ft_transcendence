@@ -19,7 +19,7 @@ class Tournament(models.Model):
     participantNum = models.IntegerField(default=0)  # Nombre de participants, par défaut 0
 
     # Champ pour stocker le dictionnaire username -> alias
-    participantDico = models.JSONField(default=dict)  # Un dictionnaire vide par défaut
+    participants = models.JSONField(default=list)
 
     def __str__(self):
-        return f"Tournament with games: {self.game_1_1.id}, {self.game_1_2.id}, {self.game_2.id}"
+        return f"Tournament {self.id} with games: {self.game_1_1.id}, {self.game_1_2.id}, {self.game_2.id}"

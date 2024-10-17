@@ -7,10 +7,10 @@ class="d-flex justify-content-center align-items-center flex-row column-gap-5"
 <div
 	class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
 >
-	<h2 id="current-tour-rooms" class="large-label">Current Tours</h2>
+	<h2 id="current-tours" class="large-label">Current Tours</h2>
 	<ul
 	class="nav d-flex flex-column justify-content-evenly align-items-center h-100"
-	id="session-list"
+	id="tour-list"
 	></ul>
 </div>
 </div>
@@ -33,7 +33,7 @@ class="d-flex justify-content-center align-items-center flex-row column-gap-5"
 		<div
 		class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
 		>
-		<form method="POST" id="game-form">
+		<form method="POST" id="tour-form">
 			<label class="form-label" for="move_speed_ball">Ball Move Speed: <span id="move_speed_ball_value">3</span></label><br />
 			<input type="range" id="move_speed_ball" name="move_speed_ball" min="1" max="5" value="3" class="w-100" oninput="updateValue('move_speed_ball_value', this.value)" />
 			<br /><br />
