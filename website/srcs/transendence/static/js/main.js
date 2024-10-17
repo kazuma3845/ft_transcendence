@@ -39,7 +39,7 @@ async function fetchCurrentUserInfo() {
   const data = await response.json();
   currentUserInfo = data;
   currentUserInfo.friends_requests = await fetchFriendRequests();
-  console.log("Current user is:", currentUserInfo);
+  // console.log("Current user is:", currentUserInfo);
   udpateFRbadge(currentUserInfo.friends_requests.length);
   return currentUserInfo;
 }

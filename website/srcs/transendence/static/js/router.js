@@ -1,6 +1,6 @@
 async function router() {
   let hash = window.location.hash; // ex: #profile/?username=neah12
-  console.log("Hash actuel : ", hash);
+  // console.log("Hash actuel : ", hash);
 
   let [route, queryString] = hash.split("?"); 
   if (route.endsWith("/")) {
@@ -10,7 +10,7 @@ async function router() {
   const params = new URLSearchParams(queryString);
   try {
     const isAuthenticated = await checkAuthentication();
-    console.log("Utilisateur authentifié : ", isAuthenticated);
+    // console.log("Utilisateur authentifié : ", isAuthenticated);
 
     if (isAuthenticated && !currentUserInfo) {
       await fetchCurrentUserInfo();

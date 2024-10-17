@@ -35,7 +35,7 @@ export default class WebSocketModule {
                     startGameDual();
                 }
                 if (data.type === 'player_disconnected') {
-                    showWinScreen(data.player, "quit game!", this.pong.score[0], this.pong.score[1], true);
+                    showWinScreen(data.message, "quit game!", this.pong.score[0], this.pong.score[1], true);
                 }
             } catch (error) {
                 console.error('Error parsing message:', error);
@@ -66,15 +66,5 @@ export default class WebSocketModule {
             console.error(`WebSocket for session is not open. Cannot send message.`);
             return false;
         }
-    }
-    // Méthode pour fermer la WebSocket proprement
-    closeWebSocket() {
-        console.log("DISCONNECT ", this.pong.player)
-        const message = {
-            type: 'disconnect',
-            message: 'Client requested disconnect'
-        };
-        this.socket.send(JSON.stringify(message));
-        this.socket.close();
     }
 }

@@ -11,25 +11,11 @@ calculators = {}
 class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self):
         super().__init__()
-        self.actualurl = {}
-        self.Url = None
 
     async def game_loop(self):
         try:
             while True:
                 current_time = asyncio.get_event_loop().time()
-
-                for user, url in self.actualurl.items():
-                    print("User: ", user, " Acctual: ", url, " URL: ", self.Url)
-                    if url != self.Url:
-                        print("PLAYER DISCONNECTED")
-                        await self.channel_layer.group_send(
-                            self.room_group_name,
-                            {
-                                'type': 'player_disconnected',
-                                'player_id': user
-                            }
-                        )
                 print("PLAYER CONNECTED ID: ", self.session_id)
 
                 updated_content = self.calculator.Calcul_loop()
@@ -51,8 +37,6 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         try:
             self.session_id = self.scope['url_route']['kwargs']['session_id']
-            self.Url = "#game?sessionid=" + self.session_id
-            self.actualurl['url'] = self.Url
             self.room_group_name = f'game_{self.session_id}'
 
             self.calculator = calculators.get(self.session_id, GameCalculator())
@@ -116,16 +100,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'player2_points': player2_points
                 }
             )
-
-        if message_type == 'url':
-            content = text_data_json['content']
-            user = content['user']
-            url = content['url']
-            self.actualurl[user] = url
-            print("SEND URL: ", text_data_json['content'])
-        
-        if message_type == 'disconnect':
-                await self.disconnect(close_code=1000)
 
         if message_type == 'update_pos':
             content = text_data_json['content']
@@ -192,13 +166,4 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'update_position',
             'content': content,
-        }))
-
-    async def player_disconnected(self, event):
-        player_id = event['player_id']
-        
-        # Envoyer aux autres clients quel joueur spécifique a été déconnecté
-        await self.send(text_data=json.dumps({
-            'type': 'player_disconnected',
-            'player': player_id
         }))

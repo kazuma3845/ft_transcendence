@@ -262,7 +262,6 @@ function startWebSocket(sessionId) {
 
   socket.onopen = function (e) {
     console.log("WebSocket connected.");
-		startPing();
   };
 
   socket.onmessage = function (e) {
@@ -279,10 +278,6 @@ function startWebSocket(sessionId) {
       }
       if (data.type === "display_player") {
         displayPlayer(data.player1, data.player2);
-      }
-      if (data.type === "player_disconnected") {
-				stopPing();
-        closeWebSocket();
       }
     } catch (error) {
       console.error("Error parsing message:", error);
@@ -323,44 +318,5 @@ function startWebSocket(sessionId) {
       console.log("---->> : ", username);
       console.error("Score elements not found in the DOM");
     }
-  }
-
-	function startPing() {
-		this.pingInterval = setInterval(() => {
-			const content = {
-				url: window.location.hash,
-				user: currentUser
-			}
-			sendMessage('url', content);
-		}, 5000);
-	}
-
-	function stopPing() {
-		if (this.pingInterval) {
-				clearInterval(this.pingInterval);
-				this.pingInterval = null;
-		}
-	}
-
-	function sendMessage(messageType, messageContent) {
-		if (socket && socket.readyState === WebSocket.OPEN) {
-				socket.send(JSON.stringify({
-						type: messageType,
-						content: messageContent
-				}));
-				return true;
-		} else {
-				console.error(`WebSocket for session is not open. Cannot send message.`);
-				return false;
-		}
-	}
-
-  function closeWebSocket() {
-    const message = {
-        type: 'disconnect',
-        message: 'Client requested disconnect'
-    };
-    socket.send(JSON.stringify(message));
-    socket.close();
   }
 }

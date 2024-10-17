@@ -144,13 +144,12 @@ export function showWinScreen(player, message, score1, score2, forfait) {
             winner = pong.playerLeft
     else
         winner = player
-    pong.websocket.closeWebSocket();
-    // registerScores();
+    registerScores(forfait);
 
     renderer.setAnimationLoop(null);
 }
 
-function registerScores() {
+function registerScores(forfeit) {
     const url = `/api/blockchain/set_score/`;
 
   const gameData = {
