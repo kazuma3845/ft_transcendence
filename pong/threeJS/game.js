@@ -153,11 +153,13 @@ export function showWinScreen(player, message, score1, score2, forfait) {
 function registerScores() {
     const url = `/api/blockchain/set_score/`;
 
-    const gameData = {
-        game_session_id: pong.id,
-        players: [pong.playerLeft, pong.playerRight],
-        scores: pong.score
-    };
+  const gameData = {
+    game_session_id: pong.id,
+    players: [pong.playerLeft, pong.playerRight],
+    scores: pong.score,
+    winner: winner,
+    forfeit: forfeit,
+  };
 
     const fetchOptions = {
         method: 'POST',

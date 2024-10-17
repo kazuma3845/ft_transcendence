@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 	'corsheaders',
     'blockchain',
 	'messaging',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

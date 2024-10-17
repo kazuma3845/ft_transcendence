@@ -12,3 +12,4 @@ daphne==4.0.0
 msgpack==1.0.8
 redis==5.0.8
 whitenoise
+django-extensions

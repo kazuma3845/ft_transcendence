@@ -9,9 +9,9 @@ function loadHome() {
 }
 
 function updateUsername() {
-  if (userInfo && userInfo.user && userInfo.user.username) {
+  if (currentUserInfo && currentUserInfo.user && currentUserInfo.user.username) {
     document.getElementById("nav-bar-username").textContent =
-      userInfo.user.username;
+      currentUserInfo.user.username;
   } else {
     document.getElementById("nav-bar-username").textContent = "";
   }
@@ -33,6 +33,37 @@ function loadModal(title, message) {
     );
 }
 
+
+async function fetchCurrentUserInfo() {
+  const response = await fetch("/api/users/profiles/info-user");
+  const data = await response.json();
+  currentUserInfo = data;
+  currentUserInfo.friends_requests = await fetchFriendRequests();
+  console.log("Current user is:", currentUserInfo);
+  udpateFRbadge(currentUserInfo.friends_requests.length);
+  return currentUserInfo;
+}
+
+async function fetchFriendRequests() {
+  const response = await fetch("/api/users/profiles/friend-requests/");
+  const data = await response.json();
+  return data.friend_requests;
+}
+
+function udpateFRbadge(frLength) {
+  const badge = document.getElementById("friend-request-badge");
+
+  if (frLength > 0) {
+    badge.classList.remove("d-none");
+    if (frLength > 9) {
+      badge.textContent = "9+";
+    } else {
+      badge.textContent = frLength;
+    }
+  } else {
+    badge.classList.add("d-none");
+  }
+}
 // Charger les parties de jeu
 function loadGames() {
   // Code pour charger les parties depuis l'API du jeu

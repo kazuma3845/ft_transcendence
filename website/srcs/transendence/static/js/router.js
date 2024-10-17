@@ -1,15 +1,23 @@
 async function router() {
-  const hash = window.location.hash; // Récupère le fragment d'URL
-  // console.log("Hash actuel : ", hash);
+  let hash = window.location.hash; // ex: #profile/?username=neah12
+  console.log("Hash actuel : ", hash);
 
+  let [route, queryString] = hash.split("?"); 
+  if (route.endsWith("/")) {
+    route = route.slice(0, -1); 
+  }
+
+  const params = new URLSearchParams(queryString);
   try {
     const isAuthenticated = await checkAuthentication();
-    // console.log("Utilisateur authentifié : ", isAuthenticated);
-    if (isAuthenticated && !userInfo) {
-      await fetchUserInfo();
+    console.log("Utilisateur authentifié : ", isAuthenticated);
+
+    if (isAuthenticated && !currentUserInfo) {
+      await fetchCurrentUserInfo();
       updateUsername();
     }
-    switch (hash) {
+
+    switch (route) {
       case "#signup":
         loadSignupForm();
         break;
@@ -34,8 +42,11 @@ async function router() {
         loadCreatTournamentsForm();
         break;
       case "#profile":
-        if (isAuthenticated) loadProfil();
-        else loadLoginForm();
+        if (isAuthenticated) {
+          loadProfil(params);
+        } else {
+          loadLoginForm();
+        }
         break;
       default:
         loadHome();
@@ -50,7 +61,6 @@ window.addEventListener("hashchange", router);
 document.addEventListener("DOMContentLoaded", router);
 
 function getCSRFToken() {
-  // Récupère le token CSRF du cookie
   let cookieValue = null;
   const cookies = document.cookie.split(";");
   for (let i = 0; i < cookies.length; i++) {
