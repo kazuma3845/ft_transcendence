@@ -4,12 +4,12 @@ from django.db import models
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to="users/static/avatars/", null=True, blank=True)
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
+    banner = models.ImageField(upload_to="banners/", null=True, blank=True)
     bio = models.TextField(max_length=500, blank=True)
 
     def __str__(self):
         return self.user.username
-
 
 class Friendship(models.Model):
     from_user = models.ForeignKey(

@@ -154,8 +154,8 @@ function createProfilBlock(user) {
     ? data.bio
     : "Ceci est une bio vraiment pas très intéressante. J'imagine que j'aime le pong puisque je suis ici. (Aidez moi à trouver un stage svp)";
 
-  document.querySelector(".avatar-div img").src = data.avatar_url
-    ? data.avatar_url
+  document.querySelector(".avatar-div img").src = data.avatar
+    ? data.avatar
     : "/static/users/avatars/avatar.png";
 
   document.querySelector(".div-banner img").src = data.banner
@@ -167,7 +167,7 @@ function createProfilBlock(user) {
     document
       .getElementById("send-friend-request-btn")
       .addEventListener("click", () => {
-        sendFriendRequest(data.user.id); // Appel de la fonction pour envoyer la demande
+        sendFriendRequest(data.user.id);
       });
   } else {
     document.getElementById("send-friend-request-btn").style.display = "none";
@@ -354,7 +354,7 @@ async function createNemesisBlock(user) {
 
   nemesisAvatar.src = nemesis_profile.avatar
     ? nemesis_profile.avatar
-    : "/static/users/avatars/bot.gif";
+    : "/static/users/avatars/avatar.png";
   nemesisProfileLink.href = `#profile/?username=${nemesis}`;
 }
 
@@ -439,14 +439,32 @@ function createLeaderboard(user) {
 
 async function loadFriends() {
   try {
-    const friendsListBlock = document.createElement("div");
+    console.log("Loading some friends");
 
-    if (currentUserInfo.friendRequests.length > 0) {
+    const profileBlock = document.getElementById("profile-block");
+    const friendsListBlock = document.createElement("div");
+    friendsListBlock.className =
+      "friend-list-block position-relative d-inline-block p-3";
+    currentUserInfo.friends.forEach(async (friend) => {
+      console.log("Loading new friend");
+
+      const friendLink = document.createElement("a");
+      friendLink.href = `#profile/?username=${friend.username}`;
+      const friendAvatar = document.createElement("img");
+      friendAvatar.src = friend.avatar_url
+        ? friend.avatar_url
+        : "/static/users/avatars/avatar.png";
+      friendAvatar.className = "img-fluid rounded-circle friends-avatar";
+      friendLink.appendChild(friendAvatar);
+      friendsListBlock.appendChild(friendLink);
+      profileBlock.appendChild(friendsListBlock);
+    });
+    if (currentUserInfo.friends_requests.length > 0) {
       loadFriendRequest();
     }
   } catch (error) {
     console.error("Erreur lors de la récupération des amis:", error);
-    document.getElementById("friend-requests-block").innerHTML =
+    document.getElementById("friend-list-block").innerHTML =
       "<p>Erreur de chargement des amis.</p>";
   }
 }

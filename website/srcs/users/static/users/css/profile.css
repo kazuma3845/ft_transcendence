@@ -23,19 +23,6 @@
   color: rgba(40, 29, 159, 0.823);
 }
 
-#friend-list-block {
-  background-color: rgba(23, 23, 170, 0.22);
-  height: 40%;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-#friend-requests-block {
-  background-color: rgba(23, 23, 170, 0.22);
-  height: 40%;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
-
 #nemesis-avatar {
   aspect-ratio: 1 / 1;
 }
@@ -49,8 +36,22 @@
   text-shadow: none;
 }
 
+
+.friend-list-container {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 20px 0;
+}
+
+.friend-list-block {
+  display: inline-block; 
+  margin-right: 10px; 
+}
+
+
 .friends-avatar {
-  width: 50px;
+  width: 70px;
   margin: 5px;
   height: auto;
   aspect-ratio: 1 / 1;
@@ -58,7 +59,6 @@
   border-color: white;
   border-width: 3px;
 }
-
 /*---------------- RIGHT PART ------------*/
 
 #upper-stats-block {
