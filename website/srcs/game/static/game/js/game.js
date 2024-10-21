@@ -45,7 +45,8 @@ function attachGameFormSubmitListener() {
 
       // Ajoute les valeurs de checkbox dans les données
       data["power"] = document.getElementById("power").checked;
-      data["bot"] = document.getElementById("bot").checked;
+      data["Multiplayer"] = document.getElementById("Multiplayer").checked;
+			data["bot"] = document.getElementById("bot").checked;
 
       // Appelle la fonction pour créer une session de jeu
       createGameSession(data)
@@ -148,8 +149,42 @@ function updateValue(id, value) {
   document.getElementById(id).textContent = value;
 }
 
-function updateCheckboxValue(id, isChecked) {
-  document.getElementById(id).textContent = isChecked ? "On" : "Off";
+// function updateCheckboxValue(id, isChecked) {
+//   document.getElementById(id).textContent = isChecked ? "On" : "Off";
+// }
+
+function updateCheckboxValue(spanId, isChecked) {
+	document.getElementById(spanId).innerText = isChecked ? 'On' : 'Off';
+	if (spanId === 'Multiplayer_value') {
+			handleMultiplayerChange(isChecked);
+	}
+}
+
+function handleMultiplayerChange(isChecked) {
+	const botCheckbox = document.getElementById('bot');
+	const botSpan = document.getElementById('bot_value');
+	const botLabel = document.querySelector('label[for="bot"]');
+	const botDifficulty = document.getElementById('bot_difficulty');
+	const botDifficultyLabel = document.querySelector('label[for="bot_difficulty"]');
+	const botDifficultyValue = document.getElementById('bot_difficulty_value');
+
+	if (isChecked) {
+			botCheckbox.checked = false;
+			botSpan.innerText = 'Off';
+			botCheckbox.classList.add('hidden');
+			botSpan.classList.add('hidden');
+			botLabel.classList.add('hidden');
+			botDifficulty.classList.add('hidden');
+			botDifficultyLabel.classList.add('hidden');
+			botDifficultyValue.classList.add('hidden');
+	} else {
+			botCheckbox.classList.remove('hidden');
+			botSpan.classList.remove('hidden');
+			botLabel.classList.remove('hidden');
+			botDifficulty.classList.remove('hidden');
+			botDifficultyLabel.classList.remove('hidden');
+			botDifficultyValue.classList.remove('hidden');
+	}
 }
 
 function updateWinNumber() {

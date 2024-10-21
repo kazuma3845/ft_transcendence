@@ -14,3 +14,7 @@ iframe {
 .game-form-container {
   border-radius: 12px;
 }
+
+.hidden {
+  display: none;
+}

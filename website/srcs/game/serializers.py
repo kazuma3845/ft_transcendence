@@ -21,6 +21,10 @@ class GameSessionSerializer(serializers.ModelSerializer):
         required=False,
         style={'input_type': 'checkbox'}
     )
+    Multiplayer = serializers.BooleanField(
+        required=False,
+        style={'input_type': 'checkbox'}
+    )
     bot = serializers.BooleanField(
         required=False,
         style={'input_type': 'checkbox'}
@@ -54,6 +58,7 @@ class GameSessionSerializer(serializers.ModelSerializer):
             'move_speed_ball',
             'move_speed_paddle',
             'power',
+            'Multiplayer',
             'bot',
             'bot_difficulty',
             'player1_started',

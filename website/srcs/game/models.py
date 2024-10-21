@@ -16,6 +16,7 @@ class GameSession(models.Model):
     move_speed_ball = models.IntegerField(default=6, validators=[MaxValueValidator(10)])
     move_speed_paddle = models.IntegerField(default=4, validators=[MaxValueValidator(10)])
     power = models.BooleanField(null=True, blank=True)
+    Multiplayer = models.BooleanField(null=True, blank=True)
     bot = models.BooleanField(null=True, blank=True)
     bot_difficulty = models.IntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(10)])
     player1_started = models.BooleanField(default=False)  # Initialisé à False

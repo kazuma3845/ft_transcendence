@@ -42,14 +42,20 @@ export default class Pong {
 
     handleKeyPress(event) {
         if (event.key === 'Enter' && this.ballPaused) {
-            if (this.player == this.playerLeft)
+            if (this.MultiLocal) {
                 this.enterleft = true;
-            else
                 this.enterright = true;
-            this.ballPaused = false;
-            if (this.botActivated) {
-                if (this.form.ball.position.x < 0)
-                    this.bot.handleBallHit();
+            }
+            else {
+                if (this.player == this.playerLeft)
+                    this.enterleft = true;
+                else
+                    this.enterright = true;
+                this.ballPaused = false;
+                if (this.botActivated) {
+                    if (this.form.ball.position.x < 0)
+                        this.bot.handleBallHit();
+                }
             }
         }
     }
@@ -108,18 +114,29 @@ export default class Pong {
             this.right_up = false;
         }
 
-        // Gestion du clavier
-        if (this.keysPressed['s']) {
-            if (this.player == this.playerLeft)
-                this.left_back = true;
-            if (this.player == this.playerRight)
+        if (this.MultiLocal) {
+            if (this.keysPressed['k'])
                 this.right_back = true;
-        }
-        if (this.keysPressed['w']) {
-            if (this.player == this.playerLeft)
-                this.left_up = true;
-            if (this.player == this.playerRight)
+            if (this.keysPressed['o'])
                 this.right_up = true;
+            if (this.keysPressed['s'])
+                this.left_back = true;
+            if (this.keysPressed['w'])
+                this.left_up = true;
+        }
+        else {
+            if (this.keysPressed['s']) {
+                if (this.player == this.playerLeft)
+                    this.left_back = true;
+                if (this.player == this.playerRight)
+                    this.right_back = true;
+            }
+            if (this.keysPressed['w']) {
+                if (this.player == this.playerLeft)
+                    this.left_up = true;
+                if (this.player == this.playerRight)
+                    this.right_up = true;
+            }
         }
         let key_position = {
             paddleSpeed: this.paddle_move_speed,
@@ -197,6 +214,7 @@ export default class Pong {
             this.initialSpeed = data.move_speed_ball * 2;
             this.paddle_move_speed = data.move_speed_paddle * 2;
             this.powerActive = data.power;
+            this.MultiLocal = data.Multiplayer;
             this.botActivated = data.bot;
             this.botLVL = (data.bot_difficulty / 10);
             this.player1_started = data.player1_started;

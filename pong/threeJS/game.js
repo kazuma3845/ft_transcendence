@@ -190,7 +190,7 @@ async function startGame() {
     pong.websocket.startWebSocket(sessionId);
     await pong.sendDataForID();
     startScreen.style.display = 'none';
-    if (pong.botActivated === false && (pong.player1_started != true || pong.player2_started != true)) {
+    if (!pong.MultiLocal && !pong.botActivated && (pong.player1_started != true || pong.player2_started != true)) {
         loader.style.display = 'flex';
     } else {
         lastFrameTime = performance.now()

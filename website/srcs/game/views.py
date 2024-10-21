@@ -34,9 +34,10 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Créer une nouvelle session de jeu avec les données validées
         session = GameSession.objects.create(
             player1=player1,
-            move_speed_ball=serializer.validated_data.get('move_speed_ball', 6),
+            move_speed_ball=serializer.validated_data.get('move_speed_ball', 3),
             move_speed_paddle=serializer.validated_data.get('move_speed_paddle', 4),
             power=serializer.validated_data.get('power', False),
+            Multiplayer=serializer.validated_data.get('Multiplayer', False),
             bot=serializer.validated_data.get('bot', False),
             bot_difficulty=serializer.validated_data.get('bot_difficulty', 5),
             win_number=serializer.validated_data.get('win_number', 5),
