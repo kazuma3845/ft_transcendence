@@ -97,8 +97,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         if not game_sessions.exists():
             return Response(
-                {"message": "Aucune session trouvée pour cet utilisateur."},
-                status=status.HTTP_404_NOT_FOUND,
+                {"message": "Aucune session trouvée pour cet utilisateur.", "data": []},
+                status=status.HTTP_200_OK,
             )
 
         serializer = GameSessionSerializer(game_sessions, many=True)
@@ -170,7 +170,14 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             {
                 "friend_requests": [
                     {
-                        "from_user": friendship.from_user.user.username,
+                        "from_user": {
+                            "username": friendship.from_user.user.username,
+                            "avatar": (
+                                friendship.from_user.avatar.url
+                                if friendship.from_user.avatar
+                                else None
+                            ),
+                        },
                         "created_at": friendship.created,
                         "id": friendship.id,
                     }
@@ -178,6 +185,27 @@ class UserProfileViewSet(viewsets.ModelViewSet):
                 ]
             },
             status=status.HTTP_200_OK,
+        )
+
+    @action(detail=False, methods=["patch"], url_path="update-avatar-banner")
+    def update_avatar_banner(self, request):
+        profile = get_object_or_404(UserProfile, user=request.user)
+        file_type = request.data.get("type")
+        uploaded_file = request.FILES.get("image")
+
+        if not uploaded_file:
+            return Response(
+                {"success": False, "error": "No file uploaded"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if file_type == "avatar":
+            profile.avatar = uploaded_file
+        if file_type == "banner":
+            profile.banner = uploaded_file
+        profile.save() 
+        serializer = self.get_serializer(profile)
+        return Response(
+            {"success": True, "profile": serializer.data}, status=status.HTTP_200_OK
         )
 
 
