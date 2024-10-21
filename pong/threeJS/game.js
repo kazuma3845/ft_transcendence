@@ -136,14 +136,14 @@ export function showWinScreen(player, message, score1, score2, forfait) {
     winScreen.style.display = "block";
     isAnimating = false;
 
-    console.log(player, message, score1, score2)
     if (forfait)
         if (player == pong.playerLeft)
             winner = pong.playerRight
         else
-            winner = pong.playerLeft
+        winner = pong.playerLeft
     else
-        winner = player
+    winner = player
+    console.log(winner, message, score1, score2)
     registerScores(forfait);
 
     renderer.setAnimationLoop(null);

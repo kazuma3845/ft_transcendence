@@ -15,9 +15,6 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def game_loop(self):
         try:
             while True:
-                current_time = asyncio.get_event_loop().time()
-                print("PLAYER CONNECTED ID: ", self.session_id)
-
                 updated_content = self.calculator.Calcul_loop()
 
                 await self.channel_layer.group_send(
@@ -32,7 +29,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         except asyncio.CancelledError:
             return
         except Exception as e:
-            await self.close()   
+            await self.close()
 
     async def connect(self):
         try:
@@ -50,9 +47,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             await self.accept()
 
-            # Ne lancer la game_loop que si elle n'est pas déjà en cours
-            if not hasattr(self.calculator, 'game_task') or self.calculator.game_task.done():
-                print(f"Starting game loop for session {self.session_id}")
+            # self.game_task = asyncio.create_task(self.game_loop())
+            if not hasattr(self.calculator, 'game_task'):
                 self.calculator.game_task = asyncio.create_task(self.game_loop())
 
             print(f"WebSocket connection accepted for session {self.session_id}")
@@ -70,18 +66,20 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         if hasattr(self.calculator, 'game_task'):
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': f"player_disconnected",
+                    'message': "Player has disconnected the game",
+                }
+            )
+            # await sleep(1)
             self.calculator.game_task.cancel()
-            try:
-                await self.calculator.game_task
-            except asyncio.CancelledError:
-                logger.info(f"Game task for session {self.session_id} was cancelled.")
         
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
-
-
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -165,5 +163,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Envoyer les positions mises à jour aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'update_position',
+            'content': content,
+        }))
+
+    async def player_disconnected(self, event):
+        content = event['message']
+        
+        # Envoyer les positions mises à jour aux clients WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'player_disconnected',
             'content': content,
         }))

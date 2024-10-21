@@ -130,7 +130,6 @@ export default class Pong {
             left_up: this.left_up,
             right_back: this.right_back,
             right_up: this.right_up,
-            ballPaused: this.ballPaused,
             enterright: this.enterright,
             enterleft: this.enterleft
         };
@@ -195,8 +194,8 @@ export default class Pong {
             this.playerLeft = data.player1;
             this.playerRight = data.player2;
             this.winScore = data.win_number;
-            this.initialSpeed = data.move_speed_ball;
-            this.paddle_move_speed = data.move_speed_paddle;
+            this.initialSpeed = data.move_speed_ball * 2;
+            this.paddle_move_speed = data.move_speed_paddle * 2;
             this.powerActive = data.power;
             this.botActivated = data.bot;
             this.botLVL = (data.bot_difficulty / 10);

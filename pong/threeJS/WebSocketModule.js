@@ -35,7 +35,7 @@ export default class WebSocketModule {
                     startGameDual();
                 }
                 if (data.type === 'player_disconnected') {
-                    showWinScreen(data.message, "quit game!", this.pong.score[0], this.pong.score[1], true);
+                    showWinScreen(this.pong.player, "quit game!", this.pong.score[0], this.pong.score[1], true);
                 }
             } catch (error) {
                 console.error('Error parsing message:', error);
@@ -45,7 +45,6 @@ export default class WebSocketModule {
         // Fermeture de la connexion WebSocket
         this.socket.onclose = (e) => {
             console.log(`WebSocket closed for session ${sessionId}.`);
-            this.socket = null;
         };
 
         // Gestion des erreurs WebSocket
