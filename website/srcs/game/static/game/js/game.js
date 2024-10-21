@@ -149,10 +149,6 @@ function updateValue(id, value) {
   document.getElementById(id).textContent = value;
 }
 
-// function updateCheckboxValue(id, isChecked) {
-//   document.getElementById(id).textContent = isChecked ? "On" : "Off";
-// }
-
 function updateCheckboxValue(spanId, isChecked) {
 	document.getElementById(spanId).innerText = isChecked ? 'On' : 'Off';
 	if (spanId === 'Multiplayer_value') {
