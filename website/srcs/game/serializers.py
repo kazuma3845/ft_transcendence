@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import GameSession, GameMove
 
 class GameSessionSerializer(serializers.ModelSerializer):
-    player1 = serializers.StringRelatedField()  # Affiche le nom d'utilisateur au lieu de l'ID
+    player1 = serializers.StringRelatedField()
     player2 = serializers.SerializerMethodField()
     winner = serializers.StringRelatedField()
     move_speed_ball = serializers.IntegerField(

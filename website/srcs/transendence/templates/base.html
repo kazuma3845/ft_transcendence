@@ -40,99 +40,107 @@
   </head>
 
   <body class="main-body">
+    <div
+      id="landing-page"
+      class="d-flex justify-content-center align-items-center vh-100"
+    >
+      <h1 id="animated-title"></h1>
+      <div id="button-container" class="hidden"></div>
+    </div>
+
     <!-- Navbar -->
-    <nav class="navbar navbar-light w-100 h-10 border-bottom border-white p-4">
-      <a class="navbar-brand title fs-2 fs-md-3 fs-lg-1" href="#"
-        >Transcendence</a
+    <div id="main-page" class="d-none w-100 h-100">
+      <nav
+        class="navbar navbar-light w-100 h-10 border-bottom border-white p-2"
       >
+        <a class="navbar-brand title" href="#">Transcendence</a>
+
+        <div
+          class="d-flex column-gap-3 justify-content-center align-items-center"
+        >
+          <a id="nav-bar-username"> </a>
+          <a
+            id="nav-bar-login-btn"
+            class="custom-btn btn btn-outline-light btn-lg"
+            href="#login"
+          >
+            Log In
+          </a>
+          <button
+            class="btn btn-sm"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasRight"
+            aria-controls="offcanvasRight"
+            id="menu-btn"
+          >
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Toggleable SideBar -->
 
       <div
-        class="d-flex column-gap-3 justify-content-center align-items-center"
+        class="offcanvas offcanva-custom glassmorphism-block offcanvas-end"
+        data-bs-backdrop="true"
+        tabindex="-1"
+        id="offcanvasRight"
+        aria-labelledby="offcanvasRightLabel"
       >
-        <a id="nav-bar-username"> </a>
-        <a
-          id="nav-bar-login-btn"
-          class="custom-btn btn btn-outline-light btn-lg"
-          href="#login"
-        >
-          Log In
-        </a>
-        <button
-          class="btn btn-sm"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasRight"
-          aria-controls="offcanvasRight"
-          id="menu-btn"
-        >
-          <i class="fa-solid fa-ellipsis-vertical"></i>
-        </button>
+        <div class="offcanvas-body">
+          <ul
+            class="nav d-flex flex-column justify-content-evenly align-items-center h-100"
+          >
+            <li class="nav-item">
+              <a class="btn btn-lg position-relative" href="#profile">
+                <i class="fa-solid fa-user"> </i
+                ><span
+                  id="friend-request-badge"
+                  class="badge rounded-pill d-none notification-badge position-absolute"
+                >
+                  0
+                </span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-lg" href="#chat">
+                <i class="fas fa-comments"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-lg" href="#game">
+                <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-lg" href="#tournament">
+                <i class="fa-solid fa-trophy"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-lg">
+                <i
+                  id="logout-button"
+                  class="fa-solid fa-right-from-bracket"
+                  data-bs-toggle="offcanvas"
+                >
+                </i>
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </nav>
 
-    <!-- Toggleable SideBar -->
+      <main
+        id="app"
+        class="d-flex justify-content-center align-items-center v-100"
+      ></main>
 
-    <div
-      class="offcanvas offcanva-custom glassmorphism-block offcanvas-end"
-      data-bs-backdrop="false"
-      tabindex="-1"
-      id="offcanvasRight"
-      aria-labelledby="offcanvasRightLabel"
-    >
-      <div class="offcanvas-body">
-        <ul
-          class="nav d-flex flex-column justify-content-evenly align-items-center h-100"
-        >
-          <li class="nav-item">
-            <a class="btn btn-lg position-relative" href="#profile">
-              <i class="fa-solid fa-user"> </i
-              ><span
-                id="friend-request-badge"
-                class="badge rounded-pill d-none notification-badge position-absolute"
-              >
-                0
-              </span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-lg" href="#chat">
-              <i class="fas fa-comments"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-lg" href="#game">
-              <i class="fa-solid fa-table-tennis-paddle-ball"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-lg" href="#tournament">
-              <i class="fa-solid fa-trophy"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-lg">
-              <i
-                id="logout-button"
-                class="fa-solid fa-right-from-bracket"
-                data-bs-toggle="offcanvas"
-              >
-              </i>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <footer class="text-center fixed-bottom">
+        <p>By Kazuma, Neah & Martzoni</p>
+      </footer>
     </div>
-    <!-- Toggleable SideBar END -->
-    <!-- Modal -->
-
-    <main
-      id="app"
-      class="d-flex justify-content-center align-items-center v-100"
-    ></main>
-
-    <footer class="text-center fixed-bottom">
-      <p>By Kazuma, Neah & Martzoni</p>
-    </footer>
 
     <script>
       const currentUser = "{{ request.user.username }}";  // Injecter le nom d'utilisateur dans une variable JS
