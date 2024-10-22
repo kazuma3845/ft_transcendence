@@ -234,27 +234,29 @@ function createProfilBlock(user) {
   const bannerUpload = document.getElementById("banner-upload");
   const avatarUpload = document.getElementById("avatar-upload");
 
-  bannerImg.addEventListener("click", function () {
-    bannerUpload.click();
-  });
+  if (data.user.username == currentUserInfo.user.username) {
+    bannerImg.addEventListener("click", function () {
+      bannerUpload.click();
+    });
 
-  avatarImg.addEventListener("click", function () {
-    avatarUpload.click();
-  });
+    avatarImg.addEventListener("click", function () {
+      avatarUpload.click();
+    });
 
-  bannerUpload.addEventListener("change", function (event) {
-    const file = event.target.files[0];
-    if (file) {
-      uploadImage(file, "banner");
-    }
-  });
+    bannerUpload.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadImage(file, "banner");
+      }
+    });
 
-  avatarUpload.addEventListener("change", function (event) {
-    const file = event.target.files[0];
-    if (file) {
-      uploadImage(file, "avatar");
-    }
-  });
+    avatarUpload.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadImage(file, "avatar");
+      }
+    });
+  }
 
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
     document.getElementById("send-friend-request-btn").style.display = "block";
@@ -544,6 +546,16 @@ async function loadFriends() {
     currentUserInfo.friends.forEach(async (friend) => {
       const friendLink = document.createElement("a");
       friendLink.href = `#profile/?username=${friend.username}`;
+      friendLink.addEventListener("click", (event) => {
+        document
+          .querySelectorAll('[data-bs-toggle="tooltip"]')
+          .forEach((el) => {
+            const instance = bootstrap.Tooltip.getInstance(el);
+            if (instance) {
+              instance.dispose();
+            }
+          });
+      });
       const friendAvatar = document.createElement("img");
       friendAvatar.src = friend.avatar_url
         ? friend.avatar_url

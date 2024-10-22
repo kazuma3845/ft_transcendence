@@ -1,3 +1,26 @@
+#animated-title{font-family: "Handjet", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "ELSH" 0.6;
+  text-transform: uppercase;
+  letter-spacing: 3vw;
+  font-size: 10rem;
+  text-shadow: 2px 2px 0 rgb(26 99 221 / 80%), 6px 6px 0 rgb(71 64 194 / 40%),
+    8px 8px 0 rgb(51 82 209 / 20%);
+  margin-left: 0.5vmax;}
+
+.nothing{
+  font-family: "Handjet", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 150;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 10px;
+  font-size: 2rem;
+  text-shadow: 2px 2px 0 rgb(26 99 221 / 80%);
+}
+
 .title {
   font-family: "Handjet", sans-serif;
   font-optical-sizing: auto;

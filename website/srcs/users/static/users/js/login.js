@@ -39,7 +39,8 @@ function attachLoginFormSubmitListener() {
               `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
             );
             updateHeader();
-            if (window.location.hash === "#login") window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
+            if (window.location.hash === "#login")
+              window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
             router(); // Recharge l'interface pour refléter l'état connecté
           }
         })
@@ -119,15 +120,17 @@ function logoutUser() {
   })
     .then((response) => {
       if (response.ok) {
-        window.location.href = "#"; // Redirige ou recharge l'application après la déconnexion
         loadModal(
           "Logged Out Successfully",
           `Goodbye ${currentUserInfo.user.username}, you will be missed...💔`
         );
+        localStorage.removeItem("hasVisited");
         currentUserInfo = null;
         updateHeader();
         updateUsername();
-        router(); // Recharge l'interface pour refléter l'état déconnecté
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } else {
         alert("Erreur lors de la déconnexion.");
       }
