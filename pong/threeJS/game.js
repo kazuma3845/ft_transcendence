@@ -94,7 +94,7 @@ function showWinScreen(player, message, score1, score2) {
   const winScreen = document.getElementById("winScreen");
   winScreen.style.display = "block";
 
-  registerScores();
+//   registerScores();
 
   renderer.setAnimationLoop(null);
 }

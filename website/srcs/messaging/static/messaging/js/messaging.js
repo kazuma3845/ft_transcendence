@@ -283,7 +283,7 @@ function loadMessages(conversationId) {
                             messageContent.textContent = "Rejoindre la ";
                             messageContent.appendChild(invitationLink);
                         }
-
+                        console.log("Test de curr tournaoir", message.content)
                         if (message.content) {
                             messageContent.textContent = message.content;
                         }
@@ -431,6 +431,17 @@ function sendMessage(conversationId, message) {
             conversation_id: conversationId,
             message: message,
 			sender: currentUser,
+        }
+    }));
+}
+
+function sendTourConv(conversationId, message) {
+    // Envoi du message à travers la WebSocket
+    socket.send(JSON.stringify({
+        type: 'newTourMessage',
+        content: {
+            conversation_id: conversationId,
+            message: message,
         }
     }));
 }

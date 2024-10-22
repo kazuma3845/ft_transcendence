@@ -4,10 +4,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework import viewsets
 from .models import Tournament, GameSession
 from .serializers import TournamentSerializer
+from messaging.models import Conversation
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.decorators import action
-
+from channels.db import database_sync_to_async
 
 class TournamentViewSet(viewsets.ModelViewSet):
     queryset = Tournament.objects.all()  # Tous les tournois
@@ -83,6 +84,12 @@ class TournamentViewSet(viewsets.ModelViewSet):
             participants=participants  # Stocke directement la liste des usernames
         )
 
+        game_1_1.tour = tournament
+        game_1_2.tour = tournament
+        game_2.tour = tournament
+        game_1_1.save()
+        game_1_2.save()
+        game_2.save()
         # Retourner le tournoi sérialisé
         return Response(TournamentSerializer(tournament).data, status=status.HTTP_201_CREATED)
 
@@ -124,4 +131,33 @@ class TournamentViewSet(viewsets.ModelViewSet):
         tour.game_1_2.save()
         tour.save()
 
+        try:
+            conversation = Conversation.objects.get(tour=tour)
+        except Conversation.DoesNotExist:
+            return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+        conversation.participants.add(request.user.userprofile)
+        # try:
+        #     # Récupérer la conversation liée au tournoi
+        #     conversation = Conversation.objects.get(tour=tour)
+        #     conversation_id = conversation.id
+        # except Conversation.DoesNotExist:
+        #     return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+        # channel_layer = get_channel_layer()
+        # async_to_sync(channel_layer.group_send)(
+        #     f"chat_{conversation_id}",
+        #     {
+        #         'type': 'chat_message',
+        #         'conversation_id': conversation_id,
+        #         'message': message,
+        #         'sender': ''
+        #     }
+        # )
         return Response({"detail": "Vous avez rejoint le tournoi avec succès."}, status=status.HTTP_200_OK)
+
+
+
+    # @database_sync_to_async
+    # def get_conversation(self, conversation_id):
+    #     # Récupérer une conversation par son ID
+    #     Conversation = apps.get_model('messaging', 'Conversation')
+    #     return Conversation.objects.get(id=conversation_id)

@@ -9,7 +9,6 @@ function loadTourForm() {
 
 async function createTourSession(data) {
     // Envoie les données à l'API pour créer une nouvelle session de jeu
-    console.log("DANS createTourSession, mais avant API")
     const response = await fetch('/api/tournaments/tournament/', {
         method: 'POST',
         headers: {
@@ -24,44 +23,64 @@ async function createTourSession(data) {
         throw new Error(data_1.error);
     }
     return data_1;
-    }
-
-function attachTourFormSubmitListener(player1 = null) {
-    document
-        .getElementById("tour-form")
-        .addEventListener("submit", function (event) {
-            event.preventDefault(); // Empêche le rechargement de la page
-
-            const formData = new FormData(this);
-            const data = {};
-
-            // Convertit le formulaire en un objet JS
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            // Ajoute player1 et player2 dans les données s'ils sont définis
-            console.log("player1 :", player1);
-            if (player1) data["player1"] = player1;
-
-            // Appelle la fonction pour créer une session de jeu avec les données
-            console.log("data[player1] :", data["player1"]);
-            createTourSession(data)
-                .then((tourData) => {
-                    console.log("APRES createTourSession : ", tourData)
-                    tourData.game_1_1.tour = tourData.id;
-                    tourData.game_1_2.tour = tourData.id;
-                    tourData.game_2.tour = tourData.id;
-                    let sessionId = tourData.game_1_1.id;
-                    window.location.href = `/#game?sessionid=${sessionId}`;
-                })
-                .catch((error) => {
-                    console.error("Erreur lors de la création du tournoi:", error);
-                    document.getElementById('error-message').textContent = error.message;
-                    document.getElementById('error-message').style.display = 'block';
-                });
-        });
 }
+
+    function attachTourFormSubmitListener(player1 = null) {
+        document
+            .getElementById("tour-form")
+            .addEventListener("submit", function (event) {
+                event.preventDefault(); // Empêche le rechargement de la page
+
+                const formData = new FormData(this);
+                const data = {};
+
+                // Convertit le formulaire en un objet JS
+                formData.forEach((value, key) => {
+                    data[key] = value;
+                });
+
+                // Ajoute player1 dans les données s'il est défini
+                console.log("player1 :", player1);
+                if (player1) data["player1"] = player1;
+
+                // Appelle la fonction pour créer une session de tournoi
+                createTourSession(data)
+                    .then((tourData) => {
+                        // Appel à l'API pour créer la conversation associée au tournoi
+                        return fetch('/api/messaging/conversations/create_tour_conv/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCSRFToken(),
+                            },
+                            body: JSON.stringify({ tour: tourData.id })  // Envoyer l'ID du tournoi créé
+                        }).then((response) => {
+                            if (!response.ok) {
+                                throw new Error(`Erreur lors de la création de la conversation : ${response.statusText}`);
+                            }
+                            return response.json(); // Convertir la réponse en JSON
+                        })
+                        .then((convData) => {
+                            console.log('Nouvelle conversation créée pour le tournoi:', convData);
+
+                            // Charger les conversations et connecter le WebSocket
+                            connectWebSocket();
+                            socket.onopen = function () {
+                                sendTourConv(convData.id, `${currentUser} a créé le tournois`);
+                            };
+
+                            // Rediriger vers le jeu après la création de la conversation et tout le chargement
+                            let sessionId = tourData.game_1_1.id;  // Accéder à game_1_1 à partir de tourData
+                            window.location.href = `/#game?sessionid=${sessionId}`;
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("Erreur lors de la création du tournoi ou de la conversation:", error);
+                        document.getElementById('error-message').textContent = error.message;
+                        document.getElementById('error-message').style.display = 'block';
+                    });
+            });
+    }
 
 async function fetchAvailableTours() {
     try {
@@ -127,18 +146,38 @@ async function joinTour(tourId) {
                 'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
             },
         });
+        const convId = await getTourConversation(tourId);
 
+        // Si convId est valide, connecter WebSocket et envoyer un message
+        if (convId) {
+            connectWebSocket();
+            socket.onopen = function () {
+                sendTourConv(convId, `${currentUser} a rejoint le tournoi`);
+            };
+        }
     // Vérifier si la requête a réussi
     if (!response.ok) {
     throw new Error(
         `Erreur lors de la connexion au tournoi: ${response.status}`
     );
     }
-
-        // Si l'appel API est réussi, lancer la fonction pour charger le jeu
-        console.log(`Vous avez rejoint le tournoi ${tourId}`);
-
-} catch (error) {
-    console.error("Erreur lors de la connexion à la session:", error);
+    } catch (error) {
+        console.error("Erreur lors de la connexion à la session:", error);
+    }
 }
+
+async function getTourConversation(tourId) {
+    try {
+        // Appeler l'API pour récupérer la conversation liée au tournoi
+        const response = await fetch(`/api/messaging/conversations/tour/${tourId}/`);
+
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération de la conversation: ${response.status}`);
+        }
+
+        const conversation = await response.json();
+        return conversation.id;  // Retourne l'ID de la conversation
+    } catch (error) {
+        console.error("Erreur lors de la récupération de la conversation du tournoi:", error);
+    }
 }

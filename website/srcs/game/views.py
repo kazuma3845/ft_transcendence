@@ -195,8 +195,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         current_user = request.user
 
         # Filtrer les sessions où player2 est vide et player1 n'est pas l'utilisateur courant
-        sessions = GameSession.objects.filter(player2__isnull=True, bot=False).exclude(player1=current_user)
-
+        sessions = GameSession.objects.filter(player2__isnull=True, bot=False, tour__isnull=True).exclude(player1=current_user)
         # Sérialiser les données
         serializer = self.get_serializer(sessions, many=True)
 

@@ -6,7 +6,7 @@ async function router() {
     const isAuthenticated = await checkAuthentication();
     // console.log("Utilisateur authentifié : ", isAuthenticated);
     if (isAuthenticated && !userInfo) {
-      await fetchUserInfo();
+      // await fetchUserInfo();
       updateUsername();
     }
     switch (hash.split('?')[0]) {

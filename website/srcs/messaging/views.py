@@ -1,12 +1,13 @@
 # Create your views here.
 from django.db.models import Max
 from rest_framework import viewsets
-from .models import Conversation, Message, BlockedUser, UserProfile
+from .models import Conversation, Message, BlockedUser, UserProfile, Tournament
 from .serializers import ConversationSerializer, MessageSerializer, BlockedUserSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+
 
 # ViewSet pour les conversations
 class ConversationViewSet(viewsets.ModelViewSet):
@@ -29,6 +30,29 @@ class ConversationViewSet(viewsets.ModelViewSet):
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
 
+    # Action personnalisée pour créer une conversation
+    @action(detail=False, methods=['post'], url_path='create_tour_conv')
+    def create_tour_conv(self, request):
+        tour_id = request.data.get('tour', None)
+        if not tour_id:
+            return Response({'error': 'L\'ID du tournoi est requis'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            # Récupérer le tournoi
+            tour = Tournament.objects.get(id=tour_id)
+        except Tournament.DoesNotExist:
+            return Response({'error': 'Le tournoi n\'existe pas'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Récupérer les IDs des participants envoyés dans le corps de la requête
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'Utilisateur introuvable'}, status=status.HTTP_404_NOT_FOUND)
+
+        conversation = Conversation.objects.create(tour=tour)
+        conversation.participants.add(user_profile)        # Sérialiser la nouvelle conversation et la renvoyer
+
+        serializer = self.get_serializer(conversation)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     # Action personnalisée pour créer une conversation
     @action(detail=False, methods=['post'], url_path='create_conversation')
@@ -122,6 +146,15 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
         # Retourner la liste des noms d'utilisateur bloqués
         return Response({'blocked_users': list(blocked_users)})
+
+    @action(detail=False, methods=['get'], url_path='tour/(?P<tour_id>[^/.]+)')
+    def get_conversation_by_tour(self, request, tour_id=None):
+        try:
+            conversation = Conversation.objects.get(tour__id=tour_id)
+            serializer = self.get_serializer(conversation)
+            return Response(serializer.data)
+        except Conversation.DoesNotExist:
+            return Response({'detail': 'Conversation non trouvée.'}, status=status.HTTP_404_NOT_FOUND)
 
 # ViewSet pour les messages
 class MessageViewSet(viewsets.ModelViewSet):

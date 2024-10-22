@@ -62,7 +62,45 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.handle_new_message(content)
         if message_type == 'newInvitation':
             await self.handle_new_invitation(content)
+        if message_type == 'newTourMessage':
+            await self.handle_new_tour_message(content)
 
+
+    async def handle_new_tour_message(self, content):
+        conversation_id = content['conversation_id']
+        message = content['message']
+
+        Conversation = apps.get_model('messaging', 'Conversation')
+        Message = apps.get_model('messaging', 'Message')
+
+        # Récupérer la conversation
+        try:
+            conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
+        except Conversation.DoesNotExist:
+            print(f"Conversation {conversation_id} does not exist")
+            return
+
+        # Créer et sauvegarder le nouveau message
+        new_message = await database_sync_to_async(Message.objects.create)(
+            conversation=conversation,
+            content=message
+        )
+
+        try:
+            conversation = await database_sync_to_async(self.get_conversation)(conversation_id)
+        except apps.get_model('messaging', 'Conversation').DoesNotExist:
+            print(f"Conversation {conversation_id} does not exist")
+            return
+
+        await self.channel_layer.group_send(
+            f"chat_{conversation_id}",
+            {
+                'type': 'chat_message',
+                'conversation_id': conversation_id,
+                'message': message,
+                'sender': ''
+            }
+        )
 
     async def handle_new_message(self, content):
         conversation_id = content['conversation_id']
@@ -191,67 +229,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'sender': await database_sync_to_async(lambda: sender_profile.user.username)()  # Utiliser le nom d'utilisateur
             }
         )
-    # async def receive(self, text_data):
-    #     data = json.loads(text_data)
-    #     message_type = data['type']
-    #     content = data['content']
-    #     print(f"Message from: {data}")
-
-    #     if message_type == 'newMessage':
-    #         conversation_id = content['conversation_id']
-    #         message_content = content['message']
-    #         sender_username = content['sender']
-
-    #         UserProfile = apps.get_model('users', 'UserProfile')
-    #         Conversation = apps.get_model('messaging', 'Conversation')
-    #         Message = apps.get_model('messaging', 'Message')
-    #         User = get_user_model()  # Assurer la compatibilité avec les User personnalisés
-
-    #         # Récupérer l'utilisateur User à partir de son nom d'utilisateur
-    #         try:
-    #             sender_user = await database_sync_to_async(User.objects.get)(username=sender_username)
-    #         except User.DoesNotExist:
-    #             print(f"User {sender_username} does not exist")
-    #             return  # Si l'utilisateur n'existe pas, on arrête
-
-    #         # Récupérer le profil UserProfile à partir de l'utilisateur
-    #         try:
-    #             sender_profile = await database_sync_to_async(UserProfile.objects.get)(user=sender_user)
-    #         except UserProfile.DoesNotExist:
-    #             print(f"UserProfile for user {sender_username} does not exist")
-    #             return
-
-    #         # Récupérer la conversation
-    #         try:
-    #             conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
-    #         except Conversation.DoesNotExist:
-    #             print(f"Conversation {conversation_id} does not exist")
-    #             return
-
-    #         # Créer et sauvegarder le nouveau message
-    #         new_message = await database_sync_to_async(Message.objects.create)(
-    #             conversation=conversation,
-    #             sender=sender_profile,
-    #             content=message_content
-    #         )
-
-    #         # Vérifier si la conversation existe et si l'utilisateur fait partie de cette conversation dans un contexte async
-    #         try:
-    #             conversation = await database_sync_to_async(self.get_conversation)(conversation_id)
-    #         except apps.get_model('messaging', 'Conversation').DoesNotExist:
-    #             print(f"Conversation {conversation_id} does not exist")
-    #             return
-
-    #         # Envoyer le message à tous les utilisateurs du groupe correspondant à cette conversation
-    #         await self.channel_layer.group_send(
-    #             f"chat_{conversation_id}",
-    #             {
-    #                 'type': 'chat_message',
-    #                 'conversation_id': conversation_id,
-    #                 'message': message_content,
-    #                 'sender': await database_sync_to_async(lambda: sender_profile.user.username)()  # Utiliser le nom d'utilisateur
-    #             }
-    #         )
 
     async def chat_message(self, event):
         conversation_id = event['conversation_id']
