@@ -32,7 +32,7 @@ services:
       - ./website/srcs:/app/srcs
       - ./blockchain/srcs:/app/blockchain_v
       - static_volume:/app/srcs/staticfiles
-
+      - media_volume:/app/srcs/media
     ports:
       - "8000:8000"
     depends_on:
@@ -54,6 +54,7 @@ services:
       dockerfile: dockerfile.nginx
     volumes:
       - static_volume:/app/srcs/transendence/static
+      - media_volume:/app/srcs/transendence/media
     ports:
       - "80:80"
       - "443:443"
@@ -109,3 +110,4 @@ networks:
 volumes:
   postgres_data:
   static_volume:
+  media_volume:
