@@ -541,7 +541,7 @@ async function loadFriends() {
     const friendsListBlock = document.createElement("div");
 
     friendsListBlock.className =
-      "friend-list-block position-relative d-inline-block p-3";
+      "friend-list-block position-relative d-inline-block";
 
     currentUserInfo.friends.forEach(async (friend) => {
       const friendLink = document.createElement("a");
