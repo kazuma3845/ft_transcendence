@@ -140,9 +140,9 @@ export function showWinScreen(player, message, score1, score2, forfait) {
         if (player == pong.playerLeft)
             winner = pong.playerRight
         else
-        winner = pong.playerLeft
+            winner = pong.playerLeft
     else
-    winner = player
+        winner = player
     console.log(winner, message, score1, score2)
     registerScores(forfait);
 
