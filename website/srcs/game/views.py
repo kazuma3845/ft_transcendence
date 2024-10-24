@@ -65,8 +65,21 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         else:
             return Response({"detail": "You are not a player in this game."}, status=status.HTTP_403_FORBIDDEN)
 
+        if session.Multiplayer:
+            session.start_time = timezone.now()
+            session.save()
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                f'game_{session.id}',
+                {
+                    'type': 'display_player',
+                    'player1': session.player1.username,
+                    'player2': 'LocalPlayer',
+                }
+            )
         # Si bot est activé, configurer le jeu contre le bot
-        if session.bot:
+        elif session.bot:
             session.start_time = timezone.now()
             session.save()
 

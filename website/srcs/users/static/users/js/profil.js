@@ -60,10 +60,16 @@ function fetchBlockchainResults(games) {
 
 async function computeStats(results, username) {
   console.log("Current username:", username);
-  const gamePlayed = results.length;
-  const matchWon = results.filter((result) => result.winner === username);
+
+  // Filter out matches with empty string winners
+  const filteredResults = results.filter((result) => result.winner !== '');
+
+  console.log("Filtered results:", filteredResults);
+
+  const gamePlayed = filteredResults.length;
+  const matchWon = filteredResults.filter((result) => result.winner === username);
   const winNumber = matchWon.length;
-  const matchLost = results.filter((result) => result.winner != username);
+  const matchLost = filteredResults.filter((result) => result.winner != username);
   const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
   console.log("Match won:", winNumber);
@@ -76,8 +82,8 @@ async function computeStats(results, username) {
   console.log("Win by forfeit:", forfeitWonNumber);
 
   let currentWinStreak = 0;
-  for (let i = 0; i <= results.length; i++) {
-    if (results[i].winner === username) {
+  for (let i = 0; i < filteredResults.length; i++) {
+    if (filteredResults[i].winner === username) {
       currentWinStreak++;
     } else {
       break;
@@ -86,7 +92,7 @@ async function computeStats(results, username) {
   console.log("Current win streak:", currentWinStreak);
 
   const lossCounter = {};
-  results.forEach((result) => {
+  filteredResults.forEach((result) => {
     if (result.winner !== username) {
       const opponent = result.winner;
       if (lossCounter[opponent]) {
@@ -114,7 +120,7 @@ async function computeStats(results, username) {
     winStreak: currentWinStreak || 0,
     winrate: winRate || 0,
     forfeit: forfeitWonNumber || 0,
-    matchHistory: results || [],
+    matchHistory: filteredResults || [],
   };
 }
 
@@ -407,7 +413,6 @@ function createMatchHistoryBlock(user) {
     `;
 
     matchHistory.forEach((match) => {
-      const row = table.insertRow();
       const userScore = match.scores[user.user.username] || 0;
       const opponentName = Object.keys(match.scores).find(
         (name) => name !== user.user.username
@@ -427,6 +432,7 @@ function createMatchHistoryBlock(user) {
         resultText = "Loss";
         rowColor = "rgba(223, 59, 59, 0.45)";
       }
+      const row = table.insertRow();
       row.style.backgroundColor = rowColor;
       row.innerHTML = `
         <td>${opponentName}</td>
