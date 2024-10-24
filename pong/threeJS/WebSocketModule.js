@@ -35,7 +35,7 @@ export default class WebSocketModule {
                     startGameDual();
                 }
                 if (data.type === 'player_disconnected') {
-                    showWinScreen(this.pong.player, "quit game!", this.pong.score[0], this.pong.score[1], true);
+                    showWinScreen(this.pong.player, "win the game by forfeit!", this.pong.score[0], this.pong.score[1], true);
                 }
             } catch (error) {
                 console.error('Error parsing message:', error);

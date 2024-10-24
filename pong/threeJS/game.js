@@ -135,31 +135,24 @@ export function showWinScreen(player, message, score1, score2, forfait) {
     winMessage.innerHTML = `${player} ${message} ${score1} - ${score2}`
     winScreen.style.display = "block";
     isAnimating = false;
-
-    if (forfait)
-        if (player == pong.playerLeft)
-            winner = pong.playerRight
-        else
-            winner = pong.playerLeft
-    else
-        winner = player
+    winner = player
     console.log(winner, message, score1, score2)
-    registerScores(forfait);
+    registerScores(forfait, winner);
 
     renderer.setAnimationLoop(null);
 }
 
-function registerScores(forfeit) {
+function registerScores(forfeit, winner) {
     const url = `/api/blockchain/set_score/`;
 
-  const gameData = {
-    game_session_id: pong.id,
-    players: [pong.playerLeft, pong.playerRight],
-    scores: pong.score,
-    winner: winner,
-    forfeit: forfeit,
-  };
-
+    const gameData = {
+        game_session_id: pong.id,
+        players: [pong.playerLeft, pong.playerRight],
+        scores: pong.score,
+        winner: winner,
+        forfeit: forfeit,
+    };
+    console.log("Game Data: ", gameData)
     const fetchOptions = {
         method: 'POST',
         headers: {

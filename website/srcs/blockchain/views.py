@@ -4,7 +4,7 @@ import json
 import os
 from datetime import date
 
-web3 = Web3(Web3.HTTPProvider("http://ganache:8545/"))  # FIXME: A ADAPTER
+web3 = Web3(Web3.HTTPProvider("http://ganache:8545/"))
 
 api_path = "/app/blockchain_v/output/PongScores.abi"
 with open(api_path, "r") as abi_file:
