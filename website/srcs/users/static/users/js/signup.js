@@ -46,7 +46,7 @@ function attachSignupFormSubmitListener() {
               "Signed Up Successfully",
               `Welcome ${currentUserInfo.user.username}, it's nice having you here ✨`
             );
-            window.location.href = "#";
+            window.location.href = "#profile";
             updateHeader();
           }
         });

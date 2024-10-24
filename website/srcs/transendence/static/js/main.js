@@ -24,8 +24,8 @@ async function animateTitle() {
 
   const titleSteps = [
     { text: "Transend", deleteCount: 3 }, // Écrit "Transend", supprime "end"
-    { text: "Transcendenc", deleteCount: 3 }, // Écrit "Transcendenc", supprime "enc"
-    { text: "Transcendance", deleteCount: 0 }, // Écrit "Transcendance", rien à supprimer
+    { text: "Transcendanc", deleteCount: 3 }, // Écrit "Transcendenc", supprime "enc"
+    { text: "Transcendence", deleteCount: 0 }, // Écrit "Transcendance", rien à supprimer
   ];
 
   let speed = 150;

@@ -222,11 +222,11 @@ function createProfilBlock(user) {
 
   document.querySelector(".avatar-div img").src = data.avatar
     ? data.avatar
-    : "/static/users/avatars/avatar.png";
+    : "/media/avatars/avatar.png";
 
   document.querySelector(".div-banner img").src = data.banner
     ? data.banner
-    : "/static/users/banners/banner.webp";
+    : "/media/banners/banner.webp";
 
   const bannerImg = document.getElementById("user-banner");
   const avatarImg = document.getElementById("user-avatar");
@@ -368,15 +368,15 @@ function createWinStreakBlock(user) {
   const flameIMG = document.getElementById("winstreak-gif");
   let flameGif;
   if (winStreak === 0) {
-    flameGif = "/static/users/scores/dog.webp";
+    flameGif = "/media/scores/dog.webp";
   } else if (winStreak >= 1 && winStreak <= 3) {
-    flameGif = "/static/users/scores/aspi.webp";
+    flameGif = "/media/scores/aspi.webp";
   } else if (winStreak >= 4 && winStreak <= 6) {
-    flameGif = "/static/users/scores/man.webp";
+    flameGif = "/media/scores/man.webp";
   } else if (winStreak >= 7 && winStreak != 42) {
-    flameGif = "/static/users/scores/fire.webp";
+    flameGif = "/media/scores/fire.webp";
   } else if (winStreak === 42) {
-    flameGif = "/static/users/scores/42.webp";
+    flameGif = "/media/scores/42.webp";
   }
   flameIMG.src = flameGif;
 }
@@ -452,7 +452,7 @@ async function createNemesisBlock(user) {
 
   nemesisAvatar.src = nemesis_profile.avatar
     ? nemesis_profile.avatar
-    : "/static/users/avatars/avatar.png";
+    : "/media/avatars/avatar.png";
   nemesisProfileLink.href = `#profile/?username=${nemesis}`;
 }
 
@@ -541,7 +541,7 @@ async function loadFriends() {
     const friendsListBlock = document.createElement("div");
 
     friendsListBlock.className =
-      "friend-list-block position-relative d-inline-block p-3";
+      "friend-list-block position-relative d-inline-block";
 
     currentUserInfo.friends.forEach(async (friend) => {
       const friendLink = document.createElement("a");
@@ -559,7 +559,7 @@ async function loadFriends() {
       const friendAvatar = document.createElement("img");
       friendAvatar.src = friend.avatar_url
         ? friend.avatar_url
-        : "/static/users/avatars/avatar.png";
+        : "/media/avatars/avatar.png";
       friendAvatar.className = "img-fluid rounded-circle friends-avatar";
       friendAvatar.setAttribute("title", friend.username);
       friendLink.appendChild(friendAvatar);
@@ -601,7 +601,7 @@ async function loadFriendRequest(friendsListBlock) {
       const requestImg = document.createElement("img");
       requestImg.src = request.from_user.avatar
         ? request.from_user.avatar
-        : "/static/users/avatars/avatar.png";
+        : "/media/avatars/avatar.png";
       requestImg.alt = `Avatar de ${request.from_user.username}`;
       requestImg.className = "img-fluid rounded-circle friends-avatar";
       requestLink.appendChild(requestImg);
