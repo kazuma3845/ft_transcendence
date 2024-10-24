@@ -137,7 +137,8 @@ export function showWinScreen(player, message, score1, score2, forfait) {
     isAnimating = false;
     winner = player
     console.log(winner, message, score1, score2)
-    registerScores(forfait, winner);
+    if (!pong.MultiLocal)
+        registerScores(forfait, winner);
 
     renderer.setAnimationLoop(null);
 }
