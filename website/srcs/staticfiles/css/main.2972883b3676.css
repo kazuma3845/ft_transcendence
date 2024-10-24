@@ -41,8 +41,8 @@
   background-color: transparent;
   position: relative;
   font-size: 3rem;
-  border: 5px solid #100657c1;
-  color: #141855a1;
+  border: 5px solid #411e7ea5;
+  color: #541c86c8;
   border-radius: 30px;
   padding: 10px 30px;
   animation: shadow-spin 2s linear infinite;
@@ -189,11 +189,6 @@ footer p {
   color: rgb(84 45 208 / 57%);
 }
 
-#login-form input,
-#signup-form input {
-  font-size: 2.5rem;
-}
-
 #app {
   height: 88%;
 }
@@ -221,7 +216,6 @@ footer p {
 .large-label {
   font-weight: 300;
   letter-spacing: 10px;
-  font-size: 4rem;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.975);
 }
@@ -230,7 +224,6 @@ footer p {
   font-weight: 300;
   letter-spacing: 3px;
   color: rgba(57, 67, 175, 0.74);
-  font-size: 3rem;
 }
 
 .offcanvas-backdrop {
