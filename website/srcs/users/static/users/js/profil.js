@@ -1,6 +1,37 @@
 let currentUserInfo = null;
 let requestedUserProfile = null;
 
+function uploadImage(file, type) {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("type", type);
+
+  fetch("/api/users/profiles/update-avatar-banner/", {
+    method: "PATCH",
+    headers: {
+      "X-CSRFToken": getCSRFToken(),
+    },
+    body: formData,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data.success) {
+        console.log(`${type} uploaded successfully.`);
+        window.location.reload();
+      } else {
+        console.error(`Failed to upload ${type}.`);
+      }
+    })
+    .catch((error) => {
+      console.error("Erreur lors de l'upload de l'image:", error);
+    });
+}
+
 function getRequestedUsername(params) {
   const queryUsername = params.get("username");
   return queryUsername ? queryUsername : currentUserInfo?.user?.username;
@@ -27,16 +58,12 @@ function fetchBlockchainResults(games) {
   });
 }
 
-async function computeStats(results) {
-  console.log("Current username:", currentUserInfo.user.username);
+async function computeStats(results, username) {
+  console.log("Current username:", username);
   const gamePlayed = results.length;
-  const matchWon = results.filter(
-    (result) => result.winner === currentUserInfo.user.username
-  );
+  const matchWon = results.filter((result) => result.winner === username);
   const winNumber = matchWon.length;
-  const matchLost = results.filter(
-    (result) => result.winner != currentUserInfo.user.username
-  );
+  const matchLost = results.filter((result) => result.winner != username);
   const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
   console.log("Match won:", winNumber);
@@ -50,7 +77,7 @@ async function computeStats(results) {
 
   let currentWinStreak = 0;
   for (let i = 0; i <= results.length; i++) {
-    if (results[i].winner === currentUserInfo.user.username) {
+    if (results[i].winner === username) {
       currentWinStreak++;
     } else {
       break;
@@ -60,7 +87,7 @@ async function computeStats(results) {
 
   const lossCounter = {};
   results.forEach((result) => {
-    if (result.winner !== currentUserInfo.user.username) {
+    if (result.winner !== username) {
       const opponent = result.winner;
       if (lossCounter[opponent]) {
         lossCounter[opponent]++;
@@ -93,17 +120,34 @@ async function computeStats(results) {
 
 async function fetchUserStats(username) {
   return fetch(`/api/users/profiles/game-sessions/?username=${username}`)
-    .then((response) => response.json())
-    .then((games) => fetchBlockchainResults(games))
-    .then((results) => computeStats(results))
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des sessions de jeu.");
+      }
+      return response.json();
+    })
+    .then((games) => {
+      console.log(games);
+      if (games.message) {
+        return {
+          message: "Aucune session trouvée pour cet utilisateur.",
+        };
+      }
+      return fetchBlockchainResults(games);
+    })
+    .then((results) => {
+      if (results.message) {
+        return results;
+      }
+      return computeStats(results, username);
+    })
     .catch((error) => {
       console.error(
-        "Erreur lors de la recuperation des sessions de jeu:",
+        "Erreur lors de la récupération des sessions de jeu:",
         error
       );
     });
 }
-
 
 async function fetchUserProfileInfo(username) {
   if (username != currentUserInfo.user.username) {
@@ -111,19 +155,34 @@ async function fetchUserProfileInfo(username) {
       `/api/users/profiles/info-user/?username=${username}`
     );
     const data = await response.json();
-    requestedUserProfile
-   = data;
-    requestedUserProfile
-  .stats = await fetchUserStats(username);
-    return requestedUserProfile
-  ;
+    requestedUserProfile = data;
+    requestedUserProfile.stats = await fetchUserStats(username);
+    return requestedUserProfile;
   } else {
     currentUserInfo.stats = await fetchUserStats(username);
     return currentUserInfo;
   }
 }
 
-// Fonction pour charger la page de profil
+function displayNoGame() {
+  const rightPart = document.getElementById("right-profile-block");
+  rightPart.innerHTML = "";
+  rightPart.className =
+    "d-flex flex-column align-items-center justify-content-center";
+  rightPart.id = "no-game-message";
+  const message = "User with no game data.";
+  let index = 0;
+
+  function typeWriter() {
+    if (index < message.length) {
+      rightPart.textContent += message.charAt(index);
+      index++;
+      setTimeout(typeWriter, 50);
+    }
+  }
+  typeWriter();
+}
+
 function loadProfil(params) {
   fetch("/static/users/html/profil/profil.html")
     .then((response) => response.text())
@@ -133,11 +192,14 @@ function loadProfil(params) {
       const username = getRequestedUsername(params);
       const user = await fetchUserProfileInfo(username);
       createProfilBlock(user);
-      createWinRateBlock(user);
-      createWinStreakBlock(user);
-      createNemesisBlock(user);
-      createMatchHistoryBlock(user);
-      createLeaderboard(user);
+      console.log(user.stats.message);
+      if (!user.stats.message) {
+        createWinRateBlock(user);
+        createWinStreakBlock(user);
+        createNemesisBlock(user);
+        createMatchHistoryBlock(user);
+        createLeaderboard(user);
+      } else displayNoGame();
     })
     .catch((error) => {
       console.error("Erreur lors du chargement du profil:", error);
@@ -158,25 +220,59 @@ function createProfilBlock(user) {
     ? data.bio
     : "Ceci est une bio vraiment pas très intéressante. J'imagine que j'aime le pong puisque je suis ici. (Aidez moi à trouver un stage svp)";
 
-  document.querySelector(".avatar-div img").src = data.avatar_url
-    ? data.avatar_url
+  document.querySelector(".avatar-div img").src = data.avatar
+    ? data.avatar
     : "/static/users/avatars/avatar.png";
 
   document.querySelector(".div-banner img").src = data.banner
     ? data.banner
     : "/static/users/banners/banner.webp";
+
+  const bannerImg = document.getElementById("user-banner");
+  const avatarImg = document.getElementById("user-avatar");
+
+  const bannerUpload = document.getElementById("banner-upload");
+  const avatarUpload = document.getElementById("avatar-upload");
+
+  if (data.user.username == currentUserInfo.user.username) {
+    bannerImg.addEventListener("click", function () {
+      bannerUpload.click();
+    });
+
+    avatarImg.addEventListener("click", function () {
+      avatarUpload.click();
+    });
+
+    bannerUpload.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadImage(file, "banner");
+      }
+    });
+
+    avatarUpload.addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        uploadImage(file, "avatar");
+      }
+    });
+  }
+
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
     document.getElementById("send-friend-request-btn").style.display = "block";
 
     document
       .getElementById("send-friend-request-btn")
       .addEventListener("click", () => {
-        sendFriendRequest(data.user.id); // Appel de la fonction pour envoyer la demande
+        sendFriendRequest(data.user.id);
       });
   } else {
     document.getElementById("send-friend-request-btn").style.display = "none";
+    document.getElementById("block-user-btn").style.display = "none";
   }
-  // loadFriends();
+  if (data.user.username === currentUserInfo.user.username) {
+    loadFriends();
+  }
 }
 
 async function sendFriendRequest(userId) {
@@ -205,10 +301,65 @@ async function sendFriendRequest(userId) {
   }
 }
 
-// async function fetchUserInfoLight(username) {
-//   const response = await fetch(`/api/users/profiles/info-user/?username=${username}`);
-//   // const profile = await fetch()
-// }
+async function rejectFriendRequest(userId) {
+  try {
+    const response = await fetch(
+      `/api/users/profiles/${userId}/reject-friend-request/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      alert(result.message);
+    } else {
+      const errorData = await response.json();
+      alert(`Erreur: ${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors du refus de demande d'ami :", error);
+    alert("Une erreur est survenue lors du refus de demande d'ami.");
+  }
+}
+
+async function acceptFriendRequest(userId) {
+  try {
+    const response = await fetch(
+      `/api/users/profiles/${userId}/accept-friend-request/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      alert(result.message);
+    } else {
+      const errorData = await response.json();
+      alert(`Erreur: ${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'acceptation de la demande d'ami :", error);
+    alert("Une erreur est survenue lors de l'acceptation de la demande d'ami.");
+  }
+}
+
+async function fetchUserInfoLight(username) {
+  const response = await fetch(
+    `/api/users/profiles/info-user/?username=${username}`
+  );
+  const profile = await response.json();
+  return profile;
+}
 
 function createWinStreakBlock(user) {
   const winStreak = user.stats.winStreak;
@@ -257,9 +408,9 @@ function createMatchHistoryBlock(user) {
 
     matchHistory.forEach((match) => {
       const row = table.insertRow();
-      const userScore = match.scores[currentUserInfo.user.username] || 0;
+      const userScore = match.scores[user.user.username] || 0;
       const opponentName = Object.keys(match.scores).find(
-        (name) => name !== currentUserInfo.user.username
+        (name) => name !== user.user.username
       );
       const opponentScore = match.scores[opponentName] || 0;
 
@@ -269,7 +420,7 @@ function createMatchHistoryBlock(user) {
       if (match.forfeit) {
         resultText = "Forfeit";
         rowColor = "white";
-      } else if (match.winner === currentUserInfo.user.username) {
+      } else if (match.winner === user.user.username) {
         resultText = "Win";
         rowColor = "rgba(59, 93, 223, 0.45)";
       } else {
@@ -290,16 +441,19 @@ function createMatchHistoryBlock(user) {
   }
 }
 
-function createNemesisBlock(user) {
+async function createNemesisBlock(user) {
   const nemesis = user.stats.nemesis;
+  const nemesis_profile = await fetchUserInfoLight(nemesis);
+  const nemesisProfileLink = document.getElementById("nemesis-link");
   const nemesisAvatar = document.getElementById("nemesis-avatar");
   const nemesisBlockTitle = document.querySelector("#nemesis-block h2");
 
   nemesisBlockTitle.textContent = `Nemesis: ${nemesis}`;
 
-  nemesisAvatar.src = user.nemesis_avatar_url
-    ? user.nemesis_avatar_url
-    : "/static/users/avatars/bot.gif";
+  nemesisAvatar.src = nemesis_profile.avatar
+    ? nemesis_profile.avatar
+    : "/static/users/avatars/avatar.png";
+  nemesisProfileLink.href = `#profile/?username=${nemesis}`;
 }
 
 // Fonction pour créer le bloc WinRate
@@ -381,23 +535,108 @@ function createLeaderboard(user) {
   }
 }
 
-async function loadFriends(user) {
+async function loadFriends() {
   try {
-    const friends = user.friends;
+    const profileBlock = document.getElementById("profile-block");
+    const friendsListBlock = document.createElement("div");
 
-    const friendsListBlock = document.getElementById("friend-list-block");
-    friendsListBlock.innerHTML = "";
+    friendsListBlock.className =
+      "friend-list-block position-relative d-inline-block p-3";
 
-    friends.forEach((friend) => {
-      const friendImg = document.createElement("img");
-      friendImg.src = friend.avatar_url;
-      friendImg.alt = `Avatar de ${friend.name}`;
-      friendImg.className = "img-fluid rounded-circle friends-avatar";
-      friendsListBlock.appendChild(friendImg);
+    currentUserInfo.friends.forEach(async (friend) => {
+      const friendLink = document.createElement("a");
+      friendLink.href = `#profile/?username=${friend.username}`;
+      friendLink.addEventListener("click", (event) => {
+        document
+          .querySelectorAll('[data-bs-toggle="tooltip"]')
+          .forEach((el) => {
+            const instance = bootstrap.Tooltip.getInstance(el);
+            if (instance) {
+              instance.dispose();
+            }
+          });
+      });
+      const friendAvatar = document.createElement("img");
+      friendAvatar.src = friend.avatar_url
+        ? friend.avatar_url
+        : "/static/users/avatars/avatar.png";
+      friendAvatar.className = "img-fluid rounded-circle friends-avatar";
+      friendAvatar.setAttribute("title", friend.username);
+      friendLink.appendChild(friendAvatar);
+      friendsListBlock.appendChild(friendLink);
     });
+
+    profileBlock.appendChild(friendsListBlock);
+    initializeTooltips(); // Initialize tooltips after dynamically adding the elements to the DOM
+
+    if (currentUserInfo.friends_requests.length > 0) {
+      loadFriendRequest(friendsListBlock);
+    }
   } catch (error) {
     console.error("Erreur lors de la récupération des amis:", error);
     document.getElementById("friend-list-block").innerHTML =
       "<p>Erreur de chargement des amis.</p>";
+  }
+}
+
+// Function to initialize tooltips (SPA-friendly)
+function initializeTooltips() {
+  const tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"], [title]')
+  );
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+}
+
+async function loadFriendRequest(friendsListBlock) {
+  try {
+    const friendRequests = currentUserInfo.friends_requests;
+    friendRequests.forEach(async (request) => {
+      const friendRequestDiv = document.createElement("div");
+      friendRequestDiv.className = "position-relative d-inline-block";
+
+      const requestLink = document.createElement("a");
+      requestLink.href = `#profile/?username=${request.from_user.username}`;
+      const requestImg = document.createElement("img");
+      requestImg.src = request.from_user.avatar
+        ? request.from_user.avatar
+        : "/static/users/avatars/avatar.png";
+      requestImg.alt = `Avatar de ${request.from_user.username}`;
+      requestImg.className = "img-fluid rounded-circle friends-avatar";
+      requestLink.appendChild(requestImg);
+      friendRequestDiv.appendChild(requestLink);
+
+      const acceptIcon = document.createElement("i");
+      acceptIcon.className =
+        "friend-request-icons fas fa-check-circle position-absolute";
+      acceptIcon.style.cursor = "pointer";
+      acceptIcon.style.top = "0px"; // Position en haut à droite
+      acceptIcon.style.right = "5px";
+      acceptIcon.style.color = "rgba(74, 130, 209, 0.75)";
+      acceptIcon.addEventListener("click", () => {
+        acceptFriendRequest(request.id);
+      });
+
+      const rejectIcon = document.createElement("i");
+      rejectIcon.className =
+        "friend-request-icons fas fa-times-circle position-absolute";
+      rejectIcon.style.cursor = "pointer";
+      rejectIcon.style.top = "0px";
+      rejectIcon.style.left = "5px";
+      rejectIcon.addEventListener("click", () => {
+        rejectFriendRequest(request.id);
+      });
+      rejectIcon.style.color = "rgba(230, 59, 59, 0.75)";
+
+      friendRequestDiv.appendChild(acceptIcon);
+      friendRequestDiv.appendChild(rejectIcon);
+
+      friendsListBlock.appendChild(friendRequestDiv);
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des demandes d'amis:", error);
+    document.getElementById("friend-requests-block").innerHTML =
+      "<p>Erreur de chargement des demandes d'amis.</p>";
   }
 }

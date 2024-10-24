@@ -15,7 +15,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ["user", "avatar", "bio", "friends"]
+        fields = ["user", "avatar", "banner", "bio", "friends"]
 
     def get_friends(self, obj):
         friends_initiated = obj.friends_initiated.filter(accepted=True)

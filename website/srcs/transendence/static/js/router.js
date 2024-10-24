@@ -2,9 +2,9 @@ async function router() {
   let hash = window.location.hash; // ex: #profile/?username=neah12
   // console.log("Hash actuel : ", hash);
 
-  let [route, queryString] = hash.split("?"); 
+  let [route, queryString] = hash.split("?");
   if (route.endsWith("/")) {
-    route = route.slice(0, -1); 
+    route = route.slice(0, -1);
   }
 
   const params = new URLSearchParams(queryString);
@@ -57,6 +57,7 @@ async function router() {
   }
 }
 
+
 window.addEventListener("hashchange", router);
 document.addEventListener("DOMContentLoaded", router);
 
@@ -70,5 +71,6 @@ function getCSRFToken() {
       break;
     }
   }
+
   return cookieValue;
 }
