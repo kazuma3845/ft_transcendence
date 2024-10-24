@@ -41,8 +41,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(f"WebSocket connection accepted for {self.user.username}")
 
     async def disconnect(self, close_code):
-        # Récupérer toutes les conversations où l'utilisateur participe dans un contexte async
-        conversations = await database_sync_to_async(self.get_user_conversations)(self.user_profile)
+        conversations = await self.get_user_conversations(self.user_profile)
+
+        # Vérifier si des conversations existent
+        if not conversations:
+            return
 
         # Retirer l'utilisateur de chaque groupe de ses conversations
         for conversation in conversations:
@@ -258,10 +261,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         }))
 
-    # Méthodes auxiliaires pour gérer les requêtes synchrone en mode async
+    # # Méthodes auxiliaires pour gérer les requêtes synchrone en mode async
+    # @database_sync_to_async
+    # def get_user_conversations(self, user_profile):
+    #     Conversation = apps.get_model('messaging', 'Conversation')
+    #     return list(Conversation.objects.filter(participants=user_profile))
+
     @database_sync_to_async
     def get_user_conversations(self, user_profile):
+        # Récupérer les conversations en mode synchrone dans une fonction asynchrone
         Conversation = apps.get_model('messaging', 'Conversation')
+        # On retourne explicitement une liste pour éviter les erreurs de coroutine non iterable
         return list(Conversation.objects.filter(participants=user_profile))
 
     @database_sync_to_async

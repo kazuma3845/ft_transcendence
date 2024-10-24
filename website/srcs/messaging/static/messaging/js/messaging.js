@@ -1,15 +1,4 @@
-// 1.	loadChat : Charge le HTML du chat.
-// 2.	loadConversations : Charge la liste des conversations via l’API.
-// 3.	loadMessages : Charge les messages d’une conversation sélectionnée.
-// 4.	openWebSocket : Ouvre une connexion WebSocket pour la conversation active.
-// 5.	sendMessage : Envoie un message via WebSocket.
-// 6.	displayNewMessage : Affiche un nouveau message dans la zone de chat.
-
-
-// Bloquage
-
 let blockedUsers;
-
 
 function updateBlockedUsers() {
     fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
@@ -214,7 +203,10 @@ function loadConversations() {
             // Si un seul participant, l'afficher seul, sinon les séparer par des '/'
             const participantsText = otherParticipants.join(', ');
             convItem.classList.add('user-conversation', 'bg-primary', 'p-2', 'mb-2', 'rounded');
-            convItem.textContent = `Conversation avec ${participantsText}`;
+            if (conversation.tour)
+                convItem.textContent = `Tournois  ${conversation.tour}  :  ${participantsText}`;
+            else
+                convItem.textContent = `Conversation avec ${participantsText}`;
 
             // Ajouter un event listener pour charger les messages et définir la conversation active
             convItem.addEventListener('click', () => {
@@ -247,7 +239,14 @@ function loadMessages(conversationId) {
 
             // Met à jour le titre de la conversation
             const chatTitle = document.getElementById('chat_title');
-            chatTitle.textContent = `Discussion avec ${participantsText}`;
+            if (conversation.tour)
+            {
+                let interButton = document.getElementById('interaction-chat');
+                interButton.style.display = 'none';
+                chatTitle.textContent = `Discussion du tournois  ${conversation.tour} avec  ${participantsText}`;
+            }
+            else
+                chatTitle.textContent = `Discussion avec ${participantsText}`;
 
             // Rendre visible la fenêtre de chat
             chatWindow.style.display = 'block';
@@ -291,25 +290,7 @@ function loadMessages(conversationId) {
                         messageItem.appendChild(messageContent);
                         messagesList.appendChild(messageItem);
                     });
-                    // messages.forEach(message => {
-                    //     const messageItem = document.createElement('div');
-                    //     const isUserMessage = message.sender === currentUser;
-
-                    //     // Ajout des classes pour alignement
-                    //     messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
-
-                    //     const messageContent = document.createElement('div');
-                    //     messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
-                    //     if (message.invitation)
-                    //         messageContent.textContent = "Rejoindre la partie";
-                    //     if (message.content)
-                    //         messageContent.textContent = message.content;
-                    //     messageItem.appendChild(messageContent);
-                    //     messagesList.appendChild(messageItem);
-                    // });
-
                     activeConversationId = conversationId;
-
                     // Scroller en bas de la zone de messages
                     messagesList.scrollTop = messagesList.scrollHeight;
                 })

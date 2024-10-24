@@ -9,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.decorators import action
 from channels.db import database_sync_to_async
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class TournamentViewSet(viewsets.ModelViewSet):
     queryset = Tournament.objects.all()  # Tous les tournois
@@ -97,7 +99,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='join_tour')
     def join_tour(self, request, pk=None):
         tour = self.get_object()  # Récupère l'instance du tournoi
-
+        message = None;
         # Vérifier si l'utilisateur est déjà dans les participants
         if request.user.username in tour.participants:
             return Response({"detail": "Vous êtes déjà inscrit dans ce tournoi."}, status=status.HTTP_400_BAD_REQUEST)
@@ -107,6 +109,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
             if tour.game_1_1.player2 is not None:
                 return Response({"detail": "Le joueur 2 de la première partie est déjà défini."}, status=status.HTTP_400_BAD_REQUEST)
             tour.game_1_1.player2 = request.user
+            message = f"{tour.game_1_1.player1} affronte {tour.game_1_1.player2}"
 
         # Cas 2 : participantNum = 2 -> game_1_2.player1 = request.user
         elif tour.participantNum == 2:
@@ -119,6 +122,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
             if tour.game_1_2.player2 is not None:
                 return Response({"detail": "Le joueur 2 de la deuxième partie est déjà défini."}, status=status.HTTP_400_BAD_REQUEST)
             tour.game_1_2.player2 = request.user
+            message = f"{tour.game_1_2.player1} affronte {tour.game_1_2.player2}"
 
         # Mettre à jour le nombre de participants
         tour.participantNum += 1
@@ -136,22 +140,30 @@ class TournamentViewSet(viewsets.ModelViewSet):
         except Conversation.DoesNotExist:
             return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
         conversation.participants.add(request.user.userprofile)
-        # try:
-        #     # Récupérer la conversation liée au tournoi
-        #     conversation = Conversation.objects.get(tour=tour)
-        #     conversation_id = conversation.id
-        # except Conversation.DoesNotExist:
-        #     return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
-        # channel_layer = get_channel_layer()
-        # async_to_sync(channel_layer.group_send)(
-        #     f"chat_{conversation_id}",
-        #     {
-        #         'type': 'chat_message',
-        #         'conversation_id': conversation_id,
-        #         'message': message,
-        #         'sender': ''
-        #     }
-        # )
+        conversation_id = conversation.id
+
+        # print(f'Essayer de print le message')
+        # print(f'sadfmessage :', message)
+        # if message:  # Si le message est bien généré
+        #     try:
+        #         print(f"Envoi du message au groupe chat_{conversation_id} : {message}")
+        #         channel_layer = get_channel_layer()
+        #         async_to_sync(channel_layer.group_send)(
+        #             f"chat_{conversation_id}",
+        #             {
+        #                 'type': 'newTourMessage',
+        #                 'content': {
+        #                     'conversation_id': conversation_id,
+        #                     'message': message,
+        #                 }
+        #                 # 'type': 'chat_message',
+        #                 # 'conversation_id': conversation_id,
+        #                 # 'message': message,
+        #                 # 'sender': request.user.username
+        #             }
+        #         )
+        #     except Exception as e:
+        #         print(f"Erreur lors de l'envoi du message à la WebSocket : {e}")
         return Response({"detail": "Vous avez rejoint le tournoi avec succès."}, status=status.HTTP_200_OK)
 
 

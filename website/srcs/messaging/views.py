@@ -75,6 +75,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
                 return Response({'error': f'Erreur lors de la récupération du participant {participant_id}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         # Récupérer toutes les conversations qui contiennent au moins un des participants
         conversations = Conversation.objects.filter(participants__in=participants).distinct()
+        # conversations = await database_sync_to_async(Conversation.objects.filter)(participants__in=participants).distinct()
 
         # Filtrer pour vérifier que la conversation contient exactement les mêmes participants
         for conversation in conversations:

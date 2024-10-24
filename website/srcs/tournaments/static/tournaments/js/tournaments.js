@@ -146,13 +146,20 @@ async function joinTour(tourId) {
                 'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
             },
         });
-        const convId = await getTourConversation(tourId);
+        const conv = await getTourConversation(tourId);
+        const tour = await getTour(tourId);
+        console.log('tour ==> ',tour);
+        const convId = conv.id;
 
         // Si convId est valide, connecter WebSocket et envoyer un message
         if (convId) {
             connectWebSocket();
             socket.onopen = function () {
                 sendTourConv(convId, `${currentUser} a rejoint le tournoi`);
+                if (tour.participantNum === 2)
+                    sendTourConv(convId, `${tour.participants[0]} affronte ${tour.participants[1]}`);
+                if (tour.participantNum === 4)
+                    sendTourConv(convId, `${tour.participants[2]} affronte ${tour.participants[3]}`);
             };
         }
     // Vérifier si la requête a réussi
@@ -176,7 +183,23 @@ async function getTourConversation(tourId) {
         }
 
         const conversation = await response.json();
-        return conversation.id;  // Retourne l'ID de la conversation
+        return conversation;  // Retourne l'ID de la conversation
+    } catch (error) {
+        console.error("Erreur lors de la récupération de la conversation du tournoi:", error);
+    }
+}
+
+async function getTour(tourId) {
+    try {
+        // Appeler l'API pour récupérer la conversation liée au tournoi
+        const response = await fetch(`/api/tournaments/tournament/${tourId}/`);
+
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération de la conversation: ${response.status}`);
+        }
+
+        const tour = await response.json();
+        return tour;  // Retourne l'ID de la conversation
     } catch (error) {
         console.error("Erreur lors de la récupération de la conversation du tournoi:", error);
     }
