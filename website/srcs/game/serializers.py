@@ -40,6 +40,8 @@ class GameSessionSerializer(serializers.ModelSerializer):
         # Si player2 est None ou vide, on retourne 'Bot'
         if obj.player2:
             return str(obj.player2)  # Retourne le nom d'utilisateur du joueur 2
+        if obj.Multiplayer:
+            return "LocalPlayer"
         return "Bot"  # Si player2 est vide, retourne 'Bot'
 
     class Meta:
