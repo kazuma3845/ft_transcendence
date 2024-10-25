@@ -18,3 +18,7 @@ iframe {
 .hidden {
   display: none;
 }
+
+.victory-screen {
+  color: white;
+}

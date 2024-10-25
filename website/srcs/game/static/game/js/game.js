@@ -1,6 +1,5 @@
 const allowedValues = [1, 3, 5, 7, 9, 11];
 
-
 function loadGameForm() {
   fetch("/static/game/html/game-form.html")
     .then((response) => response.text())
@@ -9,6 +8,7 @@ function loadGameForm() {
       attachGameFormSubmitListener();
     });
 }
+
 async function createGameSession(data, player1 = null, player2 = null) {
   // Ajoute player1 et player2 s'ils sont définis
   if (player1) data["player1"] = player1;
@@ -155,7 +155,7 @@ function updateCheckboxValue(spanId, isChecked) {
 			handleMultiplayerChange(isChecked);
 	}
 }
-
+let multi = false;
 function handleMultiplayerChange(isChecked) {
 	const botCheckbox = document.getElementById('bot');
 	const botSpan = document.getElementById('bot_value');
@@ -165,6 +165,7 @@ function handleMultiplayerChange(isChecked) {
 	const botDifficultyValue = document.getElementById('bot_difficulty_value');
 
 	if (isChecked) {
+			multi = true;
 			botCheckbox.checked = false;
 			botSpan.innerText = 'Off';
 			botCheckbox.classList.add('hidden');
@@ -174,6 +175,7 @@ function handleMultiplayerChange(isChecked) {
 			botDifficultyLabel.classList.add('hidden');
 			botDifficultyValue.classList.add('hidden');
 	} else {
+			multi = false;
 			botCheckbox.classList.remove('hidden');
 			botSpan.classList.remove('hidden');
 			botLabel.classList.remove('hidden');
@@ -183,6 +185,8 @@ function handleMultiplayerChange(isChecked) {
 	}
 }
 
+let win_number = 5
+
 function updateWinNumber() {
   const rangeInput = document.getElementById("actual_win_number");
   const displayValue = document.getElementById("actual_win_number_value");
@@ -191,6 +195,7 @@ function updateWinNumber() {
   // Map the range slider position (1 to 5) to the allowed values
   const selectedValue = allowedValues[rangeInput.value - 1];
 
+	win_number = selectedValue;
   // Update the display value
   displayValue.textContent = selectedValue;
 
@@ -303,6 +308,7 @@ function startWebSocket(sessionId) {
       if (data.type === "game_score") {
         updateScoreDisplay(
           data.player1,
+					data.player2,
           data.player1_points,
           data.player2_points
         );
@@ -323,16 +329,50 @@ function startWebSocket(sessionId) {
     console.error("WebSocket error:", e);
   };
 
-  function updateScoreDisplay(username, player1Points, player2Points) {
+	function checkWinCondition(username, username2, player1Points, player2Points) {
+			if (player1Points >= win_number) {
+				fetch(`/static/game/html/victory.html`)
+				.then((response) => response.text())
+				.then((html) => {
+					document.getElementById("app").innerHTML = html;
+					displayWinnerMessage(username);
+				});
+			} else if (player2Points >= win_number) {
+				fetch(`/static/game/html/victory.html`)
+				.then((response) => response.text())
+				.then((html) => {
+					document.getElementById("app").innerHTML = html;
+					displayWinnerMessage(username2);
+				});
+			}
+		}
+
+		function displayWinnerMessage(winner) {		
+			// Sélectionner l'élément du message de victoire
+			const winnerMessage = document.getElementById('winnerMessage');
+		console.log("CURENT: ", currentUser)
+			// Comparer les noms d'utilisateur et mettre à jour le message
+			if (winner === currentUser || winner === "LocalPlayer") {
+				winnerMessage.textContent = 'Victory!';
+			} else {
+				winnerMessage.textContent = 'Lose!';
+			}
+		}
+
+  function updateScoreDisplay(username, username2, player1Points, player2Points) {
     // console.log("Updating scores:", player1Points, player2Points);
     const player1Elem = document.getElementById("player1");
     const player1ScoreElem = document.getElementById("player1Score");
     const player2ScoreElem = document.getElementById("player2Score");
-
+		if (!username2 && multi == false)
+			username2 = "Bot"
+		else if (!username2 && multi == true)
+			username2 = "LocalPlayer"
     if (player1ScoreElem && player2ScoreElem && player1Elem) {
       player1Elem.textContent = username;
       player1ScoreElem.textContent = player1Points;
       player2ScoreElem.textContent = player2Points;
+			checkWinCondition(username, username2, player1Points, player2Points);
     } else {
       console.error("Score elements not found in the DOM");
     }

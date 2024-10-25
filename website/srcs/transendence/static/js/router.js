@@ -49,7 +49,7 @@ async function router() {
         }
         break;
       default:
-        loadHome();
+        loadProfil();
         break;
     }
   } catch (error) {
