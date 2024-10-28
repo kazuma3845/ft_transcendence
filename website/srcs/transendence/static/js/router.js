@@ -49,7 +49,11 @@ async function router() {
         }
         break;
       default:
-        loadProfil();
+        if (isAuthenticated) {
+          loadProfil(params);
+        } else {
+          loadLoginForm();
+        }
         break;
     }
   } catch (error) {
