@@ -16,13 +16,13 @@
 
 
 
-.modal-content {
+/* .modal-content {
     background-color: white;
     margin: auto;
     padding: 20px;
     border-radius: 10px;
     width: 75%; /* Largeur de la modal */
-}
+/* } */
 
 .close {
     float: right;

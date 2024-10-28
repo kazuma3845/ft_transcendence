@@ -163,9 +163,11 @@ async function fetchUserProfileInfo(username) {
     const data = await response.json();
     requestedUserProfile = data;
     requestedUserProfile.stats = await fetchUserStats(username);
+    console.log(requestedUserProfile);
     return requestedUserProfile;
   } else {
     currentUserInfo.stats = await fetchUserStats(username);
+    console.log(currentUserInfo);
     return currentUserInfo;
   }
 }
@@ -276,7 +278,10 @@ function createProfilBlock(user) {
     document.getElementById("send-friend-request-btn").style.display = "none";
     document.getElementById("block-user-btn").style.display = "none";
   }
-  if (data.user.username === currentUserInfo.user.username) {
+  if (
+    data.user.username === currentUserInfo.user.username &&
+    data.friends.length != 0
+  ) {
     loadFriends();
   }
 }
@@ -543,11 +548,16 @@ function createLeaderboard(user) {
 
 async function loadFriends() {
   try {
+    console.log("Loading friends");
     const profileBlock = document.getElementById("profile-block");
-    const friendsListBlock = document.createElement("div");
+    const friendsListBlock = document.createElement("friends-div");
+    const friendTitle = document.getElementById("friends-title");
+    const friendDivider = document.getElementById("friends-divider");
+    friendTitle.classList.remove("hidden");
+    friendDivider.classList.remove("hidden");
 
     friendsListBlock.className =
-      "friend-list-block position-relative d-inline-block";
+      "friend-list-block position-relative d-inline-block ms-3 me-3 mb-2  ";
 
     currentUserInfo.friends.forEach(async (friend) => {
       const friendLink = document.createElement("a");

@@ -4,15 +4,41 @@ iframe {
   border: none;
 }
 
-.scoreboard {
+#scoreboard {
   font-weight: 300;
-  font-size: 34px;
+  font-size: 2.5rem;
   letter-spacing: 10px;
-  color: rgba(57, 67, 175, 0.74);
+  color: rgba(47, 56, 151, 0.74);
+  position: relative;
+  top: 2rem;
 }
 
 .game-form-container {
   border-radius: 12px;
+}
+
+#game-settings-btn{
+  font-size: 3rem;
+  /* color: white; */
+  font-weight: 450;
+  font-variation-settings: "ELGR" 1, "ELSH" 3.6;
+}
+
+#modal-title {
+  font-size: 2.2rem;
+  color: white;
+}
+
+#create-game-btn{
+  font-size: 2.2rem;
+}
+
+.modal-form-label {
+  font-size: 2rem;
+}
+
+.modal-body span {
+  font-size: 2rem;
 }
 
 .hidden {

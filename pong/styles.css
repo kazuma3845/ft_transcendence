@@ -68,8 +68,9 @@ canvas {
   border-width: medium;
   font-family: "Handjet", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 250;
+  font-weight: 350;
   font-variation-settings: "ELGR" 1, "ELSH" 1;
+  font-size: 3.5rem;
 }
 
 .custom-btn:hover {

@@ -15,11 +15,11 @@ async function createGameSession(data, player1 = null, player2 = null) {
   if (player2) data["player2"] = player2;
 
   // Envoie les données à l'API pour créer une nouvelle session de jeu
-  const response = await fetch('/api/game/sessions/', {
-    method: 'POST',
+  const response = await fetch("/api/game/sessions/", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCSRFToken(), // Assure-toi que cette fonction est bien définie
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRFToken(), // Assure-toi que cette fonction est bien définie
     },
     body: JSON.stringify(data),
   });
@@ -46,7 +46,7 @@ function attachGameFormSubmitListener() {
       // Ajoute les valeurs de checkbox dans les données
       data["power"] = document.getElementById("power").checked;
       data["Multiplayer"] = document.getElementById("Multiplayer").checked;
-			data["bot"] = document.getElementById("bot").checked;
+      data["bot"] = document.getElementById("bot").checked;
 
       // Appelle la fonction pour créer une session de jeu
       createGameSession(data)
@@ -54,52 +54,61 @@ function attachGameFormSubmitListener() {
           let sessionId = sessionData.id;
 
           // Charger le jeu avec loadGameForm() et attendre le chargement
-          loadGame(sessionId).then(() => {
+          loadGame(sessionId)
+            .then(() => {
               startWebSocket(sessionId); // Gérer la session WebSocket avec l'ID de session
-          }).catch((error) => {
-            console.error("Erreur lors du chargement du formulaire de jeu:", error);
-          });
+            })
+            .catch((error) => {
+              console.error(
+                "Erreur lors du chargement du formulaire de jeu:",
+                error
+              );
+            });
         })
         .catch((error) => {
-          console.error("Erreur lors de la création de la session de jeu:", error);
-          document.getElementById('error-message').textContent = error.message;
-          document.getElementById('error-message').style.display = 'block';
+          console.error(
+            "Erreur lors de la création de la session de jeu:",
+            error
+          );
+          document.getElementById("error-message").textContent = error.message;
+          document.getElementById("error-message").style.display = "block";
         });
     });
 }
 
 function loadGame(sessionId) {
-    // localStorage.setItem('game_session_id', sessionId);
-    const currentUrl = window.location.href;
-    if (currentUrl.includes('#')) {
-        const newUrl = currentUrl.split('#')[0] + '#game?sessionid=' + sessionId;
-        window.history.replaceState({}, '', newUrl);
-    }
-    return new Promise((resolve, reject) => {
-      fetch("/static/game/html/game.html")
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.text();
-        })
-        .then((html) => {
-          document.getElementById("app").innerHTML = html;
-          const iframe = document.getElementById("pongWin"); // Assurez-vous que l'iframe a cet ID
-          if (iframe) {
-              iframe.src = '/pong/?sessionid=' + sessionId;
-          } else {
-              console.error("Iframe 'pongWin' introuvable dans le fichier HTML chargé.");
-          }
-          resolve(); // Résoudre la promesse une fois que tout est chargé
-        })
-        .catch((error) => {
-          console.error("Erreur lors du chargement de la page de jeu:", error);
-          reject(error); // Rejeter la promesse en cas d'erreur
-        });
-    });
+  // localStorage.setItem('game_session_id', sessionId);
+  const currentUrl = window.location.href;
+  if (currentUrl.includes("#")) {
+    const newUrl = currentUrl.split("#")[0] + "#game?sessionid=" + sessionId;
+    window.history.replaceState({}, "", newUrl);
+  }
+  return new Promise((resolve, reject) => {
+    fetch("/static/game/html/game.html")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.text();
+      })
+      .then((html) => {
+        document.getElementById("app").innerHTML = html;
+        const iframe = document.getElementById("pongWin"); // Assurez-vous que l'iframe a cet ID
+        if (iframe) {
+          iframe.src = "/pong/?sessionid=" + sessionId;
+        } else {
+          console.error(
+            "Iframe 'pongWin' introuvable dans le fichier HTML chargé."
+          );
+        }
+        resolve(); // Résoudre la promesse une fois que tout est chargé
+      })
+      .catch((error) => {
+        console.error("Erreur lors du chargement de la page de jeu:", error);
+        reject(error); // Rejeter la promesse en cas d'erreur
+      });
+  });
 }
-
 
 function updateScore(sessionId, player1Points, player2Points) {
   fetch(`/api/game/sessions/${sessionId}/update_score/`, {
@@ -150,19 +159,21 @@ function updateValue(id, value) {
 }
 
 function updateCheckboxValue(spanId, isChecked) {
-	document.getElementById(spanId).innerText = isChecked ? 'On' : 'Off';
-	if (spanId === 'Multiplayer_value') {
-			handleMultiplayerChange(isChecked);
-	}
+  document.getElementById(spanId).innerText = isChecked ? "On" : "Off";
+  if (spanId === "Multiplayer_value") {
+    handleMultiplayerChange(isChecked);
+  }
 }
 let multi = false;
 function handleMultiplayerChange(isChecked) {
-	const botCheckbox = document.getElementById('bot');
-	const botSpan = document.getElementById('bot_value');
-	const botLabel = document.querySelector('label[for="bot"]');
-	const botDifficulty = document.getElementById('bot_difficulty');
-	const botDifficultyLabel = document.querySelector('label[for="bot_difficulty"]');
-	const botDifficultyValue = document.getElementById('bot_difficulty_value');
+  const botCheckbox = document.getElementById("bot");
+  const botSpan = document.getElementById("bot_value");
+  const botLabel = document.querySelector('label[for="bot"]');
+  const botDifficulty = document.getElementById("bot_difficulty");
+  const botDifficultyLabel = document.querySelector(
+    'label[for="bot_difficulty"]'
+  );
+  const botDifficultyValue = document.getElementById("bot_difficulty_value");
 
 	if (isChecked) {
 			multi = true;
@@ -259,15 +270,15 @@ async function fetchAvailableSessions() {
 }
 
 async function joinGame(sessionId) {
-    try {
-        // Appeler l'API pour rejoindre la session
-        const response = await fetch(`/api/game/sessions/${sessionId}/join_game/`, {
-            method: 'POST', // Utilisation de POST pour rejoindre la session
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),  // Assurez-vous que le token CSRF est inclus si nécessaire
-            },
-        });
+  try {
+    // Appeler l'API pour rejoindre la session
+    const response = await fetch(`/api/game/sessions/${sessionId}/join_game/`, {
+      method: "POST", // Utilisation de POST pour rejoindre la session
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(), // Assurez-vous que le token CSRF est inclus si nécessaire
+      },
+    });
 
     // Vérifier si la requête a réussi
     if (!response.ok) {
@@ -276,12 +287,13 @@ async function joinGame(sessionId) {
       );
     }
 
-        // Si l'appel API est réussi, lancer la fonction pour charger le jeu
-        console.log(`Vous avez rejoint la session ${sessionId}`);
-        // console.log("ENV VARIABLE: ", response.env_variable)
-        // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
-        loadGame(sessionId).then(() => {
-          startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
+    // Si l'appel API est réussi, lancer la fonction pour charger le jeu
+    console.log(`Vous avez rejoint la session ${sessionId}`);
+    // console.log("ENV VARIABLE: ", response.env_variable)
+    // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
+    loadGame(sessionId)
+      .then(() => {
+        startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
       })
       .catch((error) => {
         console.error("Erreur lors du chargement du formulaire de jeu:", error);
@@ -293,7 +305,7 @@ async function joinGame(sessionId) {
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
-	this.pingInterval = null;
+  this.pingInterval = null;
   const socket = new WebSocket(`/ws/game/sessions/${sessionId}/`);
 
   socket.onopen = function (e) {
@@ -379,6 +391,9 @@ function startWebSocket(sessionId) {
   }
 
   function displayPlayer(username, username2) {
+    const scoreboardDiv = document.getElementById("scoreboard");
+    scoreboardDiv.classList.remove("d-none");
+
     const player1Elem = document.getElementById("player1");
     const player2Elem = document.getElementById("player2");
 

@@ -159,6 +159,7 @@ i:hover {
   font-optical-sizing: auto;
   font-weight: 250;
   font-variation-settings: "ELGR" 1, "ELSH" 1;
+  font-size: 2rem;
 }
 
 .custom-btn:hover {
@@ -221,7 +222,7 @@ footer p {
 .large-label {
   font-weight: 300;
   letter-spacing: 10px;
-  font-size: 4rem;
+  font-size: 3.5rem;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.975);
 }
