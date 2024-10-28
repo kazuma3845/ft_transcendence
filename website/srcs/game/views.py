@@ -14,6 +14,7 @@ from asgiref.sync import async_to_sync
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 from rest_framework import viewsets
+from messaging.models import Conversation
 
 @login_required
 def index(request):
@@ -179,11 +180,32 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             f'game_{session.id}',
             {
                 'type': 'game_score',
+                'id': session.id,
                 'player1': session.player1.username,
                 'player1_points': session.player1_points,
-                'player2_points': session.player2_points
+                'player2_points': session.player2_points,
+                'tour': session.tour.id
             }
         )
+
+        if session.tour:  # Si le tour du model session existe
+            try:
+                    conversation = Conversation.objects.get(tour=session.tour)
+            except Conversation.DoesNotExist:
+                    return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+            conversation_id = conversation.id
+            try:
+                print(f"Impression de  update_tree : ", session.tour.id)
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    f"chat_{conversation_id}",
+                    {
+                        'type': 'update_tree',
+                        'tour': session.tour.id,
+                    }
+                )
+            except Exception as e:
+                print(f"Erreur lors de l'envoi du message à la WebSocket : {e}")
 
         # Sérialiser la session mise à jour
         serializer = GameSessionSerializer(session)

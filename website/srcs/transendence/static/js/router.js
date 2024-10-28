@@ -39,12 +39,29 @@ async function router() {
         break;
       case "#tournaments":
         if (isAuthenticated) {
+          const params = new URLSearchParams(window.location.hash.split('?')[1]);
+          const tourId = params.get('tourid'); // Récupère le paramètre 'sessionid'
+          console.log("tourId actuel : ", tourId);
+
+          if (tourId) {
+            // Charger le jeu avec le sessionId et démarrer le WebSocket
+            loadTour(tourId);
+          } else {
             loadTourForm();
             fetchAvailableTours();
+          }
         } else {
           loadLoginForm();
         }
         break;
+
+        // if (isAuthenticated) {
+        //     loadTourForm();
+        //     fetchAvailableTours();
+        // } else {
+        //   loadLoginForm();
+        // }
+        // break;
       case "#chat":
           loadChat();
         break;

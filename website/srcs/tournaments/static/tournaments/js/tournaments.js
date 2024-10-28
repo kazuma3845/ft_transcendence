@@ -7,6 +7,15 @@ function loadTourForm() {
         });
     }
 
+function loadTour(tourId) {
+    fetch("/static/tournaments/html/tour-lobby.html")
+        .then((response) => response.text())
+        .then((html) => {
+            document.getElementById("app").innerHTML = html;
+            updateTree(tourId);
+        });
+    }
+
 async function createTourSession(data) {
     // Envoie les données à l'API pour créer une nouvelle session de jeu
     const response = await fetch('/api/tournaments/tournament/', {
@@ -69,9 +78,10 @@ async function createTourSession(data) {
                                 sendTourConv(convData.id, `${currentUser} a créé le tournois`);
                             };
 
-                            // Rediriger vers le jeu après la création de la conversation et tout le chargement
-                            let sessionId = tourData.game_1_1.id;  // Accéder à game_1_1 à partir de tourData
-                            window.location.href = `/#game?sessionid=${sessionId}`;
+                            let tourId = tourData.id;  // Accéder à game_1_1 à partir de tourData
+                            window.location.href = `/#tournaments?tourid=${tourId}`;
+                            // let sessionId = tourData.game_1_1.id;  // Accéder à game_1_1 à partir de tourData
+                            // window.location.href = `/#game?sessionid=${sessionId}`;
                         });
                     })
                     .catch((error) => {
@@ -121,6 +131,7 @@ async function fetchAvailableTours() {
             link.addEventListener("click", function (event) {
                 event.preventDefault(); // Empêcher la redirection par défaut
                 joinTour(tour.id); // Appeler la fonction pour rejoindre le tournoi
+                window.location.href = `/#tournaments?tourid=${tour.id}`;
             });
 
             listItem.appendChild(link);
@@ -202,5 +213,98 @@ async function getTour(tourId) {
         return tour;  // Retourne l'ID de la conversation
     } catch (error) {
         console.error("Erreur lors de la récupération de la conversation du tournoi:", error);
+    }
+}
+
+async function updateTree(tourId) {
+    let tour = await getTour(tourId);
+    console.log("tour : ", tour);
+    let player111 = document.querySelector("#player111 text");
+    if (player111 && tour.participants[0])
+        player111.innerHTML = tour.participants[0]; // Remplacer le contenu du texte par le nom du joueur
+    let player112 = document.querySelector("#player112 text");
+    if (player112 && tour.participants[1])
+        player112.innerHTML = tour.participants[1]; // Remplacer le contenu du texte par le nom du joueur
+    let player121 = document.querySelector("#player121 text");
+    if (player121 && tour.participants[2])
+        player121.innerHTML = tour.participants[2]; // Remplacer le contenu du texte par le nom du joueur
+    let player122 = document.querySelector("#player122 text");
+    if (player122 && tour.participants[3])
+        player122.innerHTML = tour.participants[3]; // Remplacer le contenu du texte par le nom du joueur
+    game_1_1 = getGame(tour.game_1_1.id);
+    console.log ("game_1_1 : ",game_1_1);
+
+
+    if (tour.game_1_1.start_time){
+        let score111 = document.querySelector("#score111 text");
+        if (score111)
+            score111.innerHTML = tour.game_1_1.player1_points;
+        let score112 = document.querySelector("#score112 text");
+        if (score112)
+            score112.innerHTML = tour.game_1_1.player2_points;
+    }
+
+    if (tour.game_1_2.start_time){
+        let score121 = document.querySelector("#score121 text");
+        if (score121)
+            score121.innerHTML = tour.game_1_2.player1_points; // Remplacer le contenu du texte par le nom du joueur
+        let score122 = document.querySelector("#score122 text");
+        if (score122)
+            score122.innerHTML = tour.game_1_2.player2_points; // Remplacer le contenu du texte par le nom du joueur
+    }
+
+    if (tour.game_1_1.winner) {
+        let winner1 = document.querySelector("#winner1 text");
+        if (winner1)
+            winner1.innerHTML = tour.game_1_1.winner;
+    }
+
+    if (tour.game_1_2.winner) {
+        let winner2 = document.querySelector("#winner2 text");
+        if (winner2)
+            winner2.innerHTML = tour.game_1_2.winner;
+    }
+
+    if (tour.game_2.start_time){
+        let score1 = document.querySelector("#score1 text");
+        if (score1)
+            score1.innerHTML = tour.game_2.player1_points; // Remplacer le contenu du texte par le nom du joueur
+        let score2 = document.querySelector("#score2 text");
+        if (score2)
+            score2.innerHTML = tour.game_2.player2_points; // Remplacer le contenu du texte par le nom du joueur
+    }
+
+    if (tour.game_2.winner) {
+        let winner = document.querySelector("#winner text");
+        if (winner)
+            winner.innerHTML = tour.game_2.winner;
+        let winnerBox = document.getElementById("winnerbox");
+        if (winnerBox) {
+            winnerBox.style.display = "block";  // Rendre le groupe visible
+        }
+    }
+
+    let playButton = document.getElementById("playButton");
+    if (playButton) {
+        // Modifier dynamiquement l'attribut `onclick` du rectangle
+        playButton.setAttribute("onclick", `playTour(${tourId})`);
+    }
+}
+
+// A corriger avec le user info de Francois
+async function playTour(tourId){
+    let tour = await getTour(tourId);
+    let sessionId;
+    if(!tour.game_1_1.winner){
+        if (tour.participants[0] === currentUser || tour.participants[1] === currentUser){
+            sessionId = tour.game_1_1.id;
+            return window.location.href = `/#game?sessionid=${sessionId}`;
+        }
+    }
+    if(!tour.game_1_2.winner){
+        if (tour.participants[2] === currentUser || tour.participants[3] === currentUser){
+            sessionId = tour.game_1_2.id;
+            return window.location.href = `/#game?sessionid=${sessionId}`;
+        }
     }
 }

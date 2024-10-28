@@ -74,7 +74,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
                 print(f"Erreur inattendue lors de la récupération du participant {participant_id}: {e}")
                 return Response({'error': f'Erreur lors de la récupération du participant {participant_id}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         # Récupérer toutes les conversations qui contiennent au moins un des participants
-        conversations = Conversation.objects.filter(participants__in=participants).distinct()
+        conversations = Conversation.objects.filter(participants__in=participants, tour__isnull=True).distinct()
         # conversations = await database_sync_to_async(Conversation.objects.filter)(participants__in=participants).distinct()
 
         # Filtrer pour vérifier que la conversation contient exactement les mêmes participants

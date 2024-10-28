@@ -140,7 +140,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
         except Conversation.DoesNotExist:
             return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
         conversation.participants.add(request.user.userprofile)
-        conversation_id = conversation.id
+        # conversation_id = conversation.id
 
         # print(f'Essayer de print le message')
         # print(f'sadfmessage :', message)

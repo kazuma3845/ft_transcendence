@@ -112,7 +112,6 @@ function startConversation() {
         return response.json();
     })
     .then(data => {
-        console.log('Nouvelle conversation créée:', data);
         // Charger les conversations et fermer la modal
         connectWebSocket();
         loadConversations();
@@ -202,11 +201,13 @@ function loadConversations() {
             const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
             // Si un seul participant, l'afficher seul, sinon les séparer par des '/'
             const participantsText = otherParticipants.join(', ');
-            convItem.classList.add('user-conversation', 'bg-primary', 'p-2', 'mb-2', 'rounded');
-            if (conversation.tour)
+            if (conversation.tour) {
+                convItem.classList.add('user-conversation', 'bg-secondary', 'p-2', 'mb-2', 'rounded');
                 convItem.textContent = `Tournois  ${conversation.tour}  :  ${participantsText}`;
-            else
+            } else {
+                convItem.classList.add('user-conversation', 'bg-primary', 'p-2', 'mb-2', 'rounded');
                 convItem.textContent = `Conversation avec ${participantsText}`;
+            }
 
             // Ajouter un event listener pour charger les messages et définir la conversation active
             convItem.addEventListener('click', () => {
@@ -222,7 +223,7 @@ function loadConversations() {
 
 function loadMessages(conversationId) {
     const chatWindow = document.getElementById('chat_window');
-    console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
+    // console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
 
     if (activeConversationId === conversationId) {
         chatWindow.style.display = 'none';
@@ -239,13 +240,14 @@ function loadMessages(conversationId) {
 
             // Met à jour le titre de la conversation
             const chatTitle = document.getElementById('chat_title');
+            let interButton = document.getElementById('interaction-chat');
             if (conversation.tour)
             {
-                let interButton = document.getElementById('interaction-chat');
                 interButton.style.display = 'none';
                 chatTitle.textContent = `Discussion du tournois  ${conversation.tour} avec  ${participantsText}`;
             }
             else
+                interButton.style.display = 'block';
                 chatTitle.textContent = `Discussion avec ${participantsText}`;
 
             // Rendre visible la fenêtre de chat
@@ -282,7 +284,6 @@ function loadMessages(conversationId) {
                             messageContent.textContent = "Rejoindre la ";
                             messageContent.appendChild(invitationLink);
                         }
-                        console.log("Test de curr tournaoir", message.content)
                         if (message.content) {
                             messageContent.textContent = message.content;
                         }
@@ -369,7 +370,14 @@ function connectWebSocket() {
         const data = JSON.parse(e.data);
 
         // Vérifier le type du message reçu
+        if (data.type === "updateTree"){
+            console.log("data.content.tour : ", data.content)
+            updateTree(data.content.tour)
+        }
         if (data.type === "upload_message") {
+            console.log("data.content : ", data.content)
+            if (data.content.tour)
+                updateTree(data.content.tour)
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
             const messageSender = data.content.sender;  // Le nom d'utilisateur de l'expéditeur
 
@@ -380,7 +388,7 @@ function connectWebSocket() {
             }
             // const message = data.content.message;  // Récupérer le contenu du message
             // Afficher le message dans la boîte de la conversation correspondante
-			console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
+			// console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
 			if (activeConversationId === conversationId)
 				displayNewMessage(data.content);
 			// loadMessages(conversationId);

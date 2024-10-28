@@ -59,7 +59,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message_type = data['type']
         content = data['content']
-        print(f"Message from: {data}")
+        print(f"WS Message from : {data}")
 
         if message_type == 'newMessage':
             await self.handle_new_message(content)
@@ -89,8 +89,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             content=message
         )
 
+        # try:
+        #     conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
+        # except Conversation.DoesNotExist:
+        #     print(f"Conversation {conversation_id} does not exist")
+        #     return
         try:
-            conversation = await database_sync_to_async(self.get_conversation)(conversation_id)
+            conversation = await database_sync_to_async(Conversation.objects.get)(id=conversation_id)
+            tour = await database_sync_to_async(lambda: conversation.tour.id)()
         except apps.get_model('messaging', 'Conversation').DoesNotExist:
             print(f"Conversation {conversation_id} does not exist")
             return
@@ -101,7 +107,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'conversation_id': conversation_id,
                 'message': message,
-                'sender': ''
+                'sender': '',
+                'tour': tour
             }
         )
 
@@ -157,7 +164,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'type': 'chat_message',
                 'conversation_id': conversation_id,
                 'message': message_content,
-                'sender': await database_sync_to_async(lambda: sender_profile.user.username)()  # Utiliser le nom d'utilisateur
+                'sender': await database_sync_to_async(lambda: sender_profile.user.username)(),
+                'tour': ''
             }
         )
 
@@ -237,13 +245,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         conversation_id = event['conversation_id']
         message_content = event['message']
         sender_username = event['sender']
+        tour_id = event['tour']
 
         await self.send(text_data=json.dumps({
             'type': 'upload_message',
             'content': {
                 'conversation_id': conversation_id,
                 'message': message_content,
-                'sender': sender_username
+                'sender': sender_username,
+                'tour': tour_id
             }
         }))
 
@@ -258,6 +268,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'conversation_id': conversation_id,
                 'invitation': invitation_content,
                 'sender': sender_username
+            }
+        }))
+
+    async def update_tree(self, event):
+        tour = event['tour']
+
+        await self.send(text_data=json.dumps({
+            'type': 'updateTree',
+            'content': {
+                'tour': tour
             }
         }))
 

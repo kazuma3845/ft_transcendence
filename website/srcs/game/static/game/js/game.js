@@ -243,20 +243,11 @@ async function joinGame(sessionId) {
         `Erreur lors de la connexion à la session: ${response.status}`
     );
     }
-
-        // Si l'appel API est réussi, lancer la fonction pour charger le jeu
+    // Si l'appel API est réussi, lancer la fonction pour charger le jeu
         console.log(`Vous avez rejoint la session ${sessionId}`);
-        // console.log("ENV VARIABLE: ", response.env_variable)
-        // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
-    //     loadGame(sessionId).then(() => {
-    //     startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
-    // })
-    // .catch((error) => {
-    //     console.error("Erreur lors du chargement du formulaire de jeu:", error);
-    // });
-} catch (error) {
-    console.error("Erreur lors de la connexion à la session:", error);
-}
+    } catch (error) {
+        console.error("Erreur lors de la connexion à la session:", error);
+    }
 }
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
@@ -267,7 +258,7 @@ socket.onopen = function (e) {
     console.log("WebSocket connected.");
 };
 
-socket.onmessage = function (e) {
+socket.onmessage = async function (e) {
     // console.log('Message received:', e.data);
     try {
     const data = JSON.parse(e.data);
@@ -278,6 +269,13 @@ socket.onmessage = function (e) {
         data.player1_points,
         data.player2_points
         );
+        // if (data.tour){
+        //     conv = await getTourConversation(data.tour);
+        //     console.log("ici que je veux envoyer le refresh du code : ", conv)
+        //     console.log("la c est le data.id : ", conv.id)
+        //     // updateTree(data.tour)
+        //     sendTourConv(conv.id, 'nouveau point');
+        // }
     }
     if (data.type === "display_player") {
         displayPlayer(data.player1, data.player2);
@@ -322,4 +320,20 @@ function displayPlayer(username, username2) {
     console.error("Score elements not found in the DOM");
     }
 }
+}
+
+async function getGame(game_session_id) {
+    try {
+        // Appeler l'API pour récupérer la conversation liée au tournoi
+        const response = await fetch(`/api/game/sessions/${game_session_id}/`);
+
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération de la conversation: ${response.status}`);
+        }
+
+        const session = await response.json();
+        return session;  // Retourne l'ID de la conversation
+    } catch (error) {
+        console.error("Erreur lors de la récupération de la conversation du tournoi:", error);
+    }
 }
