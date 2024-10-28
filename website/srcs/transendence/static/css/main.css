@@ -159,6 +159,7 @@ i:hover {
   font-optical-sizing: auto;
   font-weight: 250;
   font-variation-settings: "ELGR" 1, "ELSH" 1;
+  font-size: 2rem;
 }
 
 .custom-btn:hover {
