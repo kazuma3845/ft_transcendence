@@ -7,6 +7,11 @@
   border-radius: 12px;
   height: 93%;
   width: 35%;
+  overflow-y: auto;
+}
+
+#profile-block::-webkit-scrollbar {
+  display: none;
 }
 
 #email,
@@ -16,17 +21,15 @@
   text-shadow: 1px 1px 2px rgba(21, 25, 138, 0.754);
 }
 
-
 .info-divider {
   border: none;
   height: 5px;
-  background-color: #ffffff; 
+  background-color: #ffffff;
   margin-left: 2vw;
   margin-right: 2vw;
-  margin: 5px; 
+  margin: 5px;
   border-radius: 12px;
 }
-
 
 #right-profile-block {
   width: 60%;
@@ -34,7 +37,7 @@
 }
 
 .profile-label {
-  color: rgba(33, 29, 159, 0.738);
+  color: rgb(49 52 140 / 74%);
   font-size: 2rem;
 }
 
@@ -64,7 +67,7 @@
 }
 
 .friends-avatar {
-  width: 12%;
+  width: 15%;
   margin: 5px;
   height: auto;
   aspect-ratio: 1 / 1;
@@ -75,6 +78,10 @@
 
 /*---------------- RIGHT PART ------------*/
 
+#right-profile-block h2 {
+  color: rgb(49 52 140 / 74%);
+  font-size: 2rem;
+}
 #upper-stats-block {
   backdrop-filter: blur(7.5px);
   -webkit-backdrop-filter: blur(10px);
@@ -95,6 +102,17 @@
 #user-match-history {
   width: 70%;
   overflow-x: auto;
+}
+
+#user-match-history th {
+  font-size: 1.5rem;
+  color: rgb(49 52 140 / 74%);
+}
+
+#top-three-leaderboard p,
+#user-match-history td {
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(21, 25, 138, 0.754);
 }
 
 #username {
