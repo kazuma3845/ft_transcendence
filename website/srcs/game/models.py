@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone
+# from tournaments.models import Tournament
 
 class GameSession(models.Model):
-    player1 = models.ForeignKey(User, related_name='player1_sessions', on_delete=models.CASCADE)
+    player1 = models.ForeignKey(User, related_name='player1_sessions', null=True, blank=True, on_delete=models.CASCADE)
     player2 = models.ForeignKey(User, related_name='player2_sessions', null=True, blank=True, on_delete=models.CASCADE)
     # created_time = models.DateTimeField(auto_now_add=True)
     start_time = models.DateTimeField(null=True, blank=True)
@@ -21,6 +22,8 @@ class GameSession(models.Model):
     bot_difficulty = models.IntegerField(default=5, validators=[MinValueValidator(1), MaxValueValidator(10)])
     player1_started = models.BooleanField(default=False)  # Initialisé à False
     player2_started = models.BooleanField(default=False)
+    tour = models.ForeignKey('tournaments.Tournament', null=True, blank=True, on_delete=models.SET_NULL)
+
 
 class GameMove(models.Model):
     session = models.ForeignKey(GameSession, on_delete=models.CASCADE)

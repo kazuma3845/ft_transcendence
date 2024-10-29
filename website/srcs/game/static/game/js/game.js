@@ -1,18 +1,20 @@
 const allowedValues = [1, 3, 5, 7, 9, 11];
 
 function loadGameForm() {
-  fetch("/static/game/html/game-form.html")
+fetch("/static/game/html/game-form.html")
     .then((response) => response.text())
     .then((html) => {
-      document.getElementById("app").innerHTML = html;
-      attachGameFormSubmitListener();
+    document.getElementById("app").innerHTML = html;
+    attachGameFormSubmitListener(currentUser);
     });
 }
 
-async function createGameSession(data, player1 = null, player2 = null) {
+async function createGameSession(data, player1 = null, player2 = null,  tourDataId = null) {
   // Ajoute player1 et player2 s'ils sont définis
   if (player1) data["player1"] = player1;
   if (player2) data["player2"] = player2;
+  data["tour"] = tourDataId;
+
 
   // Envoie les données à l'API pour créer une nouvelle session de jeu
   const response = await fetch("/api/game/sessions/", {
@@ -30,50 +32,48 @@ async function createGameSession(data, player1 = null, player2 = null) {
   return data_1;
 }
 
-function attachGameFormSubmitListener() {
-  document
-    .getElementById("game-form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault(); // Empêche le rechargement de la page
+function attachGameFormSubmitListener(player1 = null, player2 = null, invited = null) {
+    document
+        .getElementById("game-form")
+        .addEventListener("submit", function (event) {
+            event.preventDefault(); // Empêche le rechargement de la page
 
-      const formData = new FormData(this);
-      const data = {};
+            const formData = new FormData(this);
+            const data = {};
 
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
-
-      // Ajoute les valeurs de checkbox dans les données
-      data["power"] = document.getElementById("power").checked;
-      data["Multiplayer"] = document.getElementById("Multiplayer").checked;
-      data["bot"] = document.getElementById("bot").checked;
-
-      // Appelle la fonction pour créer une session de jeu
-      createGameSession(data)
-        .then((sessionData) => {
-          let sessionId = sessionData.id;
-
-          // Charger le jeu avec loadGameForm() et attendre le chargement
-          loadGame(sessionId)
-            .then(() => {
-              startWebSocket(sessionId); // Gérer la session WebSocket avec l'ID de session
-            })
-            .catch((error) => {
-              console.error(
-                "Erreur lors du chargement du formulaire de jeu:",
-                error
-              );
+            // Convertit le formulaire en un objet JS
+            formData.forEach((value, key) => {
+                data[key] = value;
             });
-        })
-        .catch((error) => {
-          console.error(
-            "Erreur lors de la création de la session de jeu:",
-            error
-          );
-          document.getElementById("error-message").textContent = error.message;
-          document.getElementById("error-message").style.display = "block";
+
+            // Ajoute les valeurs de checkbox dans les données
+            if (invited === true)
+            {
+                data["power"] = false;
+                data["bot"] = false;
+            } else {
+                data["power"] = document.getElementById("power").checked;
+                data["Multiplayer"] = document.getElementById("Multiplayer").checked;
+                data["bot"] = document.getElementById("bot").checked;
+            }
+            // Ajoute player1 et player2 dans les données s'ils sont définis
+            if (player1) data["player1"] = player1;
+            if (player2) data["player2"] = player2;
+
+            // Appelle la fonction pour créer une session de jeu avec les données
+            createGameSession(data)
+                .then((sessionData) => {
+                    let sessionId = sessionData.id;
+                    window.location.href = `/#game?sessionid=${sessionId}`;
+                    if (invited)
+                        sendInvitation(activeConversationId, sessionId);
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de la création de la session de jeu:", error);
+                    document.getElementById('error-message').textContent = error.message;
+                    document.getElementById('error-message').style.display = 'block';
+                });
         });
-    });
 }
 
 function loadGame(sessionId) {
@@ -111,51 +111,51 @@ function loadGame(sessionId) {
 }
 
 function updateScore(sessionId, player1Points, player2Points) {
-  fetch(`/api/game/sessions/${sessionId}/update_score/`, {
+fetch(`/api/game/sessions/${sessionId}/update_score/`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCSRFToken(),
+    "Content-Type": "application/json",
+    "X-CSRFToken": getCSRFToken(),
     },
     body: JSON.stringify({
-      player1_points: player1Points,
-      player2_points: player2Points,
+    player1_points: player1Points,
+    player2_points: player2Points,
     }),
-  })
+})
     .then((response) => {
-      if (!response.ok) {
+    if (!response.ok) {
         throw new Error("Failed to update scores");
-      }
-      return response.json();
+    }
+    return response.json();
     })
     .then((data) => {
-      // console.log('Updated Scores:', data);
-      // Mettez à jour l'affichage du score dans l'interface utilisateur si nécessaire
+    // console.log('Updated Scores:', data);
+    // Mettez à jour l'affichage du score dans l'interface utilisateur si nécessaire
     })
     .catch((error) => console.error("Error:", error));
 }
 
 function loadGameSessions() {
-  fetch("/api/game/sessions/")
+fetch("/api/game/sessions/")
     .then((response) => response.json())
     .then((data) => {
-      let gameList = document.getElementById("app");
-      gameList.innerHTML = "";
+    let gameList = document.getElementById("app");
+    gameList.innerHTML = "";
 
-      data.forEach((session) => {
+    data.forEach((session) => {
         let listItem = document.createElement("li");
         listItem.textContent = `${session.player1} vs ${session.player2} - Début: ${session.start_time}`;
         if (session.end_time) {
-          listItem.textContent += ` - Fin: ${session.end_time} - Gagnant: ${session.winner}`;
+        listItem.textContent += ` - Fin: ${session.end_time} - Gagnant: ${session.winner}`;
         }
         gameList.appendChild(listItem);
-      });
+    });
     })
     .catch((error) => console.error("Error fetching game sessions:", error));
 }
 
 function updateValue(id, value) {
-  document.getElementById(id).textContent = value;
+document.getElementById(id).textContent = value;
 }
 
 function updateCheckboxValue(spanId, isChecked) {
@@ -199,40 +199,40 @@ function handleMultiplayerChange(isChecked) {
 let win_number = 5
 
 function updateWinNumber() {
-  const rangeInput = document.getElementById("actual_win_number");
-  const displayValue = document.getElementById("actual_win_number_value");
-  const hiddenInput = document.getElementById("win_number");
+const rangeInput = document.getElementById("actual_win_number");
+const displayValue = document.getElementById("actual_win_number_value");
+const hiddenInput = document.getElementById("win_number");
 
-  // Map the range slider position (1 to 5) to the allowed values
-  const selectedValue = allowedValues[rangeInput.value - 1];
+// Map the range slider position (1 to 5) to the allowed values
+const selectedValue = allowedValues[rangeInput.value - 1];
 
 	win_number = selectedValue;
   // Update the display value
   displayValue.textContent = selectedValue;
 
-  hiddenInput.value = selectedValue;
+hiddenInput.value = selectedValue;
 }
 
 // Set initial value on load
 window.onload = function () {
-  // Vérifier si l'élément avec l'ID "game-form" est présent dans le DOM
-  const gameForm = document.getElementById("game-form");
+// Vérifier si l'élément avec l'ID "game-form" est présent dans le DOM
+const gameForm = document.getElementById("game-form");
 
-  if (gameForm) {
+if (gameForm) {
     // Si l'élément existe, appelez la fonction updateWinNumber
     updateWinNumber();
-  }
+}
 };
 
 // Fonction pour appeler l'API et afficher les GameSessions disponibles
 async function fetchAvailableSessions() {
-  try {
+try {
     // Effectuer un appel GET à l'API
     const response = await fetch("/api/game/sessions/available_sessions/");
 
     // Vérifier si la requête a réussi
     if (!response.ok) {
-      throw new Error(`Erreur: ${response.status}`);
+    throw new Error(`Erreur: ${response.status}`);
     }
 
     const sessions = await response.json();
@@ -243,30 +243,30 @@ async function fetchAvailableSessions() {
     sessionList.innerHTML = "";
 
     if (sessions.length === 0) {
-      document.getElementById("current-game-rooms").textContent =
+    document.getElementById("current-game-rooms").textContent =
         "No room available";
     }
     // Parcourir les sessions et créer un lien pour chacune
     sessions.forEach((session) => {
-      const listItem = document.createElement("li"); // Créer un élément <li>
-      const link = document.createElement("a"); // Créer un élément <a> pour le lien
+    const listItem = document.createElement("li"); // Créer un élément <li>
+    const link = document.createElement("a"); // Créer un élément <a> pour le lien
 
-      // Définir l'URL du lien et son texte
-      link.href = `#`; // Pas de redirection directe
-      link.textContent = `Rejoindre la session ${session.id}`;
+    // Définir l'URL du lien et son texte
+    link.href = `#`; // Pas de redirection directe
+    link.textContent = `Rejoindre la session ${session.id}`;
 
-      // Ajouter un événement de clic pour le lien
-      link.addEventListener("click", function (event) {
+    // Ajouter un événement de clic pour le lien
+    link.addEventListener("click", function (event) {
         event.preventDefault(); // Empêcher la redirection par défaut
         joinGame(session.id); // Appeler la fonction pour rejoindre le jeu
-      });
-
-      listItem.appendChild(link);
-      sessionList.appendChild(listItem);
     });
-  } catch (error) {
+
+    listItem.appendChild(link);
+    sessionList.appendChild(listItem);
+    });
+} catch (error) {
     console.error("Erreur lors de la récupération des sessions:", error);
-  }
+}
 }
 
 async function joinGame(sessionId) {
@@ -282,25 +282,16 @@ async function joinGame(sessionId) {
 
     // Vérifier si la requête a réussi
     if (!response.ok) {
-      throw new Error(
+    throw new Error(
         `Erreur lors de la connexion à la session: ${response.status}`
-      );
+    );
     }
-
     // Si l'appel API est réussi, lancer la fonction pour charger le jeu
-    console.log(`Vous avez rejoint la session ${sessionId}`);
-    // console.log("ENV VARIABLE: ", response.env_variable)
-    // Charger le formulaire de jeu avec loadGameForm() et attendre qu'il soit chargé
-    loadGame(sessionId)
-      .then(() => {
-        startWebSocket(sessionId); // Appeler une fonction pour gérer la session créée
-      })
-      .catch((error) => {
-        console.error("Erreur lors du chargement du formulaire de jeu:", error);
-      });
-  } catch (error) {
-    console.error("Erreur lors de la connexion à la session:", error);
-  }
+        console.log(`Vous avez rejoint la session ${sessionId}`);
+        window.location.href = `/#game?sessionid=${sessionId}`;
+    } catch (error) {
+        console.error("Erreur lors de la connexion à la session:", error);
+    }
 }
 
 // ####################### ---------------- WEBSOCKET ---------------- #######################
@@ -308,38 +299,45 @@ function startWebSocket(sessionId) {
   this.pingInterval = null;
   const socket = new WebSocket(`/ws/game/sessions/${sessionId}/`);
 
-  socket.onopen = function (e) {
+socket.onopen = function (e) {
     console.log("WebSocket connected.");
-  };
+};
 
-  socket.onmessage = function (e) {
+socket.onmessage = async function (e) {
     // console.log('Message received:', e.data);
     try {
-      const data = JSON.parse(e.data);
-      // console.log("F-E: client websocket parsed data:", data);
-      if (data.type === "game_score") {
+    const data = JSON.parse(e.data);
+    // console.log("F-E: client websocket parsed data:", data);
+    if (data.type === "game_score") {
         updateScoreDisplay(
           data.player1,
 					data.player2,
           data.player1_points,
           data.player2_points
         );
-      }
-      if (data.type === "display_player") {
-        displayPlayer(data.player1, data.player2);
-      }
-    } catch (error) {
-      console.error("Error parsing message:", error);
+        // if (data.tour){
+        //     conv = await getTourConversation(data.tour);
+        //     console.log("ici que je veux envoyer le refresh du code : ", conv)
+        //     console.log("la c est le data.id : ", conv.id)
+        //     // updateTree(data.tour)
+        //     sendTourConv(conv.id, 'nouveau point');
+        // }
     }
-  };
+    if (data.type === "display_player") {
+        displayPlayer(data.player1, data.player2);
+    }
+    } catch (error) {
+    console.error("Error parsing message:", error);
+    }
+};
 
-  socket.onclose = function (e) {
+socket.onclose = function (e) {
     console.log("WebSocket closed.");
-  };
+};
 
-  socket.onerror = function (e) {
+socket.onerror = function (e) {
     console.error("WebSocket error:", e);
-  };
+};
 
 	function checkWinCondition(username, username2, player1Points, player2Points) {
 			if (player1Points >= win_number) {
@@ -386,9 +384,9 @@ function startWebSocket(sessionId) {
       player2ScoreElem.textContent = player2Points;
 			checkWinCondition(username, username2, player1Points, player2Points);
     } else {
-      console.error("Score elements not found in the DOM");
+    console.error("Score elements not found in the DOM");
     }
-  }
+}
 
   function displayPlayer(username, username2) {
     const scoreboardDiv = document.getElementById("scoreboard");
@@ -398,11 +396,27 @@ function startWebSocket(sessionId) {
     const player2Elem = document.getElementById("player2");
 
     if (player1Elem) {
-      player1Elem.textContent = username;
-      player2Elem.textContent = username2;
+    player1Elem.textContent = username;
+    player2Elem.textContent = username2;
     } else {
-      console.log("---->> : ", username);
-      console.error("Score elements not found in the DOM");
+    console.log("---->> : ", username);
+    console.error("Score elements not found in the DOM");
     }
-  }
+}
+}
+
+async function getGame(game_session_id) {
+    try {
+        // Appeler l'API pour récupérer la conversation liée au tournoi
+        const response = await fetch(`/api/game/sessions/${game_session_id}/`);
+
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération de la conversation: ${response.status}`);
+        }
+
+        const session = await response.json();
+        return session;  // Retourne l'ID de la conversation
+    } catch (error) {
+        console.error("Erreur lors de la récupération de la conversation du tournoi:", error);
+    }
 }
