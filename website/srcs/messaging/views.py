@@ -157,6 +157,24 @@ class ConversationViewSet(viewsets.ModelViewSet):
         except Conversation.DoesNotExist:
             return Response({'detail': 'Conversation non trouvée.'}, status=status.HTTP_404_NOT_FOUND)
 
+
+    @action(detail=False, methods=['get'], url_path='tour-by-conversation/(?P<conversation_id>[^/.]+)')
+    def get_tour_by_conversation(self, request, conversation_id=None):
+        try:
+            # Récupérer la conversation en fonction de son ID
+            conversation = Conversation.objects.get(id=conversation_id)
+
+            # Accéder au tournoi associé à cette conversation
+            tour = conversation.tour
+
+            if tour:
+                return Response({'tour_id': tour.id})
+            else:
+                return Response({'detail': 'Aucun tournoi associé à cette conversation.'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Conversation.DoesNotExist:
+            return Response({'detail': 'Conversation non trouvée.'}, status=status.HTTP_404_NOT_FOUND)
+
 # ViewSet pour les messages
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()

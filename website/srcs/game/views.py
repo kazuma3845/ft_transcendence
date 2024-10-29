@@ -184,7 +184,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
                 'player1': session.player1.username,
                 'player1_points': session.player1_points,
                 'player2_points': session.player2_points,
-                'tour': session.tour.id
             }
         )
 

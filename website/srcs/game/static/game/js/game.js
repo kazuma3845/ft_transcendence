@@ -245,6 +245,7 @@ async function joinGame(sessionId) {
     }
     // Si l'appel API est réussi, lancer la fonction pour charger le jeu
         console.log(`Vous avez rejoint la session ${sessionId}`);
+        window.location.href = `/#game?sessionid=${sessionId}`;
     } catch (error) {
         console.error("Erreur lors de la connexion à la session:", error);
     }

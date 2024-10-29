@@ -53,7 +53,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             sessionId = text_data_json['content']['id']
             player1_points = text_data_json['content']['player1_points']
             player2_points = text_data_json['content']['player2_points']
-            tour = text_data_json['content']['tour']
             print(f"Received data: {text_data_json}")
             # Envoyer les données du score à la salle
             await self.channel_layer.group_send(
@@ -63,7 +62,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'id': sessionId,
                     'player1_points': player1_points,
                     'player2_points': player2_points,
-                    'tour': tour
                 }
             )
 
@@ -112,7 +110,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         player1 = event['player1']
         player1_points = event['player1_points']
         player2_points = event['player2_points']
-        tour = event['tour']
 
         # Envoyer les scores aux clients WebSocket
         await self.send(text_data=json.dumps({
@@ -121,7 +118,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'player1': player1,
             'player1_points': player1_points,
             'player2_points': player2_points,
-            'tour': tour
         }))
 
     async def display_player(self, event):

@@ -9,7 +9,34 @@ function updateBlockedUsers() {
     .catch(error => console.error('Erreur lors de la récupération des utilisateurs bloqués:', error));
 }
 
+async function goLobby() {
+    tour = await getTourByConversation(activeConversationId)
+    console.log("Tour -> : ", tour);
+    window.location.href = `/#tournaments?tourid=${tour}`;
+}
 
+async function getTourByConversation(conversationId) {
+    try {
+        // Appeler l'API pour récupérer l'ID du tournoi lié à la conversation
+        const response = await fetch(`/api/messaging/conversations/tour-by-conversation/${conversationId}/`);
+
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération du tournoi : ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Vérifie si l'ID du tournoi est bien présent dans la réponse
+        if (data.tour_id) {
+            return data.tour_id;  // Retourne l'ID du tournoi
+        } else {
+            console.warn("Aucun tournoi associé à cette conversation.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Erreur lors de la récupération du tournoi pour la conversation :", error);
+    }
+}
 function toggleBlockUser() {
     const blockButton = document.getElementById('block-user-btn');
 
@@ -236,19 +263,30 @@ function loadMessages(conversationId) {
         .then(response => response.json())
         .then(conversation => {
             const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
-            const participantsText = otherParticipants.join(', ');
+
+            // Transformer chaque nom en lien cliquable
+            const participantsLinks = otherParticipants.map(participant => {
+                return `<a href="/#profile/?username=${participant}" onclick="window.location.href='/#profile/?username=${participant}'; return false;">${participant}</a>`;
+            });
+
+            const participantsText = participantsLinks.join(', ');
 
             // Met à jour le titre de la conversation
-            const chatTitle = document.getElementById('chat_title');
+            let chatTitle = document.getElementById('chat_title');
             let interButton = document.getElementById('interaction-chat');
+            let tourButton = document.getElementById('interaction-tour');
             if (conversation.tour)
             {
                 interButton.style.display = 'none';
-                chatTitle.textContent = `Discussion du tournois  ${conversation.tour} avec  ${participantsText}`;
+                tourButton.style.display = 'block';
+                chatTitle.innerHTML = `Discussion du tournois  ${conversation.tour} avec  ${participantsText}`;
             }
             else
+            {
                 interButton.style.display = 'block';
-                chatTitle.textContent = `Discussion avec ${participantsText}`;
+                tourButton.style.display = 'none';
+                chatTitle.innerHTML = `Discussion avec ${participantsText}`;
+            }
 
             // Rendre visible la fenêtre de chat
             chatWindow.style.display = 'block';
