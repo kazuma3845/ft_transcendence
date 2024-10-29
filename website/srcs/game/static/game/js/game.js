@@ -205,7 +205,6 @@ function updateWinNumber() {
 
   // Map the range slider position (1 to 5) to the allowed values
   const selectedValue = allowedValues[rangeInput.value - 1];
-
 	win_number = selectedValue;
   // Update the display value
   displayValue.textContent = selectedValue;
@@ -341,7 +340,6 @@ function startWebSocket(sessionId) {
     console.error("WebSocket error:", e);
   };
 
-  //---------------------------------------------------------------------------------------win_number never update, always 5
 	function checkWinCondition(username, username2, player1Points, player2Points) {
 			if (player1Points >= win_number) {
 				fetch(`/static/game/html/victory.html`)
@@ -360,17 +358,11 @@ function startWebSocket(sessionId) {
 			}
 		}
 
-    //---------------------------------------------------------------------------------------Always lose never Victory
 		function displayWinnerMessage(winner) {		
 			// Sélectionner l'élément du message de victoire
 			const winnerMessage = document.getElementById('winnerMessage');
-		console.log("CURENT: ", currentUser)
 			// Comparer les noms d'utilisateur et mettre à jour le message
-			if (winner === currentUser || winner === "LocalPlayer") {
-				winnerMessage.textContent = 'Victory!';
-			} else {
-				winnerMessage.textContent = 'Lose!';
-			}
+			winnerMessage.textContent = `${winner} Win the game!`;
 		}
 
   function updateScoreDisplay(username, username2, player1Points, player2Points) {
