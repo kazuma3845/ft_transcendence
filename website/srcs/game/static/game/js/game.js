@@ -341,6 +341,7 @@ function startWebSocket(sessionId) {
     console.error("WebSocket error:", e);
   };
 
+  //---------------------------------------------------------------------------------------win_number never update, always 5
 	function checkWinCondition(username, username2, player1Points, player2Points) {
 			if (player1Points >= win_number) {
 				fetch(`/static/game/html/victory.html`)
@@ -359,6 +360,7 @@ function startWebSocket(sessionId) {
 			}
 		}
 
+    //---------------------------------------------------------------------------------------Always lose never Victory
 		function displayWinnerMessage(winner) {		
 			// Sélectionner l'élément du message de victoire
 			const winnerMessage = document.getElementById('winnerMessage');
