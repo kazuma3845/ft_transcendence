@@ -17,4 +17,18 @@ clean:
 	-docker system prune -a -f
 	-rm -rf ./website/srcs/staticfiles
 
+clean_v:
+	@echo "Cleaning Docker containers, images, and volumes..."
+	-docker compose -f $(COMPOSE_FILE) down --rmi all --volumes --remove-orphans
+	-docker system prune -a -f --volumes
+	-rm -rf ./website/srcs/staticfiles
+
+blockchain_reset:
+	@echo "Resetting blockchain..."
+	-rm -rf ./Blockchain/srcs/output/*
+	-rm -rf ./Blockchain/volumes/*
+	cd ./Blockchain/srcs && ./compile.sh
+
 re: clean up
+
+hard_reset: down blockchain_reset clean_v up
