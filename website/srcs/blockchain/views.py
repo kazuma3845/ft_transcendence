@@ -7,7 +7,7 @@ from datetime import date
 
 web3 = Web3(
     Web3.HTTPProvider(
-        "https://transcendence/ganache/",
+        "https://10.18.203.36/ganache/",
         request_kwargs={"verify": False},
     )
 )

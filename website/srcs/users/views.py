@@ -210,12 +210,21 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             profile.avatar = uploaded_file
         if file_type == "banner":
             profile.banner = uploaded_file
-        profile.save() 
+        profile.save()
         serializer = self.get_serializer(profile)
         return Response(
             {"success": True, "profile": serializer.data}, status=status.HTTP_200_OK
         )
 
+    @action(detail=False, methods=['get'], url_path='search')
+    def search(self, request):
+        query = request.query_params.get('query', None)
+        if query is not None:
+            # Rechercher dans le modèle User
+            users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
+            serializer = UserSerializer(users, many=True)  # Utiliser le UserSerializer ici
+            return Response(serializer.data)
+        return Response([])
 
 @login_required
 def index(request):
