@@ -26,15 +26,50 @@ async function router() {
         break;
       case "#game":
         if (isAuthenticated) {
-          loadGameForm();
-          fetchAvailableSessions();
+          const params = new URLSearchParams(window.location.hash.split('?')[1]);
+          const sessionId = params.get('sessionid'); // Récupère le paramètre 'sessionid'
+          console.log("sessionId actuel : ", sessionId);
+
+          if (sessionId) {
+            // Charger le jeu avec le sessionId et démarrer le WebSocket
+            loadGame(sessionId).then(() => {
+              startWebSocket(sessionId); // Démarre la session WebSocket
+            }).catch((error) => {
+              console.error("Erreur lors du chargement du jeu:", error);
+            });
+          } else {
+            loadGameForm();
+            fetchAvailableSessions();
+          }
         } else {
           loadLoginForm();
         }
         break;
       case "#tournaments":
-        loadTournamentsForm();
-          break;
+        if (isAuthenticated) {
+          const params = new URLSearchParams(window.location.hash.split('?')[1]);
+          const tourId = params.get('tourid'); // Récupère le paramètre 'sessionid'
+          console.log("tourId actuel : ", tourId);
+
+          if (tourId) {
+            // Charger le jeu avec le sessionId et démarrer le WebSocket
+            loadTour(tourId);
+          } else {
+            loadTourForm();
+            fetchAvailableTours();
+          }
+        } else {
+          loadLoginForm();
+        }
+        break;
+
+        // if (isAuthenticated) {
+        //     loadTourForm();
+        //     fetchAvailableTours();
+        // } else {
+        //   loadLoginForm();
+        // }
+        // break;
       case "#chat":
           loadChat();
         break;

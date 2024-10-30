@@ -17,7 +17,7 @@ iframe {
   border-radius: 12px;
 }
 
-#game-settings-btn{
+#game-settings-btn {
   font-size: 3rem;
   /* color: white; */
   font-weight: 450;
@@ -29,7 +29,7 @@ iframe {
   color: white;
 }
 
-#create-game-btn{
+#create-game-btn {
   font-size: 2.2rem;
 }
 
@@ -45,6 +45,35 @@ iframe {
   display: none;
 }
 
-.victory-screen {
-  color: white;
+#winnerMessage {
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "ELGR" 1, "ELSH" 0.6;
+  text-transform: uppercase;
+  letter-spacing: 10px;
+  font-size: 7rem;
+  text-shadow: 2px 2px 0 rgb(26 99 221 / 80%), 6px 6px 0 rgb(71 64 194 / 40%),
+    8px 8px 0 rgb(51 82 209 / 20%);
+  margin-left: 0.5vmax;
+  animation: blink 1s infinite, scaleUp 1s ease-in-out;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.75);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
