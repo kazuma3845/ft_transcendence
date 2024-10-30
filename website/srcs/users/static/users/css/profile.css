@@ -236,3 +236,15 @@
 .tooltip .tooltip-arrow::before {
   border-color: transparent !important;
 }
+
+
+/* MODAL */
+
+#editProfileModalLabel{
+  font-size: 3rem;
+  color: white;
+}
+
+.edit-input{
+  font-size: 2.5rem;
+}

@@ -1,6 +1,37 @@
 let currentUserInfo = null;
 let requestedUserProfile = null;
 
+function loadEditProfileModal() {
+  fetch("/static/users/html/profil/editProfileModal.html")
+    .then((response) => response.text())
+    .then((html) => {
+      document.body.insertAdjacentHTML("beforeend", html);
+      var myModal = new bootstrap.Modal(
+        document.getElementById("editProfileModal")
+      );
+      myModal.show();
+
+      document
+        .getElementById("submitProfileChanges")
+        .addEventListener("click", () => {
+          const email = document.getElementById("edit-email").value
+            ? document.getElementById("edit-email").value
+            : null;
+          const password = document.getElementById("edit-password").value
+            ? document.getElementById("edit-password").value
+            : null;
+          const bio = document.getElementById("edit-bio").value
+            ? document.getElementById("edit-bio").value
+            : null;
+
+          updateUserInfo(email, password, bio);
+        });
+    })
+    .catch((error) =>
+      console.error("Erreur lors du chargement du modal:", error)
+    );
+}
+
 function uploadImage(file, type) {
   const formData = new FormData();
   formData.append("image", file);
@@ -13,9 +44,12 @@ function uploadImage(file, type) {
     },
     body: formData,
   })
-    .then((response) => {
+    .then(async (response) => {
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(
+          `Error status: ${response.status} with message: ${errorData.message}`
+        );
       }
       return response.json();
     })
@@ -29,6 +63,38 @@ function uploadImage(file, type) {
     })
     .catch((error) => {
       console.error("Erreur lors de l'upload de l'image:", error);
+    });
+}
+
+function updateUserInfo(email, password, bio) {
+  const data = {};
+  if (email) data.email = email;
+  if (password) data.password = password;
+  if (bio) data.bio = bio;
+
+  fetch("/api/users/profiles/update-user-info/", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRFToken(),
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw new Error(errorData.message || "Une erreur est survenue.");
+        });
+      }
+      return response.json();
+    })
+    .then((updatedData) => {
+      window.location.reload();
+    })
+    .catch((error) => {
+      const errorMessageDiv = document.getElementById("error-message");
+      errorMessageDiv.textContent = error.message; 
+      errorMessageDiv.classList.remove("d-none"); 
     });
 }
 
@@ -230,7 +296,7 @@ function createProfilBlock(user) {
   document.getElementById("email").textContent = data.user.email;
   document.getElementById("bio").textContent = data.bio
     ? data.bio
-    : "Ceci est une bio vraiment pas très intéressante. J'imagine que j'aime le pong puisque je suis ici. (Aidez moi à trouver un stage svp)";
+    : "Ceci est une bio vraiment pas très intéressante. On dirait bien qu'elle m'a été donné par défaut parce que je suis une feignasse qui prend pas le temps de se présenter... C'est dur. J'imagine que j'aime le pong puisque je suis ici ! (Aidez moi à trouver un stage svp)";
 
   document.querySelector(".avatar-div img").src = data.avatar
     ? data.avatar
@@ -271,8 +337,7 @@ function createProfilBlock(user) {
   }
 
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
-    document.getElementById("send-friend-request-btn").style.display = "block";
-
+    document.getElementById("edit-profile").style.display = "none";
     document
       .getElementById("send-friend-request-btn")
       .addEventListener("click", () => {
@@ -281,6 +346,9 @@ function createProfilBlock(user) {
   } else {
     document.getElementById("send-friend-request-btn").style.display = "none";
     document.getElementById("block-user-btn").style.display = "none";
+    document.getElementById("edit-profile").addEventListener("click", () => {
+      loadEditProfileModal();
+    });
   }
   if (
     data.user.username === currentUserInfo.user.username &&
@@ -472,9 +540,8 @@ async function createNemesisBlock(user) {
       ? nemesis_profile.avatar
       : "/media/avatars/avatar.png";
     nemesisProfileLink.href = `#profile/?username=${nemesis}`;
-  }
-  else {
-    nemesisAvatar.classList.add('hidden');
+  } else {
+    nemesisAvatar.classList.add("hidden");
   }
 }
 

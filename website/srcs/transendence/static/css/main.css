@@ -202,6 +202,8 @@ footer p {
 .modal-dialog {
   width: 50%;
 }
+
+
 .modal-content {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(7.5px);
