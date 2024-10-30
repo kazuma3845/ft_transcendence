@@ -46,7 +46,7 @@
 }
 
 .friend-request-icons {
-  font-size: 20px;
+  font-size: 1.5rem;
   text-shadow: none;
 }
 
@@ -64,6 +64,23 @@
 .friend-list-block {
   display: inline-block;
   margin-right: 10px;
+}
+
+.friend-request-div {
+  display: inline-block;
+  display: inline-block;
+  width: 15%;
+  position: relative;
+  margin: 5px;
+}
+
+.friends-request-avatar {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border: solid;
+  border-color: white;
+  border-width: 3px;
 }
 
 .friends-avatar {
@@ -102,6 +119,10 @@
 #user-match-history {
   width: 70%;
   overflow-x: auto;
+}
+
+#user-match-history::-webkit-scrollbar {
+  display: none;
 }
 
 #user-match-history th {
@@ -209,9 +230,9 @@
 }
 
 .tooltip-inner {
-  background-color: rgba(32, 40, 133, 0.863) !important; /* Couleur de fond */
+  background-color: rgba(32, 40, 133, 0.863) !important;
 }
 
 .tooltip .tooltip-arrow::before {
-  border-color: transparent !important; /* Couleur de la flèche */
+  border-color: transparent !important;
 }

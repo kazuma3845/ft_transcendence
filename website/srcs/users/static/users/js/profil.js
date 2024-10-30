@@ -62,14 +62,18 @@ async function computeStats(results, username) {
   console.log("Current username:", username);
 
   // Filter out matches with empty string winners
-  const filteredResults = results.filter((result) => result.winner !== '');
+  const filteredResults = results.filter((result) => result.winner !== "");
 
   console.log("Filtered results:", filteredResults);
 
   const gamePlayed = filteredResults.length;
-  const matchWon = filteredResults.filter((result) => result.winner === username);
+  const matchWon = filteredResults.filter(
+    (result) => result.winner === username
+  );
   const winNumber = matchWon.length;
-  const matchLost = filteredResults.filter((result) => result.winner != username);
+  const matchLost = filteredResults.filter(
+    (result) => result.winner != username
+  );
   const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
   console.log("Match won:", winNumber);
@@ -116,7 +120,7 @@ async function computeStats(results, username) {
     total: gamePlayed || 0,
     win: winNumber || 0,
     loss: loseNumber || 0,
-    nemesis: nemesis || "Aucun",
+    nemesis: nemesis || "None",
     winStreak: currentWinStreak || 0,
     winrate: winRate || 0,
     forfeit: forfeitWonNumber || 0,
@@ -280,7 +284,7 @@ function createProfilBlock(user) {
   }
   if (
     data.user.username === currentUserInfo.user.username &&
-    data.friends.length != 0
+    (data.friends.length != 0 || data.friends_requests.length != 0)
   ) {
     loadFriends();
   }
@@ -331,6 +335,7 @@ async function rejectFriendRequest(userId) {
     } else {
       const errorData = await response.json();
       alert(`Erreur: ${errorData.error}`);
+      window.location.reload();
     }
   } catch (error) {
     console.error("Erreur lors du refus de demande d'ami :", error);
@@ -354,6 +359,7 @@ async function acceptFriendRequest(userId) {
     if (response.ok) {
       const result = await response.json();
       alert(result.message);
+      window.location.reload();
     } else {
       const errorData = await response.json();
       alert(`Erreur: ${errorData.error}`);
@@ -461,10 +467,15 @@ async function createNemesisBlock(user) {
 
   nemesisBlockTitle.textContent = `Nemesis: ${nemesis}`;
 
-  nemesisAvatar.src = nemesis_profile.avatar
-    ? nemesis_profile.avatar
-    : "/media/avatars/avatar.png";
-  nemesisProfileLink.href = `#profile/?username=${nemesis}`;
+  if (nemesis != "None") {
+    nemesisAvatar.src = nemesis_profile.avatar
+      ? nemesis_profile.avatar
+      : "/media/avatars/avatar.png";
+    nemesisProfileLink.href = `#profile/?username=${nemesis}`;
+  }
+  else {
+    nemesisAvatar.classList.add('hidden');
+  }
 }
 
 // Fonction pour créer le bloc WinRate
@@ -595,22 +606,12 @@ async function loadFriends() {
   }
 }
 
-// Function to initialize tooltips (SPA-friendly)
-function initializeTooltips() {
-  const tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"], [title]')
-  );
-  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-    new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-}
-
 async function loadFriendRequest(friendsListBlock) {
   try {
     const friendRequests = currentUserInfo.friends_requests;
     friendRequests.forEach(async (request) => {
       const friendRequestDiv = document.createElement("div");
-      friendRequestDiv.className = "position-relative d-inline-block";
+      friendRequestDiv.className = "friend-request-div";
 
       const requestLink = document.createElement("a");
       requestLink.href = `#profile/?username=${request.from_user.username}`;
@@ -619,7 +620,8 @@ async function loadFriendRequest(friendsListBlock) {
         ? request.from_user.avatar
         : "/media/avatars/avatar.png";
       requestImg.alt = `Avatar de ${request.from_user.username}`;
-      requestImg.className = "img-fluid rounded-circle friends-avatar";
+      requestImg.setAttribute("title", request.from_user.username);
+      requestImg.className = "img-fluid rounded-circle friends-request-avatar";
       requestLink.appendChild(requestImg);
       friendRequestDiv.appendChild(requestLink);
 
@@ -649,10 +651,20 @@ async function loadFriendRequest(friendsListBlock) {
       friendRequestDiv.appendChild(rejectIcon);
 
       friendsListBlock.appendChild(friendRequestDiv);
+      initializeTooltips();
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des demandes d'amis:", error);
     document.getElementById("friend-requests-block").innerHTML =
       "<p>Erreur de chargement des demandes d'amis.</p>";
   }
+}
+
+function initializeTooltips() {
+  const tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"], [title]')
+  );
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
 }
