@@ -124,12 +124,7 @@ function checkWinCondition() {
         showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1], false);
     }
     if (pong.score[1] === pong.winScore) {
-        if (pong.botActivated)
-            showWinScreen('Bot', 'Wins! ', pong.score[0], pong.score[1], false);
-        else if (pong.MultiLocal)
-            showWinScreen('LocalPlayer', 'Wins! ', pong.score[0], pong.score[1], false);
-        else
-            showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1], false);
+        showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1], false);
     }
 }
 
@@ -183,6 +178,7 @@ async function startGame() {
     pong.websocket = websocket;
     pong.websocket.startWebSocket(sessionId);
     await pong.sendDataForID();
+    console.log("Player 1: ", pong.playerLeft, "Player 2: ", pong.playerRight)
     startScreen.style.display = 'none';
     if (!pong.MultiLocal && !pong.botActivated && (pong.player1_started != true || pong.player2_started != true)) {
         loader.style.display = 'flex';

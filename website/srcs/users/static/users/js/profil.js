@@ -365,6 +365,8 @@ async function acceptFriendRequest(userId) {
 }
 
 async function fetchUserInfoLight(username) {
+  if (username == 'Aucun')
+    return username
   const response = await fetch(
     `/api/users/profiles/info-user/?username=${username}`
   );
