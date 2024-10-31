@@ -32,16 +32,14 @@ function attachLoginFormSubmitListener() {
             document.getElementById("error-message").textContent = data.error;
             document.getElementById("error-message").style.display = "block";
           } else {
-            await fetchCurrentUserInfo();
-            updateUsername();
-            loadModal(
-              "Logged In Successfully",
-              `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
-            );
             updateHeader();
-            if (window.location.hash === "#login")
-              window.location.href = "#profile"; // Redirige ou recharge l'application après la connexion
-            router(); // Recharge l'interface pour refléter l'état connecté
+            window.location.hash = "#profile";
+            setTimeout(() => {
+              loadModal(
+                "Logged In Successfully",
+                `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
+              );
+            }, 300); // Ajustez le délai au besoin
           }
         })
         .catch((error) => console.error("Erreur:", error));
@@ -122,7 +120,8 @@ function logoutUser() {
       if (response.ok) {
         loadModal(
           "Logged Out Successfully",
-          `Goodbye ${currentUserInfo.user.username}, you will be missed...💔`
+          `Goodbye ${currentUserInfo.user.username}, you will be missed...💔`,
+          true
         );
         localStorage.removeItem("hasVisited");
         currentUserInfo = null;

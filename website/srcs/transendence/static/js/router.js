@@ -1,6 +1,7 @@
 async function router() {
+  disposeTooltips();
   let hash = window.location.hash; // ex: #profile/?username=neah12
-  // console.log("Hash actuel : ", hash);
+  console.log("Routing to:", window.location.hash);
 
   let [route, queryString] = hash.split("?");
   if (route.endsWith("/")) {
@@ -8,6 +9,7 @@ async function router() {
   }
 
   const params = new URLSearchParams(queryString);
+
   try {
     const isAuthenticated = await checkAuthentication();
     // console.log("Utilisateur authentifié : ", isAuthenticated);
@@ -34,9 +36,9 @@ async function router() {
         break;
       case "#tournaments":
         loadTournamentsForm();
-          break;
+        break;
       case "#chat":
-          loadChat();
+        loadChat();
         break;
       case "#createTournament":
         loadCreatTournamentsForm();
@@ -61,7 +63,6 @@ async function router() {
   }
 }
 
-
 window.addEventListener("hashchange", router);
 document.addEventListener("DOMContentLoaded", router);
 
@@ -78,3 +79,14 @@ function getCSRFToken() {
 
   return cookieValue;
 }
+
+function disposeTooltips() {
+  const tooltips = document.querySelectorAll('.tooltip');
+  tooltips.forEach(tooltip => {
+    const instance = bootstrap.Tooltip.getInstance(tooltip);
+    if (instance) {
+      instance.dispose();
+    }
+  });
+}
+

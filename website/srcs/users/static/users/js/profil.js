@@ -230,10 +230,10 @@ async function fetchUserProfileInfo(username) {
     const response = await fetch(
       `/api/users/profiles/info-user/?username=${username}`
     );
+    if (!response.ok) return null;
     const data = await response.json();
     requestedUserProfile = data;
     requestedUserProfile.stats = await fetchUserStats(username);
-    console.log(requestedUserProfile);
     return requestedUserProfile;
   } else {
     currentUserInfo.stats = await fetchUserStats(username);
@@ -269,15 +269,18 @@ function loadProfil(params) {
 
       const username = getRequestedUsername(params);
       const user = await fetchUserProfileInfo(username);
-      createProfilBlock(user);
-      console.log(user.stats.message);
-      if (!user.stats.message) {
-        createWinRateBlock(user);
-        createWinStreakBlock(user);
-        createNemesisBlock(user);
-        createMatchHistoryBlock(user);
-        createLeaderboard(user);
-      } else displayNoGame();
+      if (!user) {
+        loadHome();
+      } else {
+        createProfilBlock(user);
+        if (!user.stats.message) {
+          createWinRateBlock(user);
+          createWinStreakBlock(user);
+          createNemesisBlock(user);
+          createMatchHistoryBlock(user);
+          createLeaderboard(user);
+        } else displayNoGame();
+      }
     })
     .catch((error) => {
       console.error("Erreur lors du chargement du profil:", error);
@@ -393,8 +396,7 @@ async function removeFriend(friendship_id) {
 
     if (response.ok) {
       const result = await response.json();
-      loadModal("Friend deleted", "Bye loser ... 👋");
-      window.location.reload();
+      loadModal("Friend deleted", "Bye loser ... 👋", true);
     } else {
       const errorData = await response.json();
       loadModal("Error 🤕", `${errorData.error}`);
@@ -420,10 +422,10 @@ async function sendFriendRequest(userId) {
 
     if (response.ok) {
       const result = await response.json();
-      loadModal("Success", result.message);
+      loadModal("It's in the mail 💌", result.message);
     } else {
       const errorData = await response.json();
-      alert(`Erreur: ${errorData.error}`);
+      loadModal("Error 🤕", `${errorData.error}`);
     }
   } catch (error) {
     console.error("Erreur lors de l'envoi de la demande d'ami :", error);
@@ -446,11 +448,10 @@ async function rejectFriendRequest(requestId) {
 
     if (response.ok) {
       const result = await response.json();
-      alert(result.message);
+      loadModal("Who's that guy ? 🤷‍♂️", result.message, true);
     } else {
       const errorData = await response.json();
-      alert(`Erreur: ${errorData.error}`);
-      window.location.reload();
+      loadModal("Error 🤕", `${errorData.error}`);
     }
   } catch (error) {
     console.error("Erreur lors du refus de demande d'ami :", error);
@@ -473,11 +474,10 @@ async function acceptFriendRequest(requestId) {
 
     if (response.ok) {
       const result = await response.json();
-      alert(result.message);
-      window.location.reload();
+      loadModal("The more, the merrier 👯", result.message, true);
     } else {
       const errorData = await response.json();
-      alert(`Erreur: ${errorData.error}`);
+      loadModal("Error 🤕", `${errorData.error}`);
     }
   } catch (error) {
     console.error("Erreur lors de l'acceptation de la demande d'ami :", error);
@@ -673,13 +673,14 @@ function createLeaderboard(user) {
 
 async function loadFriends() {
   try {
-    console.log("Loading friends");
-    const profileBlock = document.getElementById("profile-block");
-    const friendsListBlock = document.createElement("friends-div");
     const friendTitle = document.getElementById("friends-title");
     const friendDivider = document.getElementById("friends-divider");
     friendTitle.classList.remove("hidden");
     friendDivider.classList.remove("hidden");
+
+    const profileBlock = document.getElementById("profile-block");
+    const friendsListBlock = document.createElement("friends-div");
+    friendsListBlock.innerHTML = "";
 
     friendsListBlock.className =
       "friend-list-block position-relative d-inline-block ms-3 me-3 mb-2  ";
@@ -687,16 +688,6 @@ async function loadFriends() {
     currentUserInfo.friends.forEach(async (friend) => {
       const friendLink = document.createElement("a");
       friendLink.href = `#profile/?username=${friend.username}`;
-      friendLink.addEventListener("click", (event) => {
-        document
-          .querySelectorAll('[data-bs-toggle="tooltip"]')
-          .forEach((el) => {
-            const instance = bootstrap.Tooltip.getInstance(el);
-            if (instance) {
-              instance.dispose();
-            }
-          });
-      });
       const friendAvatar = document.createElement("img");
       friendAvatar.src = friend.avatar_url
         ? friend.avatar_url
@@ -708,10 +699,11 @@ async function loadFriends() {
     });
 
     profileBlock.appendChild(friendsListBlock);
-    initializeTooltips(); // Initialize tooltips after dynamically adding the elements to the DOM
 
     if (currentUserInfo.friends_requests.length > 0) {
       loadFriendRequest(friendsListBlock);
+    } else {
+      initializeTooltips();
     }
   } catch (error) {
     console.error("Erreur lors de la récupération des amis:", error);
@@ -734,6 +726,7 @@ async function loadFriendRequest(friendsListBlock) {
         ? request.from_user.avatar
         : "/media/avatars/avatar.png";
       requestImg.alt = `Avatar de ${request.from_user.username}`;
+      requestImg.setAttribute("data-bs-toggle", "tooltip");
       requestImg.setAttribute("title", request.from_user.username);
       requestImg.className = "img-fluid rounded-circle friends-request-avatar";
       requestLink.appendChild(requestImg);
@@ -743,7 +736,7 @@ async function loadFriendRequest(friendsListBlock) {
       acceptIcon.className =
         "friend-request-icons fas fa-check-circle position-absolute";
       acceptIcon.style.cursor = "pointer";
-      acceptIcon.style.top = "0px"; // Position en haut à droite
+      acceptIcon.style.top = "-5px"; // Position en haut à droite
       acceptIcon.style.right = "5px";
       acceptIcon.style.color = "rgba(74, 130, 209, 0.75)";
       acceptIcon.addEventListener("click", () => {
@@ -754,7 +747,7 @@ async function loadFriendRequest(friendsListBlock) {
       rejectIcon.className =
         "friend-request-icons fas fa-times-circle position-absolute";
       rejectIcon.style.cursor = "pointer";
-      rejectIcon.style.top = "0px";
+      rejectIcon.style.top = "-5px";
       rejectIcon.style.left = "5px";
       rejectIcon.addEventListener("click", () => {
         rejectFriendRequest(request.id);
@@ -776,7 +769,7 @@ async function loadFriendRequest(friendsListBlock) {
 
 function initializeTooltips() {
   const tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"], [title]')
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
   tooltipTriggerList.forEach(function (tooltipTriggerEl) {
     new bootstrap.Tooltip(tooltipTriggerEl);

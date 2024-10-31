@@ -95,22 +95,40 @@ function updateUsername() {
   }
 }
 
-function loadModal(title, message) {
+//Modal générique avec titre et contenu à specifier.
+//Ajouter true pour demander un refresh de la page lors de la fermeture
+function loadModal(title, message, reload = false) {
   fetch("/static/html/modal.html")
     .then((response) => response.text())
     .then((html) => {
+      const existingModal = document.getElementById("centered");
+
+      if (existingModal) {
+        existingModal.remove();
+      }
+
       document.body.insertAdjacentHTML("beforeend", html);
       document.getElementById("centeredLabel").innerText = title;
       document.getElementById("modal-message").innerText = message;
 
-      var myModal = new bootstrap.Modal(document.getElementById("centered"));
-      myModal.show();
+      const modalElement = document.getElementById("centered");
+
+      if (modalElement) {
+        const myModal = new bootstrap.Modal(modalElement);
+        myModal.show();
+        if (reload) {
+          modalElement.addEventListener("hidden.bs.modal", () => {
+            window.location.reload();
+          });
+        }
+      } else {
+        console.error("L'élément modal n'a pas été trouvé.");
+      }
     })
     .catch((error) =>
       console.error("Erreur lors du chargement du modal:", error)
     );
 }
-
 
 
 async function fetchCurrentUserInfo() {
@@ -143,6 +161,8 @@ function udpateFRbadge(frLength) {
     badge.classList.add("d-none");
   }
 }
+
+
 // Charger les parties de jeu
 function loadGames() {
   // Code pour charger les parties depuis l'API du jeu
