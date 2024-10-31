@@ -125,7 +125,7 @@ function fetchBlockchainResults(games) {
 }
 
 async function computeStats(results, username) {
-  console.log("Current username:", username);
+  // console.log("Current username:", username);
 
   // Filter out matches with empty string winners
   const filteredResults = results.filter((result) => result.winner !== "");
@@ -486,7 +486,7 @@ async function acceptFriendRequest(requestId) {
 }
 
 async function fetchUserInfoLight(username) {
-  if (username == 'Aucun')
+  if (username == 'Aucun' || username == 'None')
     return username
   const response = await fetch(
     `/api/users/profiles/info-user/?username=${username}`
