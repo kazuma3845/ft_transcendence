@@ -39,7 +39,7 @@ function attachLoginFormSubmitListener() {
               `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
             );
             console.log("currentUser before : ", currentUser);
-            currentUser = userInfo.user.username;
+            currentUser = currentUserInfo.user.username;
             console.log("currentUser after : ", currentUser);
             updateHeader();
             if (window.location.hash === "#login")
@@ -74,7 +74,9 @@ function updateHeader() {
       } else {
         login_btn.style.display = "block";
         menu_btn.style.display = "none";
-        attachLoginFormListener();
+        document.addEventListener("DOMContentLoaded", function () {
+          attachLoginFormListener();
+        })
       }
     });
 }

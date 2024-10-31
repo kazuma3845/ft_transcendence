@@ -1,6 +1,8 @@
 let blockedUsers;
 
 function updateBlockedUsers() {
+    if (!blockedUsers)
+        return
     fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
     .then(response => response.json())
     .then(data => {
@@ -389,9 +391,10 @@ function connectWebSocket() {
     if (socket) {
         socket.close();
     }
-
+    if (!currentUser)
+        return
     // Ouvrir la WebSocket globale pour l'utilisateur
-    socket = new WebSocket(`/ws/chat/`);  // Connexion WebSocket globale
+    socket = new WebSocket(`/ws/chat/`);
 
     // Gérer l'ouverture de la WebSocket
     socket.onopen = function(e) {
