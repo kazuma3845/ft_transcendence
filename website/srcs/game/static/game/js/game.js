@@ -369,12 +369,7 @@ socket.onerror = function (e) {
 			winnerMessage.textContent = `${winner} Win the game!`;
 		}
 
-  function updateScoreDisplay(
-    username,
-    username2,
-    player1Points,
-    player2Points
-  ) {
+  function updateScoreDisplay(username, username2, player1Points, player2Points) {
     // console.log("Updating scores:", player1Points, player2Points);
     const player1Elem = document.getElementById("player1");
     const player1ScoreElem = document.getElementById("player1Score");
