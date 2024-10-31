@@ -191,6 +191,7 @@ footer p {
 }
 
 #login-form input,
+#signup-form textarea,
 #signup-form input {
   font-size: 2.5rem;
 }
@@ -201,6 +202,8 @@ footer p {
 .modal-dialog {
   width: 50%;
 }
+
+
 .modal-content {
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(7.5px);

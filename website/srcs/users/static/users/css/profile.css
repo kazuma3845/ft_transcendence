@@ -46,7 +46,7 @@
 }
 
 .friend-request-icons {
-  font-size: 20px;
+  font-size: 1.5rem;
   text-shadow: none;
 }
 
@@ -64,6 +64,23 @@
 .friend-list-block {
   display: inline-block;
   margin-right: 10px;
+}
+
+.friend-request-div {
+  display: inline-block;
+  display: inline-block;
+  width: 15%;
+  position: relative;
+  margin: 5px;
+}
+
+.friends-request-avatar {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border: solid;
+  border-color: white;
+  border-width: 3px;
 }
 
 .friends-avatar {
@@ -102,6 +119,10 @@
 #user-match-history {
   width: 70%;
   overflow-x: auto;
+}
+
+#user-match-history::-webkit-scrollbar {
+  display: none;
 }
 
 #user-match-history th {
@@ -165,6 +186,7 @@
   font-size: 1.2rem;
   text-shadow: 2px 2px 0 rgba(48, 66, 170, 0.8);
 }
+
 #friends-button-div i:hover {
   font-size: 1.4rem;
   text-shadow: none;
@@ -174,6 +196,7 @@
   color: rgba(223, 59, 59, 0.45);
 }
 
+#remove-friend-btn i:hover,
 #send-friend-request-btn i:hover {
   color: rgb(74, 130, 209);
 }
@@ -209,9 +232,20 @@
 }
 
 .tooltip-inner {
-  background-color: rgba(32, 40, 133, 0.863) !important; /* Couleur de fond */
+  background-color: rgba(32, 40, 133, 0.863) !important;
 }
 
 .tooltip .tooltip-arrow::before {
-  border-color: transparent !important; /* Couleur de la flèche */
+  border-color: transparent !important;
+}
+
+/* MODAL */
+
+#editProfileModalLabel {
+  font-size: 3rem;
+  color: white;
+}
+
+.edit-input {
+  font-size: 2.5rem;
 }

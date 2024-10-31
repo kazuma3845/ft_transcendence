@@ -39,7 +39,7 @@ function attachSignupFormSubmitListener() {
         .then((response) => response.json())
         .then(async (data) => {
           if (data.error) {
-            alert(data.error);
+            displayErrorMessage(data.error);
           } else {
             await fetchCurrentUserInfo();
             loadModal(
@@ -51,4 +51,11 @@ function attachSignupFormSubmitListener() {
           }
         });
     });
+}
+
+// Fonction pour afficher les messages d'erreur dans le formulaire
+function displayErrorMessage(message) {
+  const errorMessageDiv = document.getElementById("error-message");
+  errorMessageDiv.textContent = message;
+  errorMessageDiv.classList.remove("d-none");
 }

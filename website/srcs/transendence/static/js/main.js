@@ -111,6 +111,8 @@ function loadModal(title, message) {
     );
 }
 
+
+
 async function fetchCurrentUserInfo() {
   const response = await fetch("/api/users/profiles/info-user");
   const data = await response.json();
