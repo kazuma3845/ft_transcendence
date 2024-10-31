@@ -124,7 +124,12 @@ function checkWinCondition() {
         showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1], false);
     }
     if (pong.score[1] === pong.winScore) {
-        showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1], false);
+        if (pong.botActivated)
+            showWinScreen('Bot', 'Wins! ', pong.score[0], pong.score[1], false);
+        else if (pong.MultiLocal)
+            showWinScreen('LocalPlayer', 'Wins! ', pong.score[0], pong.score[1], false);
+        else
+            showWinScreen(pong.playerRight, 'Wins! ', pong.score[0], pong.score[1], false);
     }
 }
 
@@ -132,34 +137,11 @@ function checkWinCondition() {
 export function showWinScreen(player, message, score1, score2, forfait) {
     const winScreen = document.getElementById("winScreen");
     isAnimating = false;
-    winner = player
-    registerScores(forfait, winner);
-    // if (score1 >= pong.winScore) {
-    //     fetch(`/static/game/html/victory.html`)
-    //     .then((response) => response.text())
-    //     .then((html) => {
-    //         document.getElementById("app").innerHTML = html;
-    //         displayWinnerMessage(pong.playerLeft);
-    //     });
-    // } else if (score2 >= pong.winScore) {
-    //     fetch(`/static/game/html/victory.html`)
-    //     .then((response) => response.text())
-    //     .then((html) => {
-    //         document.getElementById("app").innerHTML = html;
-    //         displayWinnerMessage(pong.playerRight);
-    //     });
-    // }
-    console.log(winner, message, score1, score2)
+    registerScores(forfait, player);
+    console.log(player, message, score1, score2)
 
     renderer.setAnimationLoop(null);
 }
-
-// function displayWinnerMessage(winner) {		
-//     // Sélectionner l'élément du message de victoire
-//     const winnerMessage = document.getElementById('winnerMessage');
-//     // Comparer les noms d'utilisateur et mettre à jour le message
-//     winnerMessage.textContent = `${winner} Win the game!`;
-// }
 
 function registerScores(forfeit, winner) {
     const url = `/api/blockchain/set_score/`;
