@@ -93,8 +93,8 @@ function updateUserInfo(email, password, bio) {
     })
     .catch((error) => {
       const errorMessageDiv = document.getElementById("error-message");
-      errorMessageDiv.textContent = error.message; 
-      errorMessageDiv.classList.remove("d-none"); 
+      errorMessageDiv.textContent = error.message;
+      errorMessageDiv.classList.remove("d-none");
     });
 }
 
@@ -338,12 +338,32 @@ function createProfilBlock(user) {
 
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
     document.getElementById("edit-profile").style.display = "none";
-    document
-      .getElementById("send-friend-request-btn")
-      .addEventListener("click", () => {
-        sendFriendRequest(data.user.id);
-      });
+
+    let currentlyFriends = false;
+    let friendship_id;
+    currentUserInfo.friends.forEach((friend) => {
+      if (friend.username == data.user.username) {
+        currentlyFriends = true;
+        friendship_id = friend.friendship_id;
+      }
+    });
+    if (currentlyFriends) {
+      document.getElementById("send-friend-request-btn").style.display = "none";
+      document
+        .getElementById("remove-friend-btn")
+        .addEventListener("click", () => {
+          removeFriend(friendship_id);
+        });
+    } else {
+      document.getElementById("remove-friend-btn").style.display = "none";
+      document
+        .getElementById("send-friend-request-btn")
+        .addEventListener("click", () => {
+          sendFriendRequest(data.user.id);
+        });
+    }
   } else {
+    document.getElementById("remove-friend-btn").style.display = "none";
     document.getElementById("send-friend-request-btn").style.display = "none";
     document.getElementById("block-user-btn").style.display = "none";
     document.getElementById("edit-profile").addEventListener("click", () => {
@@ -355,6 +375,33 @@ function createProfilBlock(user) {
     (data.friends.length != 0 || data.friends_requests.length != 0)
   ) {
     loadFriends();
+  }
+}
+
+async function removeFriend(friendship_id) {
+  try {
+    const response = await fetch(
+      `/api/users/profiles/${friendship_id}/remove-friendship/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      loadModal("Friend deleted", "Bye loser ... 👋");
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+      loadModal("Error 🤕", `${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de la suppression d'ami", error);
+    alert("Une erreur est survenue lors de l'envoi de la suppression d'ami.");
   }
 }
 
@@ -373,7 +420,7 @@ async function sendFriendRequest(userId) {
 
     if (response.ok) {
       const result = await response.json();
-      alert(result.message);
+      loadModal("Success", result.message);
     } else {
       const errorData = await response.json();
       alert(`Erreur: ${errorData.error}`);
@@ -384,10 +431,10 @@ async function sendFriendRequest(userId) {
   }
 }
 
-async function rejectFriendRequest(userId) {
+async function rejectFriendRequest(requestId) {
   try {
     const response = await fetch(
-      `/api/users/profiles/${userId}/reject-friend-request/`,
+      `/api/users/profiles/${requestId}/reject-friend-request/`,
       {
         method: "POST",
         headers: {
@@ -411,10 +458,10 @@ async function rejectFriendRequest(userId) {
   }
 }
 
-async function acceptFriendRequest(userId) {
+async function acceptFriendRequest(requestId) {
   try {
     const response = await fetch(
-      `/api/users/profiles/${userId}/accept-friend-request/`,
+      `/api/users/profiles/${requestId}/accept-friend-request/`,
       {
         method: "POST",
         headers: {

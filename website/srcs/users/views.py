@@ -16,6 +16,7 @@ from rest_framework import status
 from game.models import GameSession
 from game.serializers import GameSessionSerializer
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -41,7 +42,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             return Response(
                 {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
             )
-            
+
         try:
             EmailValidator()(email)
         except ValidationError:
@@ -215,10 +216,18 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         friendship = get_object_or_404(
             Friendship, pk=pk, to_user=request.user.userprofile
         )
+
         friendship.delete()
         return Response(
-            {"message": "Friend request rejected"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Friend request rejected"}, status=status.HTTP_200_OK
         )
+
+    @action(detail=True, methods=["post"], url_path="remove-friendship")
+    def remove_friendship(self, request, pk=None):
+        friendship = get_object_or_404(Friendship, pk=pk)
+        friendship.delete()
+        return Response({"message": "Friendship removed"}, status=status.HTTP_200_OK)
+
 
     @action(detail=False, methods=["get"], url_path="friend-requests")
     def get_friend_requests(self, request):

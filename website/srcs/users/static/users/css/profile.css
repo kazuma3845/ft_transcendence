@@ -186,6 +186,7 @@
   font-size: 1.2rem;
   text-shadow: 2px 2px 0 rgba(48, 66, 170, 0.8);
 }
+
 #friends-button-div i:hover {
   font-size: 1.4rem;
   text-shadow: none;
@@ -195,6 +196,7 @@
   color: rgba(223, 59, 59, 0.45);
 }
 
+#remove-friend-btn i:hover,
 #send-friend-request-btn i:hover {
   color: rgb(74, 130, 209);
 }
@@ -237,14 +239,13 @@
   border-color: transparent !important;
 }
 
-
 /* MODAL */
 
-#editProfileModalLabel{
+#editProfileModalLabel {
   font-size: 3rem;
   color: white;
 }
 
-.edit-input{
+.edit-input {
   font-size: 2.5rem;
 }

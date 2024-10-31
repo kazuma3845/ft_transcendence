@@ -18,21 +18,38 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ["user", "avatar", "banner", "bio", "friends"]
 
     def get_friends(self, obj):
-        friends_initiated = obj.friends_initiated.filter(accepted=True)
-        friends_received = obj.friends_received.filter(accepted=True)
-        friends = set(f.to_user for f in friends_initiated).union(
-            f.from_user for f in friends_received
+        friends = []
+
+        friends_initiated = obj.friends_initiated.filter(accepted=True).select_related(
+            "to_user"
         )
+        for friendship in friends_initiated:
+            friend_data = {
+                "user": friendship.to_user,  
+                "friendship_id": friendship.id,
+            }
+            friends.append(friend_data)
+
+        friends_received = obj.friends_received.filter(accepted=True).select_related(
+            "from_user"
+        )
+        for friendship in friends_received:
+            friend_data = {
+                "user": friendship.from_user,
+                "friendship_id": friendship.id,
+            }
+            friends.append(friend_data)
         return UserFriendSerializer(friends, many=True).data
 
 
-class UserFriendSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source="user.username")
-    avatar_url = serializers.ImageField(source="avatar")
+class UserFriendSerializer(serializers.Serializer):
+    username = serializers.CharField(source="user.user.username")
+    avatar_url = serializers.ImageField(source="user.avatar", read_only=True)
+    friendship_id = serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = UserProfile
-        fields = ["username", "avatar_url"]
+        fields = ["username", "avatar_url", "friendship_id"]
+
 
 
 class FriendshipSerializer(serializers.ModelSerializer):
