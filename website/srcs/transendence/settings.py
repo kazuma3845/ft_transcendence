@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY_DJANGO')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['transcendence', config('IP_LOCAL')]
+ALLOWED_HOSTS = ['transcendence', 'localhost', config('IP_LOCAL')]
 
 # Application definition
 
@@ -146,6 +146,7 @@ USE_TZ = True
 
 #ajouter des adresses accessibles
 CORS_ALLOWED_ORIGINS = [
+    "https://localhost",
     "https://transcendence",
     f"https://{config('IP_LOCAL')}",
     f"http://{config('IP_LOCAL')}",
@@ -153,6 +154,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://localhost",
     "https://transcendence",
     f"https://{config('IP_LOCAL')}",
     f"http://{config('IP_LOCAL')}",
