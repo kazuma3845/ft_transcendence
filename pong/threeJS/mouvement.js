@@ -171,8 +171,10 @@ export default class Pong {
             this.form.paddle_right_size[1] = data.content.bonuspadleRsize;
             this.power.updatePaddleGeometry(this.form.paddleLeft, this.form.paddle_left_size);
             this.power.updatePaddleGeometry(this.form.paddleRight, this.form.paddle_right_size);
-            this.MalusCamLeft = data.content.bonusChageCamLeft
-            this.MalusCamRight = data.content.bonusChageCamRight
+            if (!this.MultiLocal) {
+                this.MalusCamLeft = data.content.bonusChageCamLeft
+                this.MalusCamRight = data.content.bonusChageCamRight
+            }
         }
         if (this.botActivated) {
             this.ball_angle = data.content.ball_angle;
