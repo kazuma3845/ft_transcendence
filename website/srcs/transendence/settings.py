@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY_DJANGO')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['transcendence', config('IP_LOCAL')]
+ALLOWED_HOSTS = ['transcendence', 'localhost', config('IP_LOCAL')]
 
 # Application definition
 
@@ -146,6 +146,7 @@ USE_TZ = True
 
 #ajouter des adresses accessibles
 CORS_ALLOWED_ORIGINS = [
+    "https://localhost",
     "https://transcendence",
     f"https://{config('IP_LOCAL')}",
     f"http://{config('IP_LOCAL')}",
@@ -153,6 +154,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://localhost",
     "https://transcendence",
     f"https://{config('IP_LOCAL')}",
     f"http://{config('IP_LOCAL')}",
@@ -195,3 +197,6 @@ SECURE_HSTS_PRELOAD = True
 # Assure que les cookies (comme le cookie de session) sont uniquement envoyés via HTTPS
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True

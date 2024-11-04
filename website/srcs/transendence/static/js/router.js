@@ -62,14 +62,6 @@ async function router() {
           loadLoginForm();
         }
         break;
-
-        // if (isAuthenticated) {
-        //     loadTourForm();
-        //     fetchAvailableTours();
-        // } else {
-        //   loadLoginForm();
-        // }
-        // break;
       case "#chat":
           loadChat();
         break;

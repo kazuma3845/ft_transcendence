@@ -38,13 +38,6 @@ class GameSessionSerializer(serializers.ModelSerializer):
         style={'input_type': 'range'}
     )
 
-    def get_player2(self, obj):
-        # Si player2 est None ou vide, on retourne 'Bot'
-        if obj.player2:
-            return str(obj.player2)  # Retourne le nom d'utilisateur du joueur 2
-        if obj.Multiplayer:
-            return "LocalPlayer"
-        return "Bot"  # Si player2 est vide, retourne 'Bot'
     def validate(self, data):
         """
         Valider les noms d'utilisateurs pour player1 et player2.
@@ -66,8 +59,10 @@ class GameSessionSerializer(serializers.ModelSerializer):
                 data['player2'] = User.objects.get(username=player2_username)
             except User.DoesNotExist:
                 raise serializers.ValidationError(f"L'utilisateur {player2_username} n'existe pas.")
+        elif data.get('Multiplayer'):
+            data['player2'] = "LocalPlayer"
         else:
-            data['player2'] = None  # Si pas de player2, on le met à None
+            data['player2'] = "Bot"
 
         return data
 
