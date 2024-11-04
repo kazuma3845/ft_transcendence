@@ -61,9 +61,8 @@ class GameSessionSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"L'utilisateur {player2_username} n'existe pas.")
         elif data.get('Multiplayer'):
             data['player2'] = "LocalPlayer"
-        else:
+        elif data.get('bot'):
             data['player2'] = "Bot"
-
         return data
 
     class Meta:
@@ -72,7 +71,6 @@ class GameSessionSerializer(serializers.ModelSerializer):
             'id',
             'player1',
             'player2',
-            # 'created_time',
             'start_time',
             'end_time',
             'player1_points',
