@@ -16,12 +16,16 @@ from rest_framework import status
 from game.models import GameSession
 from game.serializers import GameSessionSerializer
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import UserProfile
 from .serializers import UserProfileSerializer, UserSerializer
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -34,19 +38,34 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         email = request.data.get("email")
         password = request.data.get("password")
 
+        # Vérifie si le nom d'utilisateur existe déjà
         if User.objects.filter(username=username).exists():
             return Response(
                 {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+        try:
+            EmailValidator()(email)
+        except ValidationError:
+            return Response(
+                {"error": "Invalid email format"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            return Response({"error": e.messages}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(
             username=username, email=email, password=password
         )
         user_profile = UserProfile(user=user, bio=request.data.get("bio"))
         user_profile.save()
+
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+
         return Response(
             {"message": "User created successfully"}, status=status.HTTP_201_CREATED
         )
@@ -91,6 +110,43 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         serializer = UserProfileSerializer(user_profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["patch"], url_path="update-user-info")
+    def update_user_info(self, request):
+        user = request.user
+        user_profile = user.userprofile
+
+        email = request.data.get("email")
+        if email:
+            try:
+                EmailValidator()(email)
+                user.email = email
+            except ValidationError:
+                return Response(
+                    {"message": "Email invalide"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+        password = request.data.get("password")
+        if password:
+            try:
+                validate_password(password, user=user)
+                user.set_password(password)
+            except ValidationError as e:
+                return Response(
+                    {"message": e.messages}, status=status.HTTP_400_BAD_REQUEST
+                )
+
+        bio = request.data.get("bio")
+        if bio:
+            user_profile.bio = bio
+
+        user.save()
+        user_profile.save()
+
+        return Response(
+            {"message": "User information updated successfully"},
+            status=status.HTTP_200_OK,
+        )
 
     @action(detail=False, methods=["GET"], url_path="game-sessions")
     def user_game_sessions(self, request, username=None):
@@ -161,10 +217,18 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         friendship = get_object_or_404(
             Friendship, pk=pk, to_user=request.user.userprofile
         )
+
         friendship.delete()
         return Response(
-            {"message": "Friend request rejected"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Friend request rejected"}, status=status.HTTP_200_OK
         )
+
+    @action(detail=True, methods=["post"], url_path="remove-friendship")
+    def remove_friendship(self, request, pk=None):
+        friendship = get_object_or_404(Friendship, pk=pk)
+        friendship.delete()
+        return Response({"message": "Friendship removed"}, status=status.HTTP_200_OK)
+
 
     @action(detail=False, methods=["get"], url_path="friend-requests")
     def get_friend_requests(self, request):
@@ -203,7 +267,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         if not uploaded_file:
             return Response(
-                {"success": False, "error": "No file uploaded"},
+                {"success": False, "message": "No file uploaded"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         if file_type == "avatar":

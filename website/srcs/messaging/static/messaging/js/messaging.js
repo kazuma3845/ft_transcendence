@@ -109,7 +109,7 @@ function searchUser() {
             resultsList.innerHTML = '';  // Réinitialiser les résultats
 
             users.forEach(user => {
-                if (user.username !== currentUser) {  // Exclure l'utilisateur actuel
+                if (user.username !== currentUser && user.username !== 'Bot' && user.username !== 'LocalPlayer') {  // Exclure l'utilisateur actuel
                     const userItem = document.createElement('li');
                     userItem.textContent = user.username;
                     userItem.onclick = () => selectUser(user.username);  // Sélectionner un utilisateur
@@ -189,9 +189,10 @@ function loadChat() {
             if (conversationId && message.trim() !== '') {
                 sendMessage(conversationId, message);  // Envoyer le message à cette conversation
                 messageInput.value = '';  // Réinitialiser le champ de saisie après l'envoi
-            } else {
-                console.error("Aucune conversation active sélectionnée ou message vide");
             }
+            // else {
+            //     console.error("Aucune conversation active sélectionnée ou message vide");
+            // }
         });
 
         // Associer l'envoi de message à la touche "Entrée"
@@ -204,9 +205,10 @@ function loadChat() {
                 if (conversationId && message.trim() !== '') {
                     sendMessage(conversationId, message);  // Envoyer le message à cette conversation
                     document.getElementById('message-input').value = '';  // Réinitialiser le champ de saisie après l'envoi
-                } else {
-                    console.error("Aucune conversation active sélectionnée ou message vide");
                 }
+                // else {
+                //     console.error("Aucune conversation active sélectionnée ou message vide");
+                // }
             }
         });
     })

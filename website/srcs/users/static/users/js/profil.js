@@ -1,6 +1,37 @@
 let currentUserInfo = null;
 let requestedUserProfile = null;
 
+function loadEditProfileModal() {
+  fetch("/static/users/html/profil/editProfileModal.html")
+    .then((response) => response.text())
+    .then((html) => {
+      document.body.insertAdjacentHTML("beforeend", html);
+      var myModal = new bootstrap.Modal(
+        document.getElementById("editProfileModal")
+      );
+      myModal.show();
+
+      document
+        .getElementById("submitProfileChanges")
+        .addEventListener("click", () => {
+          const email = document.getElementById("edit-email").value
+            ? document.getElementById("edit-email").value
+            : null;
+          const password = document.getElementById("edit-password").value
+            ? document.getElementById("edit-password").value
+            : null;
+          const bio = document.getElementById("edit-bio").value
+            ? document.getElementById("edit-bio").value
+            : null;
+
+          updateUserInfo(email, password, bio);
+        });
+    })
+    .catch((error) =>
+      console.error("Erreur lors du chargement du modal:", error)
+    );
+}
+
 function uploadImage(file, type) {
   const formData = new FormData();
   formData.append("image", file);
@@ -13,9 +44,12 @@ function uploadImage(file, type) {
     },
     body: formData,
   })
-    .then((response) => {
+    .then(async (response) => {
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(
+          `Error status: ${response.status} with message: ${errorData.message}`
+        );
       }
       return response.json();
     })
@@ -29,6 +63,38 @@ function uploadImage(file, type) {
     })
     .catch((error) => {
       console.error("Erreur lors de l'upload de l'image:", error);
+    });
+}
+
+function updateUserInfo(email, password, bio) {
+  const data = {};
+  if (email) data.email = email;
+  if (password) data.password = password;
+  if (bio) data.bio = bio;
+
+  fetch("/api/users/profiles/update-user-info/", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRFToken(),
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw new Error(errorData.message || "Une erreur est survenue.");
+        });
+      }
+      return response.json();
+    })
+    .then((updatedData) => {
+      window.location.reload();
+    })
+    .catch((error) => {
+      const errorMessageDiv = document.getElementById("error-message");
+      errorMessageDiv.textContent = error.message;
+      errorMessageDiv.classList.remove("d-none");
     });
 }
 
@@ -59,17 +125,21 @@ function fetchBlockchainResults(games) {
 }
 
 async function computeStats(results, username) {
-  console.log("Current username:", username);
+  // console.log("Current username:", username);
 
   // Filter out matches with empty string winners
-  const filteredResults = results.filter((result) => result.winner !== '');
+  const filteredResults = results.filter((result) => result.winner !== "");
 
   console.log("Filtered results:", filteredResults);
 
   const gamePlayed = filteredResults.length;
-  const matchWon = filteredResults.filter((result) => result.winner === username);
+  const matchWon = filteredResults.filter(
+    (result) => result.winner === username
+  );
   const winNumber = matchWon.length;
-  const matchLost = filteredResults.filter((result) => result.winner != username);
+  const matchLost = filteredResults.filter(
+    (result) => result.winner != username
+  );
   const loseNumber = matchLost.length;
   console.log("Match joués:", gamePlayed);
   console.log("Match won:", winNumber);
@@ -116,7 +186,7 @@ async function computeStats(results, username) {
     total: gamePlayed || 0,
     win: winNumber || 0,
     loss: loseNumber || 0,
-    nemesis: nemesis || "Aucun",
+    nemesis: nemesis || "None",
     winStreak: currentWinStreak || 0,
     winrate: winRate || 0,
     forfeit: forfeitWonNumber || 0,
@@ -226,7 +296,7 @@ function createProfilBlock(user) {
   document.getElementById("email").textContent = data.user.email;
   document.getElementById("bio").textContent = data.bio
     ? data.bio
-    : "Ceci est une bio vraiment pas très intéressante. J'imagine que j'aime le pong puisque je suis ici. (Aidez moi à trouver un stage svp)";
+    : "Ceci est une bio vraiment pas très intéressante. On dirait bien qu'elle m'a été donné par défaut parce que je suis une feignasse qui prend pas le temps de se présenter... C'est dur. J'imagine que j'aime le pong puisque je suis ici ! (Aidez moi à trouver un stage svp)";
 
   document.querySelector(".avatar-div img").src = data.avatar
     ? data.avatar
@@ -267,22 +337,71 @@ function createProfilBlock(user) {
   }
 
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
-    document.getElementById("send-friend-request-btn").style.display = "block";
+    document.getElementById("edit-profile").style.display = "none";
 
-    document
-      .getElementById("send-friend-request-btn")
-      .addEventListener("click", () => {
-        sendFriendRequest(data.user.id);
-      });
+    let currentlyFriends = false;
+    let friendship_id;
+    currentUserInfo.friends.forEach((friend) => {
+      if (friend.username == data.user.username) {
+        currentlyFriends = true;
+        friendship_id = friend.friendship_id;
+      }
+    });
+    if (currentlyFriends) {
+      document.getElementById("send-friend-request-btn").style.display = "none";
+      document
+        .getElementById("remove-friend-btn")
+        .addEventListener("click", () => {
+          removeFriend(friendship_id);
+        });
+    } else {
+      document.getElementById("remove-friend-btn").style.display = "none";
+      document
+        .getElementById("send-friend-request-btn")
+        .addEventListener("click", () => {
+          sendFriendRequest(data.user.id);
+        });
+    }
   } else {
+    document.getElementById("remove-friend-btn").style.display = "none";
     document.getElementById("send-friend-request-btn").style.display = "none";
     document.getElementById("block-user-btn").style.display = "none";
+    document.getElementById("edit-profile").addEventListener("click", () => {
+      loadEditProfileModal();
+    });
   }
   if (
     data.user.username === currentUserInfo.user.username &&
-    data.friends.length != 0
+    (data.friends.length != 0 || data.friends_requests.length != 0)
   ) {
     loadFriends();
+  }
+}
+
+async function removeFriend(friendship_id) {
+  try {
+    const response = await fetch(
+      `/api/users/profiles/${friendship_id}/remove-friendship/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFToken(),
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      loadModal("Friend deleted", "Bye loser ... 👋");
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+      loadModal("Error 🤕", `${errorData.error}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'envoi de la suppression d'ami", error);
+    alert("Une erreur est survenue lors de l'envoi de la suppression d'ami.");
   }
 }
 
@@ -301,7 +420,7 @@ async function sendFriendRequest(userId) {
 
     if (response.ok) {
       const result = await response.json();
-      alert(result.message);
+      loadModal("Success", result.message);
     } else {
       const errorData = await response.json();
       alert(`Erreur: ${errorData.error}`);
@@ -312,10 +431,10 @@ async function sendFriendRequest(userId) {
   }
 }
 
-async function rejectFriendRequest(userId) {
+async function rejectFriendRequest(requestId) {
   try {
     const response = await fetch(
-      `/api/users/profiles/${userId}/reject-friend-request/`,
+      `/api/users/profiles/${requestId}/reject-friend-request/`,
       {
         method: "POST",
         headers: {
@@ -331,6 +450,7 @@ async function rejectFriendRequest(userId) {
     } else {
       const errorData = await response.json();
       alert(`Erreur: ${errorData.error}`);
+      window.location.reload();
     }
   } catch (error) {
     console.error("Erreur lors du refus de demande d'ami :", error);
@@ -338,10 +458,10 @@ async function rejectFriendRequest(userId) {
   }
 }
 
-async function acceptFriendRequest(userId) {
+async function acceptFriendRequest(requestId) {
   try {
     const response = await fetch(
-      `/api/users/profiles/${userId}/accept-friend-request/`,
+      `/api/users/profiles/${requestId}/accept-friend-request/`,
       {
         method: "POST",
         headers: {
@@ -354,6 +474,7 @@ async function acceptFriendRequest(userId) {
     if (response.ok) {
       const result = await response.json();
       alert(result.message);
+      window.location.reload();
     } else {
       const errorData = await response.json();
       alert(`Erreur: ${errorData.error}`);
@@ -365,7 +486,7 @@ async function acceptFriendRequest(userId) {
 }
 
 async function fetchUserInfoLight(username) {
-  if (username == 'Aucun')
+  if (username == 'Aucun' || username == 'None')
     return username
   const response = await fetch(
     `/api/users/profiles/info-user/?username=${username}`
@@ -463,10 +584,14 @@ async function createNemesisBlock(user) {
 
   nemesisBlockTitle.textContent = `Nemesis: ${nemesis}`;
 
-  nemesisAvatar.src = nemesis_profile.avatar
-    ? nemesis_profile.avatar
-    : "/media/avatars/avatar.png";
-  nemesisProfileLink.href = `#profile/?username=${nemesis}`;
+  if (nemesis != "None") {
+    nemesisAvatar.src = nemesis_profile.avatar
+      ? nemesis_profile.avatar
+      : "/media/avatars/avatar.png";
+    nemesisProfileLink.href = `#profile/?username=${nemesis}`;
+  } else {
+    nemesisAvatar.classList.add("hidden");
+  }
 }
 
 // Fonction pour créer le bloc WinRate
@@ -597,22 +722,12 @@ async function loadFriends() {
   }
 }
 
-// Function to initialize tooltips (SPA-friendly)
-function initializeTooltips() {
-  const tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"], [title]')
-  );
-  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-    new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-}
-
 async function loadFriendRequest(friendsListBlock) {
   try {
     const friendRequests = currentUserInfo.friends_requests;
     friendRequests.forEach(async (request) => {
       const friendRequestDiv = document.createElement("div");
-      friendRequestDiv.className = "position-relative d-inline-block";
+      friendRequestDiv.className = "friend-request-div";
 
       const requestLink = document.createElement("a");
       requestLink.href = `#profile/?username=${request.from_user.username}`;
@@ -621,7 +736,8 @@ async function loadFriendRequest(friendsListBlock) {
         ? request.from_user.avatar
         : "/media/avatars/avatar.png";
       requestImg.alt = `Avatar de ${request.from_user.username}`;
-      requestImg.className = "img-fluid rounded-circle friends-avatar";
+      requestImg.setAttribute("title", request.from_user.username);
+      requestImg.className = "img-fluid rounded-circle friends-request-avatar";
       requestLink.appendChild(requestImg);
       friendRequestDiv.appendChild(requestLink);
 
@@ -651,10 +767,20 @@ async function loadFriendRequest(friendsListBlock) {
       friendRequestDiv.appendChild(rejectIcon);
 
       friendsListBlock.appendChild(friendRequestDiv);
+      initializeTooltips();
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des demandes d'amis:", error);
     document.getElementById("friend-requests-block").innerHTML =
       "<p>Erreur de chargement des demandes d'amis.</p>";
   }
+}
+
+function initializeTooltips() {
+  const tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"], [title]')
+  );
+  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+    new bootstrap.Tooltip(tooltipTriggerEl);
+  });
 }
