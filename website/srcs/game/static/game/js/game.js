@@ -303,27 +303,18 @@ socket.onopen = function (e) {
     console.log("WebSocket connected.");
 };
 
+let player2 = null
+
 socket.onmessage = async function (e) {
     // console.log('Message received:', e.data);
     try {
     const data = JSON.parse(e.data);
     // console.log("F-E: client websocket parsed data:", data);
     if (data.type === "game_score") {
-        updateScoreDisplay(
-          data.player1,
-          data.player2,
-          data.player1_points,
-          data.player2_points
-        );
-        // if (data.tour){
-        //     conv = await getTourConversation(data.tour);
-        //     console.log("ici que je veux envoyer le refresh du code : ", conv)
-        //     console.log("la c est le data.id : ", conv.id)
-        //     // updateTree(data.tour)
-        //     sendTourConv(conv.id, 'nouveau point');
-        // }
+      updateScoreDisplay(data.player1, player2, data.player1_points, data.player2_points);
     }
     if (data.type === "display_player") {
+        player2 = data.player2;
         displayPlayer(data.player1, data.player2);
     }
     } catch (error) {
@@ -339,12 +330,7 @@ socket.onerror = function (e) {
     console.error("WebSocket error:", e);
 };
 
-  function checkWinCondition(
-    username,
-    username2,
-    player1Points,
-    player2Points
-  ) {
+  function checkWinCondition(username, username2, player1Points, player2Points) {
     if (player1Points >= win_number) {
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
@@ -370,12 +356,9 @@ socket.onerror = function (e) {
 		}
 
   function updateScoreDisplay(username, username2, player1Points, player2Points) {
-    // console.log("Updating scores:", player1Points, player2Points);
     const player1Elem = document.getElementById("player1");
     const player1ScoreElem = document.getElementById("player1Score");
     const player2ScoreElem = document.getElementById("player2Score");
-    if (!username2 && multi == false) username2 = "Bot";
-    else if (!username2 && multi == true) username2 = "LocalPlayer";
     if (player1ScoreElem && player2ScoreElem && player1Elem) {
       player1Elem.textContent = username;
       player1ScoreElem.textContent = player1Points;
