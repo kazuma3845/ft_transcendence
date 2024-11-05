@@ -196,7 +196,7 @@ function handleMultiplayerChange(isChecked) {
   }
 }
 
-let win_number = 5;
+// let win_number = 5;
 
 function updateWinNumber() {
   const rangeInput = document.getElementById("actual_win_number");
@@ -206,7 +206,7 @@ function updateWinNumber() {
   // Map the range slider position (1 to 5) to the allowed values
   const selectedValue = allowedValues[rangeInput.value - 1];
 
-  win_number = selectedValue;
+  // win_number = selectedValue;
   // Update the display value
   displayValue.textContent = selectedValue;
 
@@ -215,13 +215,13 @@ function updateWinNumber() {
 
 // Set initial value on load
 window.onload = function () {
-// Vérifier si l'élément avec l'ID "game-form" est présent dans le DOM
-const gameForm = document.getElementById("game-form");
+  // Vérifier si l'élément avec l'ID "game-form" est présent dans le DOM
+  const gameForm = document.getElementById("game-form");
 
-if (gameForm) {
-    // Si l'élément existe, appelez la fonction updateWinNumber
-    updateWinNumber();
-}
+  if (gameForm) {
+      // Si l'élément existe, appelez la fonction updateWinNumber
+      updateWinNumber();
+  }
 };
 
 // Fonction pour appeler l'API et afficher les GameSessions disponibles
@@ -294,12 +294,37 @@ async function joinGame(sessionId) {
     }
 }
 
+let win_number;
+
+async function getSession(sessionId) {
+  try {
+    // Appeler l'API pour obtenir la session
+    const response = await fetch(`/api/game/sessions/${sessionId}/`, {
+      method: "GET", // Utilisation de GET pour obtenir la session
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRFToken(), // Assurez-vous que le token CSRF est inclus si nécessaire
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const gameSession = await response.json();
+    return gameSession;
+  } catch (error) {
+    console.error("gameSession NOT FOUND :", error);
+  }
+}
+
 // ####################### ---------------- WEBSOCKET ---------------- #######################
 function startWebSocket(sessionId) {
   this.pingInterval = null;
   const socket = new WebSocket(`/ws/game/sessions/${sessionId}/`);
 
-socket.onopen = function (e) {
+socket.onopen = async function (e) {
+    const gameSession = await getSession(sessionId)
+    console.log("GAMESESSION: ", gameSession)
+    win_number = gameSession.win_number
     console.log("WebSocket connected.");
 };
 
@@ -320,6 +345,10 @@ socket.onmessage = async function (e) {
         player2 = data.player2;
         displayPlayer(data.player1, data.player2);
     }
+    if (data.type === "player_disconnected") {
+      if (win_number !== point1 && win_number !== point2)
+        displayForfaitMessage();
+  }
     } catch (error) {
     console.error("Error parsing message:", error);
     }
@@ -344,6 +373,7 @@ socket.onerror = function (e) {
   }
 
   function checkWinCondition(username, username2, player1Points, player2Points) {
+    console.log(username, username2, player1Points, player2Points, win_number)
     if (player1Points >= win_number) {
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
@@ -359,7 +389,7 @@ socket.onerror = function (e) {
           displayWinnerMessage(username2);
         });
     }
-}
+  }
 
 		function displayWinnerMessage(winner) {		
 			// Sélectionner l'élément du message de victoire
