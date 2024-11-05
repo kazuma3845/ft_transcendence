@@ -269,6 +269,7 @@ function loadProfil(params) {
 
       const username = getRequestedUsername(params);
       const user = await fetchUserProfileInfo(username);
+      console.log("Le user id demandé est: ", user.user.id)
       if (!user) {
         loadHome();
       } else {
@@ -340,7 +341,7 @@ function createProfilBlock(user) {
   }
 
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
-    loadProfileFriendsButtons(data.user.username);
+    loadProfileFriendsButtons(data);
   } else {
     document.getElementById("remove-friend-btn").style.display = "none";
     document.getElementById("send-friend-request-btn").style.display = "none";
@@ -356,16 +357,16 @@ function createProfilBlock(user) {
   }
 }
 
-async function loadProfileFriendsButtons(username) {
+async function loadProfileFriendsButtons(data) {
 
+  username = data.user.username;
   document.getElementById("edit-profile").style.display = "none";
 
   if (username != 'Bot' && username != 'LocalPlayer') {
-    console.log("Username is: ", username)
     let currentlyFriends = false;
     let friendship_id;
     currentUserInfo.friends.forEach((friend) => {
-      if (friend.username == data.user.username) {
+      if (friend.username == username) {
         currentlyFriends = true;
         friendship_id = friend.friendship_id;
       }
