@@ -131,13 +131,9 @@ function checkWinCondition() {
 
 export function showWinScreen(player, message, score1, score2, forfait) {
     const winScreen = document.getElementById("winScreen");
-    const winMessage = document.getElementById("winMessage");
-    winMessage.innerHTML = `${player} ${message} ${score1} - ${score2}`
-    winScreen.style.display = "block";
     isAnimating = false;
-    winner = player
-    console.log(winner, message, score1, score2)
-    registerScores(forfait, winner);
+    registerScores(forfait, player);
+    console.log(player, message, score1, score2)
 
     renderer.setAnimationLoop(null);
 }
@@ -182,6 +178,7 @@ async function startGame() {
     pong.websocket = websocket;
     pong.websocket.startWebSocket(sessionId);
     await pong.sendDataForID();
+    console.log("Player 1: ", pong.playerLeft, "Player 2: ", pong.playerRight)
     startScreen.style.display = 'none';
     if (!pong.MultiLocal && !pong.botActivated && (pong.player1_started != true || pong.player2_started != true)) {
         loader.style.display = 'flex';

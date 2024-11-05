@@ -29,6 +29,8 @@ urlpatterns = [
     path('api/leaderboards/', include('leaderboards.urls')),
     path('api/blockchain/', include('blockchain.urls')),
 	path('api/messaging/', include('messaging.urls')),
+	path('api/tournaments/', include('tournaments.urls')),
+
     # path('api/tournaments/', include('tournaments.urls')),
     # path('users/', include('users.urls')),
     # path('game/', include('game.urls')),

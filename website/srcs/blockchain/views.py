@@ -3,11 +3,11 @@ from django.http import JsonResponse
 import json
 import os
 from datetime import date
-
+from decouple import config
 
 web3 = Web3(
     Web3.HTTPProvider(
-        "https://transcendence/ganache/",
+        f"https://{config('IP_LOCAL')}/ganache/",
         request_kwargs={"verify": False},
     )
 )

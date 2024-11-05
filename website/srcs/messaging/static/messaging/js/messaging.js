@@ -1,17 +1,8 @@
-// 1.	loadChat : Charge le HTML du chat.
-// 2.	loadConversations : Charge la liste des conversations via l’API.
-// 3.	loadMessages : Charge les messages d’une conversation sélectionnée.
-// 4.	openWebSocket : Ouvre une connexion WebSocket pour la conversation active.
-// 5.	sendMessage : Envoie un message via WebSocket.
-// 6.	displayNewMessage : Affiche un nouveau message dans la zone de chat.
-
-
-// Bloquage
-
 let blockedUsers;
 
-
 function updateBlockedUsers() {
+    if (!blockedUsers)
+        return
     fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
     .then(response => response.json())
     .then(data => {
@@ -20,7 +11,34 @@ function updateBlockedUsers() {
     .catch(error => console.error('Erreur lors de la récupération des utilisateurs bloqués:', error));
 }
 
+async function goLobby() {
+    tour = await getTourByConversation(activeConversationId)
+    console.log("Tour -> : ", tour);
+    window.location.href = `/#tournaments?tourid=${tour}`;
+}
 
+async function getTourByConversation(conversationId) {
+    try {
+        // Appeler l'API pour récupérer l'ID du tournoi lié à la conversation
+        const response = await fetch(`/api/messaging/conversations/tour-by-conversation/${conversationId}/`);
+
+        if (!response.ok) {
+            throw new Error(`Erreur lors de la récupération du tournoi : ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Vérifie si l'ID du tournoi est bien présent dans la réponse
+        if (data.tour_id) {
+            return data.tour_id;  // Retourne l'ID du tournoi
+        } else {
+            console.warn("Aucun tournoi associé à cette conversation.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Erreur lors de la récupération du tournoi pour la conversation :", error);
+    }
+}
 function toggleBlockUser() {
     const blockButton = document.getElementById('block-user-btn');
 
@@ -91,7 +109,7 @@ function searchUser() {
             resultsList.innerHTML = '';  // Réinitialiser les résultats
 
             users.forEach(user => {
-                if (user.username !== currentUser) {  // Exclure l'utilisateur actuel
+                if (user.username !== currentUser && user.username !== 'Bot' && user.username !== 'LocalPlayer') {  // Exclure l'utilisateur actuel
                     const userItem = document.createElement('li');
                     userItem.textContent = user.username;
                     userItem.onclick = () => selectUser(user.username);  // Sélectionner un utilisateur
@@ -123,7 +141,6 @@ function startConversation() {
         return response.json();
     })
     .then(data => {
-        console.log('Nouvelle conversation créée:', data);
         // Charger les conversations et fermer la modal
         connectWebSocket();
         loadConversations();
@@ -172,9 +189,10 @@ function loadChat() {
             if (conversationId && message.trim() !== '') {
                 sendMessage(conversationId, message);  // Envoyer le message à cette conversation
                 messageInput.value = '';  // Réinitialiser le champ de saisie après l'envoi
-            } else {
-                console.error("Aucune conversation active sélectionnée ou message vide");
             }
+            // else {
+            //     console.error("Aucune conversation active sélectionnée ou message vide");
+            // }
         });
 
         // Associer l'envoi de message à la touche "Entrée"
@@ -187,9 +205,10 @@ function loadChat() {
                 if (conversationId && message.trim() !== '') {
                     sendMessage(conversationId, message);  // Envoyer le message à cette conversation
                     document.getElementById('message-input').value = '';  // Réinitialiser le champ de saisie après l'envoi
-                } else {
-                    console.error("Aucune conversation active sélectionnée ou message vide");
                 }
+                // else {
+                //     console.error("Aucune conversation active sélectionnée ou message vide");
+                // }
             }
         });
     })
@@ -213,8 +232,13 @@ function loadConversations() {
             const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
             // Si un seul participant, l'afficher seul, sinon les séparer par des '/'
             const participantsText = otherParticipants.join(', ');
-            convItem.classList.add('user-conversation', 'bg-primary', 'p-2', 'mb-2', 'rounded');
-            convItem.textContent = `Conversation avec ${participantsText}`;
+            if (conversation.tour) {
+                convItem.classList.add('user-conversation', 'bg-secondary', 'p-2', 'mb-2', 'rounded');
+                convItem.textContent = `Tournois  ${conversation.tour}  :  ${participantsText}`;
+            } else {
+                convItem.classList.add('user-conversation', 'bg-primary', 'p-2', 'mb-2', 'rounded');
+                convItem.textContent = `Conversation avec ${participantsText}`;
+            }
 
             // Ajouter un event listener pour charger les messages et définir la conversation active
             convItem.addEventListener('click', () => {
@@ -230,7 +254,7 @@ function loadConversations() {
 
 function loadMessages(conversationId) {
     const chatWindow = document.getElementById('chat_window');
-    console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
+    // console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
 
     if (activeConversationId === conversationId) {
         chatWindow.style.display = 'none';
@@ -243,15 +267,35 @@ function loadMessages(conversationId) {
         .then(response => response.json())
         .then(conversation => {
             const otherParticipants = conversation.participants.filter(participant => participant !== currentUser);
-            const participantsText = otherParticipants.join(', ');
+
+            // Transformer chaque nom en lien cliquable
+            const participantsLinks = otherParticipants.map(participant => {
+                return `<a href="/#profile/?username=${participant}" onclick="window.location.href='/#profile/?username=${participant}'; return false;">${participant}</a>`;
+            });
+
+            const participantsText = participantsLinks.join(', ');
 
             // Met à jour le titre de la conversation
-            const chatTitle = document.getElementById('chat_title');
-            chatTitle.textContent = `Discussion avec ${participantsText}`;
+            let chatTitle = document.getElementById('chat_title');
+            let interButton = document.getElementById('interaction-chat');
+            let tourButton = document.getElementById('interaction-tour');
+            if (conversation.tour)
+            {
+                interButton.style.display = 'none';
+                tourButton.style.display = 'block';
+                chatTitle.innerHTML = `Discussion du tournois  ${conversation.tour} avec  ${participantsText}`;
+            }
+            else
+            {
+                interButton.style.display = 'block';
+                tourButton.style.display = 'none';
+                chatTitle.innerHTML = `Discussion avec ${participantsText}`;
+            }
 
             // Rendre visible la fenêtre de chat
             chatWindow.style.display = 'block';
-
+        // pour le bouton d invite
+            attachGameFormSubmitListener(currentUser, otherParticipants[0], true);
             // Requête pour obtenir les messages
             fetch(`/api/messaging/conversations/${conversationId}/messages/`)
                 .then(response => response.json())
@@ -268,14 +312,28 @@ function loadMessages(conversationId) {
 
                         const messageContent = document.createElement('div');
                         messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
-                        messageContent.textContent = message.content;
+
+                        if (message.invitation) {
+                            const invitationLink = document.createElement('a');
+                            invitationLink.href = `/#game?sessionid=${message.invitation}`;  // Créer l'URL
+                            invitationLink.textContent = "partie";  // Texte du lien
+
+                            // Optionnel : Si tu ne veux pas utiliser href, tu peux utiliser un gestionnaire d'événement de clic.
+                            invitationLink.addEventListener('click', function(event) {
+                                event.preventDefault();  // Empêche le comportement par défaut du lien
+                                window.location.href = `/#game?sessionid=${message.invitation}`;
+                            });
+                            messageContent.textContent = "Rejoindre la ";
+                            messageContent.appendChild(invitationLink);
+                        }
+                        if (message.content) {
+                            messageContent.textContent = message.content;
+                        }
 
                         messageItem.appendChild(messageContent);
                         messagesList.appendChild(messageItem);
                     });
-
                     activeConversationId = conversationId;
-
                     // Scroller en bas de la zone de messages
                     messagesList.scrollTop = messagesList.scrollHeight;
                 })
@@ -335,9 +393,10 @@ function connectWebSocket() {
     if (socket) {
         socket.close();
     }
-
+    if (!currentUser)
+        return
     // Ouvrir la WebSocket globale pour l'utilisateur
-    socket = new WebSocket(`/ws/chat/`);  // Connexion WebSocket globale
+    socket = new WebSocket(`/ws/chat/`);
 
     // Gérer l'ouverture de la WebSocket
     socket.onopen = function(e) {
@@ -354,7 +413,14 @@ function connectWebSocket() {
         const data = JSON.parse(e.data);
 
         // Vérifier le type du message reçu
+        if (data.type === "updateTree"){
+            console.log("data.content.tour : ", data.content)
+            updateTree(data.content.tour)
+        }
         if (data.type === "upload_message") {
+            console.log("data.content : ", data.content)
+            if (data.content.tour)
+                updateTree(data.content.tour)
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
             const messageSender = data.content.sender;  // Le nom d'utilisateur de l'expéditeur
 
@@ -365,11 +431,15 @@ function connectWebSocket() {
             }
             // const message = data.content.message;  // Récupérer le contenu du message
             // Afficher le message dans la boîte de la conversation correspondante
-			console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
+			// console.log(`activeConversationId : ${activeConversationId} | data.content.conversation_id : ${data.content.conversation_id}`);
 			if (activeConversationId === conversationId)
 				displayNewMessage(data.content);
 			// loadMessages(conversationId);
-        } else {
+        }
+        else if (data.type === "upload_invitation") {
+            console.log(data);
+        }
+        else {
             console.log(`Type de message non géré : ${data.type}`);
         }
     };
@@ -393,7 +463,29 @@ function sendMessage(conversationId, message) {
             conversation_id: conversationId,
             message: message,
 			sender: currentUser,
-			from: 'front'
+        }
+    }));
+}
+
+function sendTourConv(conversationId, message) {
+    // Envoi du message à travers la WebSocket
+    socket.send(JSON.stringify({
+        type: 'newTourMessage',
+        content: {
+            conversation_id: conversationId,
+            message: message,
+        }
+    }));
+}
+
+function sendInvitation(conversationId, invitation) {
+    // Envoi du message à travers la WebSocket
+    socket.send(JSON.stringify({
+        type: 'newInvitation',
+        content: {
+            conversation_id: conversationId,
+			sender: currentUser,
+            invitation: invitation,
         }
     }));
 }

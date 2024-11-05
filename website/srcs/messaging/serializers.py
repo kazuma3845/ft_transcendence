@@ -8,11 +8,17 @@ class ConversationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender = serializers.CharField(source='sender.user.username')  # Renvoyer le username du sender
+    # sender = serializers.CharField(source='sender.user.username')  # Renvoyer le username du sender
+    sender = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'timestamp', 'is_read', 'conversation', 'sender']  # Inclure les champs souhaités
+        fields = ['id', 'content', 'timestamp', 'is_read', 'conversation', 'sender', 'invitation']  # Inclure les champs souhaités
+
+    def get_sender(self, obj):
+        if obj.sender:
+            return obj.sender.user.username  # Ou tout autre champ du user
+        return None  # Ou un message par défaut si le sender est `null`
 
 class BlockedUserSerializer(serializers.ModelSerializer):
     class Meta:

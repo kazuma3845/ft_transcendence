@@ -11,6 +11,10 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import User
+from rest_framework import viewsets
+from messaging.models import Conversation
 
 @login_required
 def index(request):
@@ -20,7 +24,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
     queryset = GameSession.objects.all()
     serializer_class = GameSessionSerializer
     permission_classes = [IsAuthenticated]
-
     def create(self, request, *args, **kwargs):
         # Initialiser le serializer avec les données de la requête
         serializer = self.get_serializer(data=request.data)
@@ -28,12 +31,31 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Valider les données
         serializer.is_valid(raise_exception=True)
 
-        # Récupérer l'utilisateur connecté
-        player1 = request.user
+        print(f"serializer data", serializer)
+        # Récupérer le username de player1 depuis les données validées
+        player1_username = serializer.validated_data.get('player1', None)
+        player2_username = serializer.validated_data.get('player2', None)
+
+        # Récupérer l'objet User correspondant au username de player1
+        player1 = None
+        if player1_username:
+            try:
+                player1 = User.objects.get(username=player1_username)
+            except User.DoesNotExist:
+                raise ValidationError(f"L'utilisateur {player1_username} n'existe pas.")
+
+        # Récupérer l'objet User correspondant au username de player2
+        player2 = None
+        if player2_username:
+            try:
+                player2 = User.objects.get(username=player2_username)
+            except User.DoesNotExist:
+                raise ValidationError(f"L'utilisateur {player2_username} n'existe pas.")
 
         # Créer une nouvelle session de jeu avec les données validées
         session = GameSession.objects.create(
-            player1=player1,
+            player1=player1,  # player1 peut être None si non fourni
+            player2=player2,  # player2 peut être None si non fourni
             move_speed_ball=serializer.validated_data.get('move_speed_ball', 3),
             move_speed_paddle=serializer.validated_data.get('move_speed_paddle', 4),
             power=serializer.validated_data.get('power', False),
@@ -172,11 +194,31 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             f'game_{session.id}',
             {
                 'type': 'game_score',
+                'id': session.id,
                 'player1': session.player1.username,
                 'player1_points': session.player1_points,
-                'player2_points': session.player2_points
+                'player2_points': session.player2_points,
             }
         )
+
+        if session.tour:  # Si le tour du model session existe
+            try:
+                    conversation = Conversation.objects.get(tour=session.tour)
+            except Conversation.DoesNotExist:
+                    return Response({"detail": "Conversation pour ce tournoi non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+            conversation_id = conversation.id
+            try:
+                print(f"Impression de  update_tree : ", session.tour.id)
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    f"chat_{conversation_id}",
+                    {
+                        'type': 'update_tree',
+                        'tour': session.tour.id,
+                    }
+                )
+            except Exception as e:
+                print(f"Erreur lors de l'envoi du message à la WebSocket : {e}")
 
         # Sérialiser la session mise à jour
         serializer = GameSessionSerializer(session)
@@ -188,7 +230,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         current_user = request.user
 
         # Filtrer les sessions où player2 est vide et player1 n'est pas l'utilisateur courant
-        sessions = GameSession.objects.filter(player2__isnull=True, bot=False, Multiplayer=False).exclude(player1=current_user)
+        sessions = GameSession.objects.filter(player2__isnull=True, bot=False, tour__isnull=True, Multiplayer=False).exclude(player1=current_user)
 
         # Sérialiser les données
         serializer = self.get_serializer(sessions, many=True)

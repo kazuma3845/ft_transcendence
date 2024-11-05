@@ -23,3 +23,18 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS("Bot profile created successfully!"))
         else:
             self.stdout.write(self.style.WARNING("Bot profile already exists."))
+
+        if not User.objects.filter(username="LocalPlayer").exists():
+            user = User.objects.create_user(
+                username="LocalPlayer", email="transcendence@localplayer.42.ch", password=None
+            )
+            UserProfile.objects.create(
+                user=user,
+                bio="Je suis ton doppelganger",
+                avatar="/avatars/bot.gif",
+                banner="/banners/terminator.gif",
+            )
+            self.stdout.write(self.style.SUCCESS("LocalPlayer profile created successfully!"))
+        else:
+            self.stdout.write(self.style.WARNING("LocalPlayer profile already exists."))
+

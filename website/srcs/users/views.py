@@ -27,10 +27,11 @@ from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
-
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    # permission_classes = [IsAuthenticated]
+
 
     def create(self, request, *args, **kwargs):
         username = request.data.get("username")
@@ -279,6 +280,15 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             {"success": True, "profile": serializer.data}, status=status.HTTP_200_OK
         )
 
+    @action(detail=False, methods=['get'], url_path='search')
+    def search(self, request):
+        query = request.query_params.get('query', None)
+        if query is not None:
+            # Rechercher dans le modèle User
+            users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
+            serializer = UserSerializer(users, many=True)  # Utiliser le UserSerializer ici
+            return Response(serializer.data)
+        return Response([])
 
 @login_required
 def index(request):

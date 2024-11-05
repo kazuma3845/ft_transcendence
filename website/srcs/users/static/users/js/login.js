@@ -69,7 +69,9 @@ function updateHeader() {
       } else {
         login_btn.style.display = "block";
         menu_btn.style.display = "none";
-        attachLoginFormListener();
+        document.addEventListener("DOMContentLoaded", function () {
+          attachLoginFormListener();
+        })
       }
     });
 }
