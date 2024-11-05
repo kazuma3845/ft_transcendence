@@ -340,8 +340,28 @@ function createProfilBlock(user) {
   }
 
   if (currentUserInfo && currentUserInfo.user.username !== data.user.username) {
-    document.getElementById("edit-profile").style.display = "none";
+    loadProfileFriendsButtons(data.user.username);
+  } else {
+    document.getElementById("remove-friend-btn").style.display = "none";
+    document.getElementById("send-friend-request-btn").style.display = "none";
+    document.getElementById("edit-profile").addEventListener("click", () => {
+      loadEditProfileModal();
+    });
+  }
+  if (
+    data.user.username === currentUserInfo.user.username &&
+    (data.friends.length != 0 || data.friends_requests.length != 0)
+  ) {
+    loadFriends();
+  }
+}
 
+async function loadProfileFriendsButtons(username) {
+
+  document.getElementById("edit-profile").style.display = "none";
+
+  if (username != 'Bot' && username != 'LocalPlayer') {
+    console.log("Username is: ", username)
     let currentlyFriends = false;
     let friendship_id;
     currentUserInfo.friends.forEach((friend) => {
@@ -365,19 +385,10 @@ function createProfilBlock(user) {
           sendFriendRequest(data.user.id);
         });
     }
-  } else {
+  }
+  else {
     document.getElementById("remove-friend-btn").style.display = "none";
     document.getElementById("send-friend-request-btn").style.display = "none";
-    document.getElementById("block-user-btn").style.display = "none";
-    document.getElementById("edit-profile").addEventListener("click", () => {
-      loadEditProfileModal();
-    });
-  }
-  if (
-    data.user.username === currentUserInfo.user.username &&
-    (data.friends.length != 0 || data.friends_requests.length != 0)
-  ) {
-    loadFriends();
   }
 }
 
