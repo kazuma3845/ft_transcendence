@@ -13,7 +13,7 @@ class GameSession(models.Model):
     player1_points = models.IntegerField(default=0)
     player2_points = models.IntegerField(default=0)
     winner = models.ForeignKey(User, related_name='won_sessions', null=True, blank=True, on_delete=models.SET_NULL)
-    win_number = models.IntegerField(default=3)
+    win_number = models.IntegerField(default=5)
     move_speed_ball = models.IntegerField(default=6, validators=[MaxValueValidator(10)])
     move_speed_paddle = models.IntegerField(default=4, validators=[MaxValueValidator(10)])
     power = models.BooleanField(null=True, blank=True)

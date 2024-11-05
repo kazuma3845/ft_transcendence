@@ -1,5 +1,5 @@
-const allowedValues = [1, 3, 5, 7, 9, 11];
 
+const allowedValues = [1, 3, 5, 7, 9, 11];
 function loadGameForm() {
 fetch("/static/game/html/game-form.html")
     .then((response) => response.text())
@@ -199,18 +199,18 @@ function handleMultiplayerChange(isChecked) {
 let win_number = 5;
 
 function updateWinNumber() {
-const rangeInput = document.getElementById("actual_win_number");
-const displayValue = document.getElementById("actual_win_number_value");
-const hiddenInput = document.getElementById("win_number");
-
-// Map the range slider position (1 to 5) to the allowed values
-const selectedValue = allowedValues[rangeInput.value - 1];
+  const rangeInput = document.getElementById("actual_win_number");
+  const displayValue = document.getElementById("actual_win_number_value");
+  const hiddenInput = document.getElementById("win_number");
+  
+  // Map the range slider position (1 to 5) to the allowed values
+  const selectedValue = allowedValues[rangeInput.value - 1];
 
   win_number = selectedValue;
   // Update the display value
   displayValue.textContent = selectedValue;
 
-hiddenInput.value = selectedValue;
+  hiddenInput.value = selectedValue;
 }
 
 // Set initial value on load
@@ -311,6 +311,9 @@ socket.onmessage = async function (e) {
     const data = JSON.parse(e.data);
     // console.log("F-E: client websocket parsed data:", data);
     if (data.type === "game_score") {
+      console.log(data)
+      point1 = data.player1_points;
+      point2 = data.player2_points;
       updateScoreDisplay(data.player1, player2, data.player1_points, data.player2_points);
     }
     if (data.type === "display_player") {
@@ -330,6 +333,16 @@ socket.onerror = function (e) {
     console.error("WebSocket error:", e);
 };
 
+  function displayForfaitMessage() {		
+    fetch(`/static/game/html/victory.html`)
+    .then((response) => response.text())
+    .then((html) => {
+      document.getElementById("app").innerHTML = html;
+      const winnerMessage = document.getElementById('winnerMessage');
+      winnerMessage.textContent = `Win by Forfeit`;
+    });
+  }
+
   function checkWinCondition(username, username2, player1Points, player2Points) {
     if (player1Points >= win_number) {
       fetch(`/static/game/html/victory.html`)
@@ -346,7 +359,7 @@ socket.onerror = function (e) {
           displayWinnerMessage(username2);
         });
     }
-  }
+}
 
 		function displayWinnerMessage(winner) {		
 			// Sélectionner l'élément du message de victoire
