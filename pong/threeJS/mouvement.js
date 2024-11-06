@@ -226,10 +226,11 @@ export default class Pong {
         }
     }
 
-    sendDataToScore() {
+    sendDataToScore(winner_username) {
         const data = {
             player1_points: this.score[0],
             player2_points: this.score[1],
+            winner: winner_username
         };
         fetch(`/api/game/sessions/${this.id}/update_score/`, {
             method: 'POST',

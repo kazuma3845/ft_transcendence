@@ -3,7 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import logging
 from .calcul import GameCalculator
 import asyncio
-
+from django.utils import timezone
+from asgiref.sync import sync_to_async
 
 logger = logging.getLogger(__name__)
 calculators = {}
@@ -65,21 +66,56 @@ class GameConsumer(AsyncWebsocketConsumer):
             await self.close()  # Fermer la connexion WebSocket en cas d'erreur
 
     async def disconnect(self, close_code):
-        if hasattr(self.calculator, 'game_task'):
+        try:
+            # Annuler la tâche de la boucle de jeu
+            if hasattr(self.calculator, 'game_task'):
+                self.calculator.game_task.cancel()
+
+            # Envoyer un message de déconnexion
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
-                    'type': f"player_disconnected",
+                    'type': "player_disconnected",
                     'message': "Player has disconnected the game",
                 }
             )
-            # await sleep(1)
-            self.calculator.game_task.cancel()
-        
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+
+            # Importer GameSession localement
+            from .models import GameSession
+
+            # Utiliser sync_to_async pour la requête de base de données
+            try:
+                session = await sync_to_async(GameSession.objects.get)(id=self.session_id)
+                session.end_time = timezone.now()  # Définir l'heure actuelle
+                await sync_to_async(session.save)()  # Sauvegarder les modifications de manière asynchrone
+                logger.info(f"GameSession {self.session_id} end_time mis à jour")
+            except GameSession.DoesNotExist:
+                logger.error(f"GameSession {self.session_id} introuvable")
+
+            # Retirer le consommateur du groupe
+            await self.channel_layer.group_discard(
+                self.room_group_name,
+                self.channel_name
+            )
+        except Exception as e:
+            logger.error(f"Erreur lors de la déconnexion pour la session {self.session_id}: {e}")
+
+    # async def disconnect(self, close_code):
+    #     if hasattr(self.calculator, 'game_task'):
+    #         await self.channel_layer.group_send(
+    #             self.room_group_name,
+    #             {
+    #                 'type': f"player_disconnected",
+    #                 'message': "Player has disconnected the game",
+    #             }
+    #         )
+    #         # await sleep(1)
+    #         self.calculator.game_task.cancel()
+
+    #     await self.channel_layer.group_discard(
+    #         self.room_group_name,
+    #         self.channel_name
+    #     )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -163,7 +199,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def update_position(self, event):
         content = event['content']
-        
+
         # Envoyer les positions mises à jour aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'update_position',
@@ -172,7 +208,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def player_disconnected(self, event):
         content = event['message']
-        
+
         # Envoyer les positions mises à jour aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'player_disconnected',

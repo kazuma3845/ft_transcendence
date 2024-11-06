@@ -36,6 +36,7 @@ export default class WebSocketModule {
                 }
                 if (data.type === 'player_disconnected') {
                     if (this.pong.score[0] != this.pong.winScore && this.pong.score[1] != this.pong.winScore)
+                        this.pong.sendDataToScore();
                         showWinScreen(this.pong.player, "win the game by forfeit!", this.pong.score[0], this.pong.score[1], true);
                 }
             } catch (error) {

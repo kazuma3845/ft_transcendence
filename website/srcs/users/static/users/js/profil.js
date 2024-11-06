@@ -789,3 +789,27 @@ function initializeTooltips() {
     new bootstrap.Tooltip(tooltipTriggerEl);
   });
 }
+
+async function getUsername(userId) {
+  try {
+      // Faire une requête GET à l'API
+      const response = await fetch(`/api/users/profiles/${userId}/`);
+
+      // Vérifier si la réponse est correcte
+      if (!response.ok) {
+          throw new Error(`Erreur lors de la récupération du profil: ${response.status}`);
+      }
+
+      // Convertir la réponse en JSON
+      const data = await response.json();
+
+      // Extraire le nom d'utilisateur
+      const username = data.user.username;
+      console.log("Nom d'utilisateur:", username);
+
+      // Retourner le nom d'utilisateur
+      return username;
+  } catch (error) {
+      console.error("Erreur:", error);
+  }
+}

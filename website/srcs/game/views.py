@@ -168,7 +168,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         session = self.get_object()
         player1_points = request.data.get('player1_points')
         player2_points = request.data.get('player2_points')
-        end_time = request.data.get('end_time')
+        winner = request.data.get('winner')
 
         if player1_points is not None:
             session.player1_points = int(player1_points)
@@ -176,17 +176,15 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         if player2_points is not None:
             session.player2_points = int(player2_points)
 
-        if end_time is not None:
-            parsed_end_time = parse_datetime(end_time)
-            if parsed_end_time:
-                session.end_time = parsed_end_time
-            else:
-                return Response({
-                    'error': 'Invalid date format for end_time.'
-                }, status=status.HTTP_400_BAD_REQUEST)
 
+        # Vérifier si un joueur a atteint le nombre de points pour gagner
         # Sauvegarder la session mise à jour
         session.save()
+
+        if winner is not None:
+            # Appeler set_winner avec player1 comme gagnant
+            request.data['winner'] = winner  # Mettre l'ID de player1 dans request.data
+            self.set_winner(request, pk)
 
         # Envoyer les nouvelles informations via WebSocket
         channel_layer = get_channel_layer()
@@ -235,6 +233,43 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Sérialiser les données
         serializer = self.get_serializer(sessions, many=True)
 
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], url_path='set_winner')
+    def set_winner(self, request, pk=None):
+        session = self.get_object()
+
+        # Récupérer le gagnant à partir du username passé dans la requête
+        winner_username = request.data.get('winner')
+
+        if not winner_username:
+            return Response({'error': 'Le nom d\'utilisateur du gagnant est requis'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Obtenir l'instance de l'utilisateur
+            winner = User.objects.get(username=winner_username)
+        except User.DoesNotExist:
+            return Response({'error': 'Utilisateur non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Définir le gagnant et l'heure de fin de la session
+        session.winner = winner
+        session.end_time = timezone.now()  # Utilise l'heure actuelle
+        session.save()
+
+        # Vérifier si la session fait partie d'un tournoi
+        if session.tour:
+            tournament = session.tour
+            # Si game_1_1 est la session actuelle, mettre à jour player1 de game_2
+            if tournament.game_1_1 == session:
+                tournament.game_2.player1 = winner
+                tournament.game_2.save()
+            # Si game_1_2 est la session actuelle, mettre à jour player2 de game_2
+            elif tournament.game_1_2 == session:
+                tournament.game_2.player2 = winner
+                tournament.game_2.save()
+
+        # Sérialiser la session mise à jour
+        serializer = GameSessionSerializer(session)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GameMoveViewSet(viewsets.ModelViewSet):
