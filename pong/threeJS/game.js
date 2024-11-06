@@ -148,6 +148,7 @@ function registerScores(forfeit, winner) {
         winner: winner,
         forfeit: forfeit,
     };
+    pong.sendDataToScore(winner)
     console.log("Game Data: ", gameData)
     const fetchOptions = {
         method: 'POST',

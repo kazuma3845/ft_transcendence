@@ -256,13 +256,13 @@ async function updateTree(tourId) {
     if (tour.game_1_1.winner) {
         let winner1 = document.querySelector("#winner1 text");
         if (winner1)
-            winner1.innerHTML = tour.game_1_1.winner;
+            winner1.innerHTML = await getUsername(tour.game_1_1.winner);
     }
 
     if (tour.game_1_2.winner) {
         let winner2 = document.querySelector("#winner2 text");
         if (winner2)
-            winner2.innerHTML = tour.game_1_2.winner;
+            winner2.innerHTML = await getUsername(tour.game_1_2.winner);
     }
 
     if (tour.game_2.start_time){

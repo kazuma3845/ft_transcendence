@@ -1,4 +1,6 @@
-let blockedUsers;
+let blockedUsers = [];
+
+let activeConversationId = 0;
 
 function updateBlockedUsers() {
     if (!blockedUsers)
@@ -213,9 +215,8 @@ function loadChat() {
         });
     })
     .catch(error => console.error('Erreur lors du chargement du chat:', error));
-}
+} // Variable globale pour stocker l'ID de la conversation active
 
-let activeConversationId = 0;  // Variable globale pour stocker l'ID de la conversation active
 function getActiveConversationId() {
     return activeConversationId;  // Retourner l'ID de la conversation active
 }
@@ -305,8 +306,10 @@ function loadMessages(conversationId) {
 
                     messages.forEach(message => {
                         const messageItem = document.createElement('div');
-                        const isUserMessage = message.sender === currentUser;
-
+                        const isUserMessage = message.sender === currentUser; // Le nom d'utilisateur de l'expéditeur
+                        if (blockedUsers.includes(message.sender)) {
+                            return;  // Ne pas traiter ce message
+                        }
                         // Ajout des classes pour alignement
                         messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
 
@@ -384,6 +387,47 @@ function displayNewMessage(data) {
     messagesList.scrollTop = messagesList.scrollHeight;
 }
 
+function displayInvitation(data) {
+    const messagesList = document.getElementById('chat-messages');
+
+    const messageItem = document.createElement('div');
+
+    // Vérifier si l'utilisateur actuel est l'expéditeur
+    const isUserMessage = data.sender === currentUser;
+
+    // Ajout des classes CSS en fonction de l'expéditeur
+    messageItem.classList.add('d-flex', isUserMessage ? 'justify-content-end' : 'justify-content-start');
+
+    const messageContent = document.createElement('div');
+
+    // Ajouter des styles en fonction de l'expéditeur (vert pour l'utilisateur, autre couleur pour les autres)
+    messageContent.classList.add('p-2', 'mb-1', 'rounded-3', isUserMessage ? 'bg-success' : 'bg-body-tertiary');
+
+    // Vérifier si le message contient une invitation
+    if (data.invitation) {
+        const invitationLink = document.createElement('a');
+        invitationLink.href = `/#game?sessionid=${data.invitation}`;  // Créer l'URL de l'invitation
+        invitationLink.textContent = "Rejoindre la partie";  // Texte du lien
+
+        // Optionnel : Si vous souhaitez utiliser un gestionnaire de clic
+        invitationLink.addEventListener('click', function(event) {
+            event.preventDefault();  // Empêche le comportement par défaut du lien
+            window.location.href = `/#game?sessionid=${data.invitation}`;
+        });
+
+        messageContent.textContent = "Invitation à une ";
+        messageContent.appendChild(invitationLink);
+    } else {
+        // Si ce n'est pas une invitation, afficher le contenu comme un message normal
+        messageContent.textContent = data.message;
+    }
+
+    messageItem.appendChild(messageContent);
+    messagesList.appendChild(messageItem);
+
+    // Scroller automatiquement en bas de la zone de messages
+    messagesList.scrollTop = messagesList.scrollHeight;
+}
 // ------------------------>> WEBSOCKET
 
 let socket;
@@ -418,7 +462,6 @@ function connectWebSocket() {
             updateTree(data.content.tour)
         }
         if (data.type === "upload_message") {
-            console.log("data.content : ", data.content)
             if (data.content.tour)
                 updateTree(data.content.tour)
             const conversationId = data.content.conversation_id;  // Récupérer l'ID de la conversation
@@ -437,7 +480,16 @@ function connectWebSocket() {
 			// loadMessages(conversationId);
         }
         else if (data.type === "upload_invitation") {
-            console.log(data);
+            const conversationId = data.content.conversation_id;
+            const messageSender = data.content.sender;  // Le nom d'utilisateur de l'expéditeur
+            if (blockedUsers.includes(messageSender)) {
+                console.log(`Message de ${messageSender} bloqué parmis ${blockedUsers}`);
+                return;  // Ne pas traiter ce message
+            }
+            if (activeConversationId === conversationId)
+            {
+                displayInvitation(data.content);
+            }
         }
         else {
             console.log(`Type de message non géré : ${data.type}`);

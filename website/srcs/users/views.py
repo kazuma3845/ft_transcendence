@@ -26,11 +26,12 @@ from .serializers import UserProfileSerializer, UserSerializer
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from rest_framework.permissions import IsAuthenticated
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
     def create(self, request, *args, **kwargs):
