@@ -343,7 +343,7 @@ socket.onopen = async function (e) {
         displayPlayer(data.player1, data.player2);
     }
     if (data.type === "player_disconnected") {
-      if (win_number !== point1 && win_number !== point2)
+      if (win_number !== point1 && win_number !== point2 && (player2 !== "bot" || player2 !== "LocalPlayer"))
         displayForfaitMessage();
   }
     } catch (error) {
