@@ -404,8 +404,6 @@ socket.onopen = async function (e) {
       player1ScoreElem.textContent = player1Points;
       player2ScoreElem.textContent = player2Points;
       checkWinCondition(username, username2, player1Points, player2Points);
-    } else {
-      console.error("Score elements not found in the DOM");
     }
   }
 
