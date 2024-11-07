@@ -333,7 +333,6 @@ socket.onopen = async function (e) {
     const data = JSON.parse(e.data);
     // console.log("F-E: client websocket parsed data:", data);
     if (data.type === "game_score") {
-      console.log(data)
       point1 = data.player1_points;
       point2 = data.player2_points;
       updateScoreDisplay(data.player1, player2, data.player1_points, data.player2_points);
@@ -343,7 +342,7 @@ socket.onopen = async function (e) {
         displayPlayer(data.player1, data.player2);
     }
     if (data.type === "player_disconnected") {
-      if (win_number !== point1 && win_number !== point2 && (player2 !== "bot" || player2 !== "LocalPlayer"))
+      if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
         displayForfaitMessage();
   }
     } catch (error) {
@@ -370,7 +369,6 @@ socket.onopen = async function (e) {
   }
 
   function checkWinCondition(username, username2, player1Points, player2Points) {
-    console.log(username, username2, player1Points, player2Points, win_number)
     if (player1Points >= win_number) {
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
