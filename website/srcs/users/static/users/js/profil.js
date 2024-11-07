@@ -269,7 +269,7 @@ function loadProfil(params) {
 
       const username = getRequestedUsername(params);
       const user = await fetchUserProfileInfo(username);
-      console.log("Le user id demandé est: ", user.user.id)
+      console.log("Le user id demandé est: ", user.user.id);
       if (!user) {
         loadHome();
       } else {
@@ -358,11 +358,10 @@ function createProfilBlock(user) {
 }
 
 async function loadProfileFriendsButtons(data) {
-
   username = data.user.username;
   document.getElementById("edit-profile").style.display = "none";
 
-  if (username != 'Bot' && username != 'LocalPlayer') {
+  if (username != "Bot" && username != "LocalPlayer") {
     let currentlyFriends = false;
     let friendship_id;
     currentUserInfo.friends.forEach((friend) => {
@@ -386,8 +385,7 @@ async function loadProfileFriendsButtons(data) {
           sendFriendRequest(data.user.id);
         });
     }
-  }
-  else {
+  } else {
     document.getElementById("remove-friend-btn").style.display = "none";
     document.getElementById("send-friend-request-btn").style.display = "none";
   }
@@ -498,8 +496,7 @@ async function acceptFriendRequest(requestId) {
 }
 
 async function fetchUserInfoLight(username) {
-  if (username == 'Aucun' || username == 'None')
-    return username
+  if (username == "Aucun" || username == "None") return username;
   const response = await fetch(
     `/api/users/profiles/info-user/?username=${username}`
   );
@@ -644,27 +641,67 @@ function createWinrateChart(wins, losses) {
   });
 }
 
-function createLeaderboard(user) {
-  //getLeaderBoard()
+async function getLeaderBoard() {
+  const response = await fetch("api/game/sessions");
+  if (!response.ok) {
+    console.log("Error fetching games", response.status);
+  } else {
+    const allGames = await response.json();
+    console.log("Fetched games: ", allGames);
+
+    //On chope un objet, acc = accumulateur temp
+    const winnerCounts = allGames.reduce((acc, game) => {
+      const winnerName = game.winner;
+      if (winnerName) {
+        if (!acc[winnerName]) {
+          acc[winnerName] = 0;
+        }
+        acc[winnerName]++;
+      }
+      return acc;
+    }, {});
+
+    const leaderboard = Object.keys(winnerCounts) //On transforme en tableau puis on le trie
+      .map((key) => {
+        return { username: key, wins: winnerCounts[key] };
+      })
+      .sort((a, b) => b.wins - a.wins);
+
+    console.log("Leaderboard: ", leaderboard);
+
+    // On ajoute un rank a tous pour l'extraire plus facilement apres
+    leaderboard.forEach((player, index) => {
+      player.rank = index + 1;
+    });
+    return leaderboard;
+  }
+}
+
+async function createLeaderboard(user) {
+  const leaderboardData = await getLeaderBoard();
   const leaderboardContainer = document.getElementById("top-three-leaderboard");
   leaderboardContainer.innerHTML = "";
-  leaderboardData = [];
   if (leaderboardData.length === 0) {
     leaderboardContainer.innerHTML = "<p>No leaderboard data available.</p>";
     return;
   }
 
-  leaderboardData.slice(0, 3).forEach((player, index) => {
+  const topThreeData = leaderboardData.slice(0, 3);
+  const playerInfos = await Promise.all(
+    topThreeData.map((player) => fetchUserInfoLight(player.username))
+  );
+
+  playerInfos.forEach((infoUser, index) => {
+    const player = topThreeData[index];
     const playerDiv = document.createElement("div");
-    playerDiv.classList.add("d-flex", "align-items-center", "mb-2");
-
-    const avatarSize = index === 0 ? "70px" : index === 1 ? "60px" : "50px";
-
+    playerDiv.classList.add("d-flex", "align-items-center");
     playerDiv.innerHTML = `
-      <img src="${player.avatar_url}" class="rounded-circle" style="width: ${avatarSize}; height: ${avatarSize}; margin-right: 10px;">
+      <a href="#profile/?username=${player.username}">
+        <img src="${infoUser.avatar}" class="rounded-circle avatar-leaderboard">
+      </a>
       <div>
-        <strong>${player.username}</strong>
-        <p>Points: ${player.score}</p>
+        <h3 class="username-leaderboard">${player.username}</h3>
+        <p>Points: ${player.wins}</p>
       </div>
     `;
 
@@ -672,16 +709,31 @@ function createLeaderboard(user) {
   });
 
   const currentRankingContainer = document.getElementById("current-ranking");
-  const userRank = leaderboardData.find(
+  const userRankIndex = leaderboardData.findIndex(
     (player) => player.username === user.user.username
   );
 
-  if (userRank && userRank.rank > 3) {
-    currentRankingContainer.innerHTML = `
-      <p>Your Current Rank: ${userRank.rank} (Points: ${userRank.score})</p>
-    `;
+  if (userRankIndex !== -1) {
+    const rank = leaderboardData[userRankIndex].rank;
+    console.log("Current user rank:", rank);
+    switch (rank) {
+      case 1:
+        msg = "You're in first place! 🥇";
+        break;
+      case 2:
+        msg = "Second place, great job!🥈";
+        break;
+      case 3:
+        msg = "Third place, good effort!🥉";
+        break;
+      default:
+        msg = `Thanks for participating! (${rank})`;
+        break;
+    }
+    currentRankingContainer.innerHTML = `<p>${msg}</p>`;
   } else {
-    currentRankingContainer.innerHTML = `<p>You are in the Top 3!</p>`;
+    console.log("User not found in the leaderboard");
+    currentRankingContainer.innerHTML = `<p>User not found in the leaderboard</p>`;
   }
 }
 
@@ -792,24 +844,26 @@ function initializeTooltips() {
 
 async function getUsername(userId) {
   try {
-      // Faire une requête GET à l'API
-      const response = await fetch(`/api/users/profiles/${userId}/`);
+    // Faire une requête GET à l'API
+    const response = await fetch(`/api/users/profiles/${userId}/`);
 
-      // Vérifier si la réponse est correcte
-      if (!response.ok) {
-          throw new Error(`Erreur lors de la récupération du profil: ${response.status}`);
-      }
+    // Vérifier si la réponse est correcte
+    if (!response.ok) {
+      throw new Error(
+        `Erreur lors de la récupération du profil: ${response.status}`
+      );
+    }
 
-      // Convertir la réponse en JSON
-      const data = await response.json();
+    // Convertir la réponse en JSON
+    const data = await response.json();
 
-      // Extraire le nom d'utilisateur
-      const username = data.user.username;
-      console.log("Nom d'utilisateur:", username);
+    // Extraire le nom d'utilisateur
+    const username = data.user.username;
+    console.log("Nom d'utilisateur:", username);
 
-      // Retourner le nom d'utilisateur
-      return username;
+    // Retourner le nom d'utilisateur
+    return username;
   } catch (error) {
-      console.error("Erreur:", error);
+    console.error("Erreur:", error);
   }
 }

@@ -43,6 +43,9 @@
 
 #nemesis-avatar {
   aspect-ratio: 1 / 1;
+  border: solid;
+  border-color: white;
+  border-width: 2px;
 }
 
 .friend-request-icons {
@@ -93,6 +96,16 @@
   border-width: 3px;
 }
 
+.avatar-leaderboard {
+  width: 4.5rem;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border: solid;
+  border-color: white;
+  border-width: 2px;
+  margin-right: 1rem;
+}
+
 /*---------------- RIGHT PART ------------*/
 
 #right-profile-block h2 {
@@ -130,6 +143,7 @@
   color: rgb(49 52 140 / 74%);
 }
 
+#current-ranking p,
 #top-three-leaderboard p,
 #user-match-history td {
   color: #ffffff;
@@ -139,6 +153,12 @@
 #username {
   font-size: 3.5vw;
   color: rgba(32, 40, 133, 0.863);
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+.username-leaderboard {
+  color: rgb(49 52 140 / 74%);
   text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.8);
   font-weight: 400;
 }
