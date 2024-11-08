@@ -1,7 +1,97 @@
 .chat-messages {
-	font-size: 20px;
+  font-size: 20px;
 }
 
+#new-conversation-btn {
+  border-radius: 1rem;
+  border-color: white;
+  border-width: medium;
+  font-family: "Handjet", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 350;
+  font-variation-settings: "ELGR" 1, "ELSH" 1;
+  font-size: 1.3rem;
+  background: #585eb6;
+  color: white;
+  transition: background 0.5s ease;
+}
+
+#new-conversation-btn:hover {
+  border-radius: 1rem;
+  border-color: #585eb6;
+  border-width: large;
+  font-weight: 500;
+  background: transparent;
+  color: #585eb6;
+}
+
+.user-conversation {
+  border-radius: 1rem;
+  border-color: #585eb6;
+  border-width: medium;
+  font-family: "Handjet", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 350;
+  font-variation-settings: "ELGR" 1, "ELSH" 1;
+  font-size: 1.3rem;
+  background: transparent;
+  color: #585eb6;
+  transition: background 0.5s ease;
+}
+
+.user-conversation:hover {
+  border-color: white;
+  font-variation-settings: "" 1, "ELSH" 1;
+  background: #585eb6;
+  color: white;
+  transition: background 0.5s ease;
+}
+
+#conversation-div {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.border-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-animation::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 0;
+  background: white;
+  animation: revealBorder 2s ease forwards;
+}
+
+@keyframes revealBorder {
+  to {
+    height: 100%; /* Anime la hauteur jusqu'à 100% de celle du parent */
+  }
+}
+
+#chat-messages {
+  height: 82%;
+  overflow-y: auto;
+}
+
+#chat-messages::-webkit-scrollbar {
+  display: none;
+}
+
+#message-input {
+  margin-right: 1em;
+  border-radius: 1em;
+}
+
+#send-message {
+  font-size: 1.2rem;
+}
 /* Styles pour la modal.modal {
     position: fixed;
     z-index: 1;
@@ -14,8 +104,6 @@
     align-items: center;
 }   */
 
-
-
 /* .modal-content {
     background-color: white;
     margin: auto;
@@ -25,8 +113,8 @@
 /* } */
 
 .close {
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }

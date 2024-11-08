@@ -1,96 +1,168 @@
-<div class="container-fluid h-100 ">
-	<div class="row h-100">
+<div class="container-fluid h-100">
+  <div class="row h-100">
+    <!-- Liste des discussions (droite) -->
+    <div class="col-3 p-3 border-animation">
+      <div class="search-bar mb-3">
+        <!-- <button class="btn btn-outline-secondary w-100" onclick="openSearchUserModal()">Rechercher utilisateur</button> -->
+        <button
+          id="new-conversation-btn"
+          class="btn w-100"
+          onclick="loadConversationModal()"
+        >
+          New chat
+        </button>
+      </div>
 
-	<!-- Liste des discussions (droite) -->
-	<div class="col-3 bg-light p-3">
-		<div class="search-bar mb-3">
-			<!-- <button class="btn btn-outline-secondary w-100" onclick="openSearchUserModal()">Rechercher utilisateur</button> -->
-			<button class="btn btn-primary w-100 mt-2" onclick="openSearchUserModal()">Nouvelle discussion</button>		</div>
+      <div class="discussion-list">
+        <h5>Chat with</h5>
+        <!-- Liste des discussions existantes ici -->
+      </div>
+    </div>
+    <!-- Zone de chat active (gauche) -->
+    <div
+      id="chat_window"
+      class="col-9 bg-lightblue p-3"
+      style="display: none; height: 100%"
+    >
+      <div
+        class="chat-header mb-3 d-flex justify-content-between align-items-center"
+      >
+        <h5 id="chat_title">Chatting with</h5>
+        <div id="interaction-chat">
+          <button
+            id="invite-user-btn"
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#gameModal"
+          >
+            Play together
+          </button>
+          <button
+            id="block-user-btn"
+            class="btn btn-danger"
+            onclick="toggleBlockUser()"
+            style="display: none"
+          >
+            Block
+          </button>
+        </div>
+        <div id="interaction-tour">
+          <button id="lobby-btn" class="btn btn-primary" onclick="goLobby()">
+            Go to lobby
+          </button>
+        </div>
+      </div>
 
-		<div class="discussion-list">
-			<h5>Discussion en cours</h5>
-			<!-- Liste des discussions existantes ici -->
-		</div>
-	</div>
-	<!-- Zone de chat active (gauche) -->
-	<div id="chat_window" class="col-9 bg-lightblue p-3" style="display: none;">
-		<div class="chat-header mb-3 d-flex justify-content-between align-items-center">
-			<h5 id="chat_title">Discussion avec </h5>
-			<div id="interaction-chat">
-				<button id="invite-user-btn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gameModal">Inviter à une partie</button>
-				<button id="block-user-btn" class="btn btn-danger" onclick="toggleBlockUser()" style="display: none;">Bloquer</button>
-			</div>
-			<div id="interaction-tour">
-				<button id="lobby-btn" class="btn btn-primary" onclick="goLobby()">Go to lobby</button>
-			</div>
-		</div>
+      <div class="chat-messages" id="chat-messages">
+        <!-- Messages échangés -->
+      </div>
 
-		<div class="chat-messages mb-3" id="chat-messages" style="height: 60vh; overflow-y: auto;">
-		  <!-- Messages échangés -->
-		</div>
-
-		<!-- Input pour écrire un nouveau message -->
-		<div class="chat-input">
-		  <div class="input-group">
-			<input type="text" class="form-control" placeholder="Écrire un message" id="message-input">
-			<div class="input-group-append">
-			  <button class="btn btn-success" id="send-message">Envoyer</button>
-			</div>
-		  </div>
-		</div>
-	</div>
-
-	</div>
+      <!-- Input pour écrire un nouveau message -->
+      <div class="chat-input">
+        <div class="input-group d-flex flex-row justify-content-between">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Write a message"
+            id="message-input"
+          />
+          <div class="input-group-append">
+            <button class="btn btn-lg custom-btn btn-outline-light" id="send-message">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-	<!-- Modal structure -->
-	<div id="newConversationModal" class="modal">
-		<div class="modal-content">
-			<span class="close" onclick="closeSearchUserModal()">&times;</span> <!-- Bouton pour fermer la modal -->
-			<h3>Nouvelle Discussion</h3>
-			<input type="text" id="searchUserInput" placeholder="Rechercher un utilisateur..." oninput="searchUser()">
-			<ul id="searchResults"></ul> <!-- Affichage des résultats de la recherche -->
-			<button id="start-conversation-btn" class="btn btn-primary" onclick="startConversation()" style="display: none;">Démarrer la conversation</button>
-		</div>
-	</div>
 
-	<div class="modal fade" id="gameModal" tabindex="-1" aria-labelledby="gameModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-		  <div class="modal-content">
-			<div class="modal-header">
-			  <h5 class="modal-title" id="gameModalLabel">New Game Settings</h5>
-			  <button
-				type="button"
-				class="btn-close"
-				data-bs-dismiss="modal"
-				aria-label="Close"
-			  ></button>
-			</div>
-			<div class="modal-body">
-			  <!-- Game form goes here -->
-			  <div
-				class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
-			  >
-				<form method="POST" id="game-form">
-				  <label class="form-label" for="move_speed_ball">Ball Move Speed: <span id="move_speed_ball_value">3</span></label><br />
-				  <input type="range" id="move_speed_ball" name="move_speed_ball" min="1" max="5" value="3" class="w-100" oninput="updateValue('move_speed_ball_value', this.value)" />
-				  <br /><br />
+<div
+  class="modal fade"
+  id="gameModal"
+  tabindex="-1"
+  aria-labelledby="gameModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="gameModalLabel">New Game Settings</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Game form goes here -->
+        <div
+          class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
+        >
+          <form method="POST" id="game-form">
+            <label class="form-label" for="move_speed_ball"
+              >Ball Move Speed: <span id="move_speed_ball_value">3</span></label
+            ><br />
+            <input
+              type="range"
+              id="move_speed_ball"
+              name="move_speed_ball"
+              min="1"
+              max="5"
+              value="3"
+              class="w-100"
+              oninput="updateValue('move_speed_ball_value', this.value)"
+            />
+            <br /><br />
 
-				  <label class="form-label" for="move_speed_paddle">Paddle Move Speed: <span id="move_speed_paddle_value">4</span></label><br />
-				  <input type="range" id="move_speed_paddle" name="move_speed_paddle" min="1" max="10" value="4" class="w-100" oninput="updateValue('move_speed_paddle_value', this.value)" />
-				  <br /><br />
+            <label class="form-label" for="move_speed_paddle"
+              >Paddle Move Speed:
+              <span id="move_speed_paddle_value">4</span></label
+            ><br />
+            <input
+              type="range"
+              id="move_speed_paddle"
+              name="move_speed_paddle"
+              min="1"
+              max="10"
+              value="4"
+              class="w-100"
+              oninput="updateValue('move_speed_paddle_value', this.value)"
+            />
+            <br /><br />
 
-				  <!-- <label class="form-label" for="bot_difficulty">Bot Difficulty: <span id="bot_difficulty_value">5</span></label><br />
+            <!-- <label class="form-label" for="bot_difficulty">Bot Difficulty: <span id="bot_difficulty_value">5</span></label><br />
 				  <input type="range" id="bot_difficulty" name="bot_difficulty" min="1" max="10" value="5" class="w-100" oninput="updateValue('bot_difficulty_value', this.value)" />
 				  <br /><br /> -->
 
-				  <label class="form-label" for="actual_win_number">Choose a winning number: <span id="actual_win_number_value">5</span></label><br />
-				  <input type="range" id="actual_win_number" name="actual_win_number" min="1" max="6" step="1" value="3" oninput="updateWinNumber()" class="w-100" />
-				  <input type="hidden" id="win_number" name="win_number" value="5" />
-				  <br /><br />
-				  <button class="custom-btn btn btn-outline-light btn-lg w-100" data-bs-dismiss="modal" data-bs-target="#gameModal" type="submit">Create</button>
-				</form>
-			  </div>
-			</div>
-		  </div>
-		</div>
-	  </div>
+            <label class="form-label" for="actual_win_number"
+              >Choose a winning number:
+              <span id="actual_win_number_value">5</span></label
+            ><br />
+            <input
+              type="range"
+              id="actual_win_number"
+              name="actual_win_number"
+              min="1"
+              max="6"
+              step="1"
+              value="3"
+              oninput="updateWinNumber()"
+              class="w-100"
+            />
+            <input type="hidden" id="win_number" name="win_number" value="5" />
+            <br /><br />
+            <button
+              class="custom-btn btn btn-outline-light btn-lg w-100"
+              data-bs-dismiss="modal"
+              data-bs-target="#gameModal"
+              type="submit"
+            >
+              Create
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

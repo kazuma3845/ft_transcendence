@@ -1,0 +1,43 @@
+<div
+  class="modal fade"
+  id="conversationModal"
+  tabindex="-1"
+  aria-labelledby="conversationModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newConversationLabel">
+          New chat
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <input
+          type="text"
+          id="searchUserInput"
+          class="form-control"
+          placeholder="Search user..."
+          oninput="searchUser()"
+        />
+        <ul id="searchResults" class="list-group d-flex flex-column p-3"></ul>
+      </div>
+      <div class="modal-footer d-flex justify-content-center">
+        <button
+          id="start-conversation-btn"
+          class="custom-btn btn btn-outline-light btn-lg"
+          onclick="startConversation()"
+          style="display: none; font-size: 1.5rem"
+        >
+          Start chatting
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
