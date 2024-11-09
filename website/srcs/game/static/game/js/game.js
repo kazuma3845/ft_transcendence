@@ -364,7 +364,7 @@ socket.onopen = async function (e) {
     .then((html) => {
       document.getElementById("app").innerHTML = html;
       const winnerMessage = document.getElementById('winnerMessage');
-      winnerMessage.textContent = `Win by Forfeit`;
+      winnerMessage.textContent = `One player a left the game`;
     });
   }
 

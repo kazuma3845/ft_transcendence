@@ -100,22 +100,6 @@ class GameConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f"Erreur lors de la déconnexion pour la session {self.session_id}: {e}")
 
-    # async def disconnect(self, close_code):
-    #     if hasattr(self.calculator, 'game_task'):
-    #         await self.channel_layer.group_send(
-    #             self.room_group_name,
-    #             {
-    #                 'type': f"player_disconnected",
-    #                 'message': "Player has disconnected the game",
-    #             }
-    #         )
-    #         # await sleep(1)
-    #         self.calculator.game_task.cancel()
-
-    #     await self.channel_layer.group_discard(
-    #         self.room_group_name,
-    #         self.channel_name
-    #     )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
