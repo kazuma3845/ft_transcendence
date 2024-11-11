@@ -120,7 +120,7 @@
   height: 50%;
 }
 #lower-stats-block {
-  height: 40%;
+  height: 35%;
   background-color: rgba(196, 17, 17, 0);
 }
 .upper-blocks {
@@ -212,9 +212,6 @@
   text-shadow: none;
 }
 
-#block-user-btn i:hover {
-  color: rgba(223, 59, 59, 0.45);
-}
 
 #remove-friend-btn i:hover,
 #send-friend-request-btn i:hover {
