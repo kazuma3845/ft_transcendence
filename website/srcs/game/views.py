@@ -88,9 +88,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             return Response({"detail": "You are not a player in this game."}, status=status.HTTP_403_FORBIDDEN)
 
         if session.Multiplayer:
-            session.start_time = timezone.now()
-            session.save()
-
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f'game_{session.id}',
@@ -102,9 +99,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
             )
         # Si bot est activé, configurer le jeu contre le bot
         elif session.bot:
-            session.start_time = timezone.now()
-            session.save()
-
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f'game_{session.id}',
@@ -117,9 +111,6 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         # Vérifier si les deux joueurs ont démarré
         elif session.player1_started and session.player2_started:
-            session.start_time = timezone.now()
-            session.save()
-
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 f'game_{session.id}',
@@ -139,7 +130,9 @@ class GameSessionViewSet(viewsets.ModelViewSet):
                 }
             )
 
+
         # Sauvegarder les informations de démarrage dans la base de données
+        session.start_time = timezone.now()
         session.save()
 
         # Sérialiser la session et renvoyer les informations au frontend
@@ -227,8 +220,15 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         # Obtenir l'utilisateur courant
         current_user = request.user
 
-        # Filtrer les sessions où player2 est vide et player1 n'est pas l'utilisateur courant
-        sessions = GameSession.objects.filter(player2__isnull=True, bot=False, tour__isnull=True, Multiplayer=False).exclude(player1=current_user)
+    # Filtrer les sessions selon les critères demandés
+        sessions = GameSession.objects.filter(
+            player2__isnull=True,
+            bot=False,
+            tour__isnull=True,
+            Multiplayer=False,
+            start_time__isnull=False,  # start_time n'est pas null
+            end_time__isnull=True      # end_time est null
+        ).exclude(player1=current_user)
 
         # Sérialiser les données
         serializer = self.get_serializer(sessions, many=True)

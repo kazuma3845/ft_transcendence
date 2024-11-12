@@ -1,5 +1,17 @@
 # Ignorer les fichiers de configuration sensibles
-.website/.env
-.DS_Store
-.env
-venv
+**/.env
+
+# Ignorer les fichiers spécifiques à macOS
+**/.DS_Store
+
+# Ignorer les environnements virtuels
+**/venv/
+**/.venv/
+
+# Ignorer les dossiers de cache Python
+**/__pycache__/
+
+# Ignorer les dossiers node_modules
+**/node_modules/
+website/mycert.crt
+website/mykey.key
