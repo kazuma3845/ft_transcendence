@@ -341,10 +341,6 @@ socket.onopen = async function (e) {
         player2 = data.player2;
         displayPlayer(data.player1, data.player2);
     }
-    if (data.type === "player_disconnected") {
-      if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
-        displayForfaitMessage();
-  }
     } catch (error) {
       console.error("Error parsing message:", error);
     }
@@ -358,18 +354,13 @@ socket.onopen = async function (e) {
     console.error("WebSocket error:", e);
 };
 
-  function displayForfaitMessage() {		
-    fetch(`/static/game/html/victory.html`)
-    .then((response) => response.text())
-    .then((html) => {
-      document.getElementById("app").innerHTML = html;
-      const winnerMessage = document.getElementById('winnerMessage');
-      winnerMessage.textContent = `One player a left the game`;
-    });
+  function sleep(seconds) {
+    return new Promise(resolve => setTimeout(resolve, seconds * 1000));
   }
 
-  function checkWinCondition(username, username2, player1Points, player2Points) {
+  async function checkWinCondition(username, username2, player1Points, player2Points) {
     if (player1Points >= win_number) {
+      await sleep(0.2);
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
         .then((html) => {
@@ -377,6 +368,7 @@ socket.onopen = async function (e) {
           displayWinnerMessage(username);
         });
     } else if (player2Points >= win_number) {
+      await sleep(0.2);
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
         .then((html) => {
