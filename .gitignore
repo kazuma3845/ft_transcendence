@@ -13,3 +13,5 @@
 
 # Ignorer les dossiers node_modules
 **/node_modules/
+website/mycert.crt
+website/mykey.key
