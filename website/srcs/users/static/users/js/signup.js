@@ -42,12 +42,15 @@ function attachSignupFormSubmitListener() {
             displayErrorMessage(data.error);
           } else {
             await fetchCurrentUserInfo();
+            currentUser = currentUserInfo.user.username;
+            updateUsername();
             loadModal(
               "Signed Up Successfully",
               `Welcome ${currentUserInfo.user.username}, it's nice having you here ✨`
             );
-            window.location.href = "#profile";
             updateHeader();
+            window.location.href = "#profile";
+            router();
           }
         });
     });

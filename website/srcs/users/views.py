@@ -26,13 +26,19 @@ from .serializers import UserProfileSerializer, UserSerializer
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    # permission_classes = [IsAuthenticated]
 
+    def get_permissions(self):
+        if self.action in ['create', 'check_authentication', 'login_user']:
+            return [AllowAny()]
+        elif self.action in ['list']:  # Remplacez par l'action spécifique
+            return [IsAdminUser()]
+        return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
         username = request.data.get("username")

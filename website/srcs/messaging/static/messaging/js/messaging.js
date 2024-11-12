@@ -2,12 +2,14 @@ let blockedUsers = [];
 
 let activeConversationId = 0;
 
-function updateBlockedUsers() {
-  if (!blockedUsers) return;
-  fetch(`/api/messaging/conversations/blocked-users/`) // Endpoint pour récupérer les utilisateurs bloqués
-    .then((response) => response.json())
-    .then((data) => {
-      blockedUsers = data.blocked_users; // Stocker les utilisateurs bloqués dans une variable
+async function updateBlockedUsers() {
+    let isAuthenticated = await checkAuthentication();
+    if (!isAuthenticated)
+        return
+    fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
+    .then(response => response.json())
+    .then(data => {
+        blockedUsers = data.blocked_users;  // Stocker les utilisateurs bloqués dans une variable
     })
     .catch((error) =>
       console.error(
