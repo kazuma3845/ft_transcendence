@@ -210,11 +210,6 @@ footer p {
   height: 100vh;
 }
 
-nav {
-  height: 10vh;
-  max-height: 100px;
-}
-
 #app {
   flex: 1;
   overflow: auto;

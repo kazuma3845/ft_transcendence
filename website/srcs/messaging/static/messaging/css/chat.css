@@ -72,7 +72,6 @@
 }
 
 #chat-messages-div {
-  height: 89%;
   overflow-y: auto;
 }
 
@@ -131,4 +130,8 @@ h4 {
   background-color: #585eb6;
   color: aliceblue;
   border-color: aliceblue;
+}
+
+#chat_window{
+  height: 100%;
 }

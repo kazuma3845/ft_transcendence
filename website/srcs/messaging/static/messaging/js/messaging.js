@@ -296,8 +296,7 @@ function loadMessages(conversationId) {
   // console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
 
   if (activeConversationId === conversationId) {
-    chatWindow.style.display = "none";
-    activeConversationId = null;
+    activeConversationId == null;
     return;
   }
 
@@ -331,8 +330,8 @@ function loadMessages(conversationId) {
       }
 
       // Rendre visible la fenêtre de chat
-      chatWindow.style.display = "block";
-      // pour le bouton d invite
+      chatWindow.classList.remove("d-none");
+      
       attachGameFormSubmitListener(currentUser, otherParticipants[0], true);
       // Requête pour obtenir les messages
       fetch(`/api/messaging/conversations/${conversationId}/messages/`)

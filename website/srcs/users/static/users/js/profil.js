@@ -697,7 +697,9 @@ async function createLeaderboard(user) {
     playerDiv.classList.add("d-flex", "align-items-center");
     playerDiv.innerHTML = `
       <a href="#profile/?username=${player.username}">
-        <img src="${infoUser.avatar}" class="rounded-circle avatar-leaderboard">
+        <img src="${
+          infoUser.avatar ? infoUser.avatar : "/media/avatars/avatar.png"
+        } " class="rounded-circle avatar-leaderboard">
       </a>
       <div>
         <h3 class="username-leaderboard">${player.username}</h3>
