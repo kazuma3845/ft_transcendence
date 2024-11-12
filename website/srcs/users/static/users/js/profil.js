@@ -33,6 +33,15 @@ function loadEditProfileModal() {
 }
 
 function uploadImage(file, type) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  if (!allowedTypes.includes(file.type)) {
+    loadModal(
+      "Unauthorized file type 🚓",
+      "Allowed types are JPEG, PNG, WebP, and GIF."
+    );
+    return;
+  }
+
   const formData = new FormData();
   formData.append("image", file);
   formData.append("type", type);
@@ -47,9 +56,7 @@ function uploadImage(file, type) {
     .then(async (response) => {
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          `Error status: ${response.status} with message: ${errorData.message}`
-        );
+        throw new Error(errorData.message);
       }
       return response.json();
     })
@@ -62,7 +69,7 @@ function uploadImage(file, type) {
       }
     })
     .catch((error) => {
-      console.error("Erreur lors de l'upload de l'image:", error);
+      loadModal("File upload failed 🚨", `${error.message}`);
     });
 }
 
