@@ -318,14 +318,18 @@ function startWebSocket(sessionId) {
   this.pingInterval = null;
   const socket = new WebSocket(`/ws/game/sessions/${sessionId}/`);
 
+let point1 = 0
+let point2 = 0
+let player2 = null
+
 socket.onopen = async function (e) {
     const gameSession = await getSession(sessionId)
     console.log("GAMESESSION: ", gameSession)
     win_number = gameSession.win_number
+    point1 = gameSession.player1_points
+    point2 = gameSession.player2_points
     console.log("WebSocket connected.");
   };
-
-  let player2 = null
 
   socket.onmessage = async function (e) {
     // console.log('Message received:', e.data);
@@ -338,9 +342,14 @@ socket.onopen = async function (e) {
       updateScoreDisplay(data.player1, player2, data.player1_points, data.player2_points);
     }
     if (data.type === "display_player") {
-        player2 = data.player2;
-        displayPlayer(data.player1, data.player2);
+      player2 = data.player2;
+      player1 = data.player1;
+      displayPlayer(data.player1, data.player2);
     }
+    if (data.type === "disconnect_screen") {
+      if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
+        displayForfaitMessage(data.content == player1 ? player2 : player1);
+  }
     } catch (error) {
       console.error("Error parsing message:", error);
     }
@@ -353,6 +362,16 @@ socket.onopen = async function (e) {
   socket.onerror = function (e) {
     console.error("WebSocket error:", e);
 };
+
+  function displayForfaitMessage(Player_disconnect) {		
+    fetch(`/static/game/html/victory.html`)
+    .then((response) => response.text())
+    .then((html) => {
+      document.getElementById("app").innerHTML = html;
+      const winnerMessage = document.getElementById('winnerMessage');
+      winnerMessage.textContent = `${Player_disconnect} a left the game`;
+    });
+  }
 
   function sleep(seconds) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
