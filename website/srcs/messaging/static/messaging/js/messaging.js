@@ -331,7 +331,7 @@ function loadMessages(conversationId) {
 
       // Rendre visible la fenêtre de chat
       chatWindow.classList.remove("d-none");
-      
+
       attachGameFormSubmitListener(currentUser, otherParticipants[0], true);
       // Requête pour obtenir les messages
       fetch(`/api/messaging/conversations/${conversationId}/messages/`)
@@ -358,16 +358,17 @@ function loadMessages(conversationId) {
             );
 
             if (message.invitation) {
+              messageContent.classList.replace("chat-message", "invitation-message")
               const invitationLink = document.createElement("a");
               invitationLink.href = `/#game?sessionid=${message.invitation}`; // Créer l'URL
-              invitationLink.textContent = "partie"; // Texte du lien
-
+              invitationLink.textContent = "Join the game"; // Texte du lien
+              invitationLink.style.textDecoration = "none";
+              invitationLink.style.color = "inherit";
               // Optionnel : Si tu ne veux pas utiliser href, tu peux utiliser un gestionnaire d'événement de clic.
               invitationLink.addEventListener("click", function (event) {
                 event.preventDefault(); // Empêche le comportement par défaut du lien
                 window.location.href = `/#game?sessionid=${message.invitation}`;
               });
-              messageContent.textContent = "Rejoindre la ";
               messageContent.appendChild(invitationLink);
             }
             if (message.content) {
@@ -429,10 +430,8 @@ function displayNewMessage(data) {
 
   // Ajouter des styles en fonction de l'expéditeur (vert pour l'utilisateur, autre couleur pour les autres)
   messageContent.classList.add(
-    "p-2",
-    "mb-1",
-    "rounded-3",
-    isUserMessage ? "bg-success" : "bg-body-tertiary"
+    "chat-message",
+    isUserMessage ? "external-message" : "user-message"
   );
   messageContent.textContent = data.message;
 
@@ -461,10 +460,8 @@ function displayInvitation(data) {
 
   // Ajouter des styles en fonction de l'expéditeur (vert pour l'utilisateur, autre couleur pour les autres)
   messageContent.classList.add(
-    "p-2",
-    "mb-1",
-    "rounded-3",
-    isUserMessage ? "bg-success" : "bg-body-tertiary"
+    "invitation-message",
+    isUserMessage ? "external-message" : "user-message"
   );
 
   // Vérifier si le message contient une invitation

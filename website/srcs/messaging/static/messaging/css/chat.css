@@ -114,10 +114,17 @@ h4 {
 }
 
 .chat-message {
+  padding: 0.5em;
+  margin-bottom: 5px;
+  border-radius: 6px;
+}
+
+.invitation-message {
   border-style: outset;
   padding: 0.4em;
   margin-bottom: 5px;
-  border-radius: 6px;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
 .external-message {
@@ -135,3 +142,4 @@ h4 {
 #chat_window{
   height: 100%;
 }
+
