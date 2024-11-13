@@ -198,7 +198,7 @@ function updateWinNumber() {
   const rangeInput = document.getElementById("actual_win_number");
   const displayValue = document.getElementById("actual_win_number_value");
   const hiddenInput = document.getElementById("win_number");
-  
+
   // Map the range slider position (1 to 5) to the allowed values
   const selectedValue = allowedValues[rangeInput.value - 1];
 
@@ -344,6 +344,7 @@ socket.onopen = async function (e) {
     if (data.type === "player_disconnected") {
       if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
         displayForfaitMessage();
+        setLobbyRedirect(sessionId);
   }
     } catch (error) {
       console.error("Error parsing message:", error);
@@ -358,7 +359,7 @@ socket.onopen = async function (e) {
     console.error("WebSocket error:", e);
 };
 
-  function displayForfaitMessage() {		
+  function displayForfaitMessage() {
     fetch(`/static/game/html/victory.html`)
     .then((response) => response.text())
     .then((html) => {
@@ -393,6 +394,26 @@ socket.onopen = async function (e) {
     winnerMessage.textContent = `${winner} Win the game!`;
   }
 
+  async function setLobbyRedirect(sessionId) {
+    const gameSession = await getSession(sessionId);
+    console.log(gameSession);
+    const tourid = gameSession.tour;
+    const redirectLink = document.getElementById('redirect');
+
+    if (!redirectLink) {
+        console.error('Element with id "redirect" not found.');
+        return;
+    }
+
+    if (tourid) {
+        redirectLink.href = `#tournaments?tourid=${tourid}`;
+        redirectLink.textContent = "Return to Lobby";
+    } else {
+        redirectLink.href = "#game";
+        redirectLink.textContent = "Play again";
+    }
+}
+
   function updateScoreDisplay(username, username2, player1Points, player2Points) {
     const player1Elem = document.getElementById("player1");
     const player1ScoreElem = document.getElementById("player1Score");
@@ -402,6 +423,7 @@ socket.onopen = async function (e) {
       player1ScoreElem.textContent = player1Points;
       player2ScoreElem.textContent = player2Points;
       checkWinCondition(username, username2, player1Points, player2Points);
+      setLobbyRedirect(sessionId);
     }
   }
 

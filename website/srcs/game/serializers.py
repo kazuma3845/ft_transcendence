@@ -84,7 +84,8 @@ class GameSessionSerializer(serializers.ModelSerializer):
             'bot',
             'bot_difficulty',
             'player1_started',
-            'player2_started'
+            'player2_started',
+            'tour'
         ]
 
 

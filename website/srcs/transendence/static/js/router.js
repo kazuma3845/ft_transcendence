@@ -33,6 +33,13 @@ async function router() {
           console.log("sessionId actuel : ", sessionId);
 
           if (sessionId) {
+            let gameSession = await getGame(sessionId);
+            if (gameSession.end_time)
+            {
+              loadGameForm();
+              fetchAvailableSessions();
+              break;
+            }
             // Charger le jeu avec le sessionId et démarrer le WebSocket
             loadGame(sessionId).then(() => {
               startWebSocket(sessionId); // Démarre la session WebSocket
@@ -117,4 +124,3 @@ function disposeTooltips() {
     }
   });
 }
-
