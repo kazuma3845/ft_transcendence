@@ -127,6 +127,7 @@ function fetchBlockchainResults(games) {
 async function computeStats(results, username) {
   // console.log("Current username:", username);
 
+  console.log("Not Filtered results:", results);
   // Filter out matches with empty string winners
   const filteredResults = results.filter((result) => result.winner !== "");
 

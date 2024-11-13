@@ -117,8 +117,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-let winner = null
-
 function checkWinCondition() {
     if (pong.score[0] === pong.winScore) {
         showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1], false);
@@ -130,11 +128,9 @@ function checkWinCondition() {
 
 
 export function showWinScreen(player, message, score1, score2, forfait) {
-    const winScreen = document.getElementById("winScreen");
     isAnimating = false;
     registerScores(forfait, player);
     console.log(player, message, score1, score2)
-
     renderer.setAnimationLoop(null);
 }
 
