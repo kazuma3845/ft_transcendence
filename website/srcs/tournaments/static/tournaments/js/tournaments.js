@@ -81,7 +81,7 @@ function attachTourFormSubmitListener(player1 = null) {
               // Charger les conversations et connecter le WebSocket
               connectWebSocket();
               socket.onopen = function () {
-                sendTourConv(convData.id, `${currentUser} a créé le tournois`);
+                sendTourConv(convData.id, `${currentUser} created this tournament.`);
               };
 
               let tourId = tourData.id; // Accéder à game_1_1 à partir de tourData

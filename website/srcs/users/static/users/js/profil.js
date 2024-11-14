@@ -238,7 +238,9 @@ async function fetchUserProfileInfo(username) {
     const response = await fetch(
       `/api/users/profiles/info-user/?username=${username}`
     );
-    if (!response.ok) return null;
+    if (!response.ok) {
+      return null;
+    }
     const data = await response.json();
     requestedUserProfile = data;
     requestedUserProfile.stats = await fetchUserStats(username);
@@ -277,9 +279,10 @@ function loadProfil(params) {
 
       const username = getRequestedUsername(params);
       const user = await fetchUserProfileInfo(username);
-      console.log("Le user id demandé est: ", user.user.id);
       if (!user) {
+        console.log("User does not exists.");
         loadHome();
+        return;
       } else {
         createProfilBlock(user);
         if (!user.stats.message) {
@@ -778,8 +781,6 @@ async function loadFriends() {
 
     if (currentUserInfo.friends_requests.length > 0) {
       loadFriendRequest(friendsListBlock);
-    } else {
-      initializeTooltips();
     }
   } catch (error) {
     console.error("Erreur lors de la récupération des amis:", error);
@@ -802,7 +803,6 @@ async function loadFriendRequest(friendsListBlock) {
         ? request.from_user.avatar
         : "/media/avatars/avatar.png";
       requestImg.alt = `Avatar de ${request.from_user.username}`;
-      requestImg.setAttribute("data-bs-toggle", "tooltip");
       requestImg.setAttribute("title", request.from_user.username);
       requestImg.className = "img-fluid rounded-circle friends-request-avatar";
       requestLink.appendChild(requestImg);
@@ -841,15 +841,6 @@ async function loadFriendRequest(friendsListBlock) {
     document.getElementById("friend-requests-block").innerHTML =
       "<p>Erreur de chargement des demandes d'amis.</p>";
   }
-}
-
-function initializeTooltips() {
-  const tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  );
-  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-    new bootstrap.Tooltip(tooltipTriggerEl);
-  });
 }
 
 async function getUsername(userId) {

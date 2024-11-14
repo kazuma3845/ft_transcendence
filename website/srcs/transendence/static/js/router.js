@@ -1,7 +1,5 @@
 async function router() {
-  disposeTooltips();
   let hash = window.location.hash; // ex: #profile/?username=neah12
-  console.log("Routing to:", window.location.hash);
 
   let [route, queryString] = hash.split("?");
   if (route.endsWith("/")) {
@@ -30,7 +28,6 @@ async function router() {
         if (isAuthenticated) {
           const params = new URLSearchParams(window.location.hash.split('?')[1]);
           const sessionId = params.get('sessionid'); // Récupère le paramètre 'sessionid'
-          console.log("sessionId actuel : ", sessionId);
 
           if (sessionId) {
             let gameSession = await getGame(sessionId);
@@ -115,12 +112,3 @@ function getCSRFToken() {
   return cookieValue;
 }
 
-function disposeTooltips() {
-  const tooltips = document.querySelectorAll('.tooltip');
-  tooltips.forEach(tooltip => {
-    const instance = bootstrap.Tooltip.getInstance(tooltip);
-    if (instance) {
-      instance.dispose();
-    }
-  });
-}

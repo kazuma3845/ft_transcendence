@@ -31,3 +31,9 @@ button {
 button:hover {
     background-color: #0055ff;
 } */
+
+#tournament-setting-btn {
+  font-size: 3rem;
+  font-weight: 450;
+  font-variation-settings: "ELGR" 1, "ELSH" 3.6;
+}

@@ -391,7 +391,7 @@ function startWebSocket(sessionId) {
       .then((html) => {
         document.getElementById("app").innerHTML = html;
         const winnerMessage = document.getElementById("winnerMessage");
-        winnerMessage.textContent = `${Player_disconnect} a left the game`;
+        winnerMessage.textContent = `${Player_disconnect} left the game`;
       });
   }
 
