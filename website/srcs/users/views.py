@@ -26,7 +26,7 @@ from .serializers import UserProfileSerializer, UserSerializer
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from PIL import Image
 
 

@@ -412,7 +412,6 @@ socket.onopen = async function (e) {
     const redirectLink = document.getElementById('redirect');
 
     if (!redirectLink) {
-        console.error('Element with id "redirect" not found.');
         return;
     }
 
