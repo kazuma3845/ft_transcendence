@@ -221,8 +221,8 @@ async function getTour(tourId) {
 }
 
 async function updateTree(tourId) {
-    console.log("updateTree() called on tour ", tourId);
     let tour = await getTour(tourId);
+    console.log("updateTree() called on tour ", tour);
     let player111 = document.querySelector("#player111 text");
     if (player111 && tour.participants[0])
         player111.innerHTML = tour.participants[0]; // Remplacer le contenu du texte par le nom du joueur
@@ -260,13 +260,13 @@ async function updateTree(tourId) {
     if (tour.game_1_1.winner) {
         let winner1 = document.querySelector("#winner1 text");
         if (winner1)
-            winner1.innerHTML = await getUsername(tour.game_1_1.winner);
+            winner1.innerHTML = tour.game_1_1.winner;
     }
 
     if (tour.game_1_2.winner) {
         let winner2 = document.querySelector("#winner2 text");
         if (winner2)
-            winner2.innerHTML = await getUsername(tour.game_1_2.winner);
+            winner2.innerHTML = tour.game_1_2.winner;
     }
 
     if (tour.game_2.start_time){
@@ -298,6 +298,7 @@ async function updateTree(tourId) {
 // A corriger avec le user info de Francois
 async function playTour(tourId){
     let tour = await getTour(tourId);
+    // console.log("--->  tour = ", tour)
     let sessionId;
     if(!tour.game_1_1.winner){
         if (tour.participants[0] === currentUser || tour.participants[1] === currentUser){

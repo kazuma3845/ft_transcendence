@@ -3,6 +3,8 @@ from .models import Tournament
 from game.models import GameSession
 
 class GameSessionSerializer(serializers.ModelSerializer):
+	winner = serializers.CharField(source='winner.username', allow_null=True)  # Affiche le username du gagnant
+
 	class Meta:
 		model = GameSession
 		fields = '__all__'  # Inclure tous les champs nécessaires pour la session de jeu
