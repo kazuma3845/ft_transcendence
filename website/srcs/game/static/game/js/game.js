@@ -349,6 +349,7 @@ socket.onopen = async function (e) {
     if (data.type === "disconnect_screen") {
       if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
         displayForfaitMessage(data.content == player1 ? player2 : player1);
+        console.log("Call de setLobbyRedirect() depuis socket.onmessage :", sessionId);
         setLobbyRedirect(sessionId);
   }
     } catch (error) {
@@ -364,7 +365,7 @@ socket.onopen = async function (e) {
     console.error("WebSocket error:", e);
 };
 
-  function displayForfaitMessage(Player_disconnect) {		
+  function displayForfaitMessage(Player_disconnect) {
     fetch(`/static/game/html/victory.html`)
     .then((response) => response.text())
     .then((html) => {
@@ -378,14 +379,14 @@ socket.onopen = async function (e) {
     return new Promise(resolve => setTimeout(resolve, seconds * 1000));
   }
 
-  async function checkWinCondition(username, username2, player1Points, player2Points) {
+  async function checkWinCondition(username, username2, player1Points, player2Points, sessionId) {
     if (player1Points >= win_number) {
       await sleep(0.2);
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
         .then((html) => {
           document.getElementById("app").innerHTML = html;
-          displayWinnerMessage(username);
+          displayWinnerMessage(username, sessionId);
         });
     } else if (player2Points >= win_number) {
       await sleep(0.2);
@@ -393,21 +394,22 @@ socket.onopen = async function (e) {
         .then((response) => response.text())
         .then((html) => {
           document.getElementById("app").innerHTML = html;
-          displayWinnerMessage(username2);
+          displayWinnerMessage(username2, sessionId);
         });
     }
   }
 
-  function displayWinnerMessage(winner) {
+  function displayWinnerMessage(winner, sessionId) {
     // Sélectionner l'élément du message de victoire
     const winnerMessage = document.getElementById('winnerMessage');
     // Comparer les noms d'utilisateur et mettre à jour le message
     winnerMessage.textContent = `${winner} Win the game!`;
+    setLobbyRedirect(sessionId);
   }
 
   async function setLobbyRedirect(sessionId) {
     const gameSession = await getSession(sessionId);
-    console.log(gameSession);
+    console.log("Dans la fonction setLobbyRedirect", gameSession);
     const tourid = gameSession.tour;
     const redirectLink = document.getElementById('redirect');
 
@@ -433,8 +435,8 @@ socket.onopen = async function (e) {
       player1Elem.textContent = username;
       player1ScoreElem.textContent = player1Points;
       player2ScoreElem.textContent = player2Points;
-      checkWinCondition(username, username2, player1Points, player2Points);
-      setLobbyRedirect(sessionId);
+      checkWinCondition(username, username2, player1Points, player2Points, sessionId);
+      // console.log("Call de setLobbyRedirect() depuis updateScoreDisplay() :", sessionId);
     }
   }
 

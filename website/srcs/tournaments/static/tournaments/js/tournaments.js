@@ -36,7 +36,7 @@ async function createTourSession(data) {
 function updateCheckboxValue(spanId, isChecked) {
     document.getElementById(spanId).innerText = isChecked ? "On" : "Off";
   }
-  
+
 
     function attachTourFormSubmitListener(player1 = null) {
         document
@@ -221,8 +221,8 @@ async function getTour(tourId) {
 }
 
 async function updateTree(tourId) {
+    console.log("updateTree() called on tour ", tourId);
     let tour = await getTour(tourId);
-    console.log("tour : ", tour);
     let player111 = document.querySelector("#player111 text");
     if (player111 && tour.participants[0])
         player111.innerHTML = tour.participants[0]; // Remplacer le contenu du texte par le nom du joueur
@@ -236,7 +236,7 @@ async function updateTree(tourId) {
     if (player122 && tour.participants[3])
         player122.innerHTML = tour.participants[3]; // Remplacer le contenu du texte par le nom du joueur
     game_1_1 = getGame(tour.game_1_1.id);
-    console.log ("game_1_1 : ",game_1_1);
+    // console.log ("game_1_1 : ",game_1_1);
 
 
     if (tour.game_1_1.start_time){
@@ -308,6 +308,12 @@ async function playTour(tourId){
     if(!tour.game_1_2.winner){
         if (tour.participants[2] === currentUser || tour.participants[3] === currentUser){
             sessionId = tour.game_1_2.id;
+            return window.location.href = `/#game?sessionid=${sessionId}`;
+        }
+    }
+    if(!tour.game_2.winner){
+        if (tour.game_1_1.winner === currentUser || tour.game_1_2.winner === currentUser){
+            sessionId = tour.game_2.id;
             return window.location.href = `/#game?sessionid=${sessionId}`;
         }
     }
