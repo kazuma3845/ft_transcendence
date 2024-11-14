@@ -117,8 +117,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-let winner = null
-
 function checkWinCondition() {
     if (pong.score[0] === pong.winScore) {
         showWinScreen(pong.playerLeft, 'Wins! ', pong.score[0], pong.score[1], false);
@@ -130,17 +128,14 @@ function checkWinCondition() {
 
 
 export function showWinScreen(player, message, score1, score2, forfait) {
-    const winScreen = document.getElementById("winScreen");
     isAnimating = false;
     registerScores(forfait, player);
     console.log(player, message, score1, score2)
-
     renderer.setAnimationLoop(null);
 }
 
 function registerScores(forfeit, winner) {
     const url = `/api/blockchain/set_score/`;
-
     const gameData = {
         game_session_id: pong.id,
         players: [pong.playerLeft, pong.playerRight],

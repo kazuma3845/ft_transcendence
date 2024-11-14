@@ -127,6 +127,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         if message_type == 'start_game':
             message = text_data_json['message']
+            player = text_data_json['player']
             print(f"Received data: {text_data_json}")
             # Envoyer les données du score à la salle
             await self.channel_layer.group_send(
@@ -134,16 +135,30 @@ class GameConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'start_game',
                     'message': message,
+                    'player': player,
+                }
+            )
+
+        if message_type == 'disconnect_screen':
+            self.playerDisconnect = text_data_json['content']
+            print("PLAYER DISCONNECTED: ", self.playerDisconnect)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'disconnect_screen',
+                    'message': self.playerDisconnect,
                 }
             )
 
     async def start_game(self, event):
         message = event['message']
+        player = event['player']
 
         # Envoyer les scores aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'start_game',
             'message': message,
+            'player': player,
         }))
 
     async def player_joined(self, event):
@@ -196,5 +211,14 @@ class GameConsumer(AsyncWebsocketConsumer):
         # Envoyer les positions mises à jour aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'player_disconnected',
+            'content': content,
+        }))
+
+    async def disconnect_screen(self, event):
+        content = event['message']
+
+        # Envoyer les positions mises à jour aux clients WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'disconnect_screen',
             'content': content,
         }))
