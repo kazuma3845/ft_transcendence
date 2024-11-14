@@ -1,61 +1,100 @@
 <div
-class="d-flex justify-content-center align-items-center flex-row column-gap-5"
+  class="d-flex justify-content-center align-items-center flex-row column-gap-5"
 >
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tourModal" >
-		Open Tournaments Settings
-	</button>
-<div
-	class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
->
-	<h2 id="current-tours" class="large-label">Current Tours</h2>
-	<ul
-	class="nav d-flex flex-column justify-content-evenly align-items-center h-100"
-	id="tour-list"
-	></ul>
-</div>
+  <button
+    type="button"
+    class="btn custom-btn btn-lg"
+    data-bs-toggle="modal"
+    data-bs-target="#tourModal"
+  >
+    Open Tournaments Settings
+  </button>
+  <div
+    class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center"
+  >
+    <h2 id="current-tours" class="large-label">Current Tours</h2>
+    <ul
+      class="nav d-flex flex-column justify-content-evenly align-items-center h-100"
+      id="tour-list"
+    ></ul>
+  </div>
 </div>
 
 <!-- Modal Structure -->
-<div class="modal fade" id="tourModal" tabindex="-1" aria-labelledby="gameModalLabel" aria-hidden="true">
-<div class="modal-dialog">
-	<div class="modal-content">
-	<div class="modal-header">
-		<h5 class="modal-title" id="gameModalLabel">New Game Settings</h5>
-		<button
-		type="button"
-		class="btn-close"
-		data-bs-dismiss="modal"
-		aria-label="Close"
-		></button>
-	</div>
-	<div class="modal-body">
-		<!-- Game form goes here -->
-		<div
-		class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
-		>
-		<form method="POST" id="tour-form">
-			<label class="form-label" for="move_speed_ball">Ball Move Speed: <span id="move_speed_ball_value">3</span></label><br />
-			<input type="range" id="move_speed_ball" name="move_speed_ball" min="1" max="5" value="3" class="w-100" oninput="updateValue('move_speed_ball_value', this.value)" />
-			<br /><br />
+<div
+  class="modal fade"
+  id="tourModal"
+  tabindex="-1"
+  aria-labelledby="gameModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div
+          class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center"
+        >
+          <form method="POST" id="tour-form">
+            <label class="form-label" for="move_speed_ball"
+              >Ball Move Speed: <span id="move_speed_ball_value">3</span></label
+            ><br />
+            <input
+              type="range"
+              id="move_speed_ball"
+              name="move_speed_ball"
+              min="1"
+              max="5"
+              value="3"
+              class="w-100"
+              oninput="updateValue('move_speed_ball_value', this.value)"
+            />
+            <br /><br />
 
-			<label class="form-label" for="move_speed_paddle">Paddle Move Speed: <span id="move_speed_paddle_value">4</span></label><br />
-			<input type="range" id="move_speed_paddle" name="move_speed_paddle" min="1" max="10" value="4" class="w-100" oninput="updateValue('move_speed_paddle_value', this.value)" />
-			<br /><br />
+            <label class="form-label" for="move_speed_paddle"
+              >Paddle Move Speed:
+              <span id="move_speed_paddle_value">4</span></label
+            ><br />
+            <input
+              type="range"
+              id="move_speed_paddle"
+              name="move_speed_paddle"
+              min="1"
+              max="10"
+              value="4"
+              class="w-100"
+              oninput="updateValue('move_speed_paddle_value', this.value)"
+            />
+            <br /><br />
 
-			<label class="modal-form-label" for="power">Power:</label>
-            <input type="checkbox" id="power" name="power"
-              onchange="updateCheckboxValue('power_value', this.checked)" />
-            <span id="power_value">Off</span><br /><br />
+            <label class="form-label" for="actual_win_number"
+              >Choose a winning number:
+              <span id="actual_win_number_value">5</span></label
+            ><br />
+            <input
+              type="range"
+              id="actual_win_number"
+              name="actual_win_number"
+              min="1"
+              max="6"
+              step="1"
+              value="3"
+              oninput="updateWinNumber()"
+              class="w-100"
+            />
+            <input type="hidden" id="win_number" name="win_number" value="5" />
+            <br /><br />
 
-			<label class="form-label" for="actual_win_number">Choose a winning number: <span id="actual_win_number_value">5</span></label><br />
-			<input type="range" id="actual_win_number" name="actual_win_number" min="1" max="6" step="1" value="3" oninput="updateWinNumber()" class="w-100" />
-			<input type="hidden" id="win_number" name="win_number" value="5" />
-			<br /><br />
-
-			<button class="custom-btn btn btn-outline-light btn-lg w-100" data-bs-dismiss="modal" data-bs-target="#gameModal" type="submit">Create</button>
-		</form>
-		</div>
-	</div>
-	</div>
-</div>
+            <button
+              class="custom-btn btn btn-outline-light btn-lg w-100"
+              data-bs-dismiss="modal"
+              data-bs-target="#gameModal"
+              type="submit"
+            >
+              Create
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

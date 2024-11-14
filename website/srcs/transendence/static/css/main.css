@@ -41,28 +41,29 @@
   background-color: transparent;
   position: relative;
   font-size: 3rem;
-  border: 5px solid #100657c1;
-  color: #141855a1;
+  border: 5px solid #8a81d48d;
+  color: #575b9ca1;
   border-radius: 30px;
   padding: 10px 30px;
   animation: shadow-spin 2s linear infinite;
 }
 
 #landing-page button:hover {
-  animation: glitch-effect 0.8s steps(2, end) infinite, shadow-spin 2s linear infinite;
+  animation: glitch-effect 0.8s steps(2, end) infinite,
+    shadow-spin 2s linear infinite;
 }
 
 @keyframes glitch-effect {
   0% {
     font-variation-settings: "ELSH" 0.5;
-    text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.8), 6px 6px 0 rgb(71 64 194 / 40%),
-    8px 8px 0 rgb(51 82 209 / 20%);
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.8),
+      6px 6px 0 rgb(71 64 194 / 40%), 8px 8px 0 rgb(51 82 209 / 20%);
     box-shadow: white;
   }
   20% {
     font-variation-settings: "ELSH" 3.5;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8), 5px 5px 0 rgb(71 64 194 / 40%),
-    7px 7px 0 rgb(51 82 209 / 20%);
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8),
+      5px 5px 0 rgb(71 64 194 / 40%), 7px 7px 0 rgb(51 82 209 / 20%);
     box-shadow: white;
   }
   40% {
@@ -70,14 +71,15 @@
   }
   60% {
     font-variation-settings: "ELSH" 4.5;
-    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.8), -5px -5px 0 rgb(71 64 194 / 40%),
-    -7px -7px 0 rgb(51 82 209 / 20%);
+    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.8),
+      -5px -5px 0 rgb(71 64 194 / 40%), -7px -7px 0 rgb(51 82 209 / 20%);
     display: inline-block;
     transform: rotate(360deg);
   }
   80% {
     font-variation-settings: "ELSH" 5.5;
-    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.8), -5px -5px 0 rgb(71 64 194 / 40%),
+    text-shadow: -1px -1px 0 rgba(255, 255, 255, 0.8),
+      -5px -5px 0 rgb(71 64 194 / 40%);
   }
   100% {
     font-variation-settings: "ELSH" 2.5;
@@ -86,19 +88,24 @@
 
 @keyframes shadow-spin {
   0% {
-    box-shadow: 5px 5px 15px rgba(255, 255, 255, 0.4), -5px -5px 15px rgba(71, 64, 194, 0.3);
+    box-shadow: 5px 5px 15px rgba(255, 255, 255, 0.4),
+      -5px -5px 15px rgba(71, 64, 194, 0.3);
   }
   25% {
-    box-shadow: -5px 5px 15px rgba(255, 255, 255, 0.6), -10px -10px 20px rgba(71, 64, 194, 0.2);
+    box-shadow: -5px 5px 15px rgba(255, 255, 255, 0.6),
+      -10px -10px 20px rgba(71, 64, 194, 0.2);
   }
   50% {
-    box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.8), 5px -5px 20px rgba(71, 64, 194, 0.4);
+    box-shadow: -5px -5px 15px rgba(255, 255, 255, 0.8),
+      5px -5px 20px rgba(71, 64, 194, 0.4);
   }
   75% {
-    box-shadow: 5px -5px 15px rgba(255, 255, 255, 0.6), 10px 10px 20px rgba(71, 64, 194, 0.3);
+    box-shadow: 5px -5px 15px rgba(255, 255, 255, 0.6),
+      10px 10px 20px rgba(71, 64, 194, 0.3);
   }
   100% {
-    box-shadow: 5px 5px 15px rgba(255, 255, 255, 0.4), -5px -5px 15px rgba(71, 64, 194, 0.3);
+    box-shadow: 5px 5px 15px rgba(255, 255, 255, 0.4),
+      -5px -5px 15px rgba(71, 64, 194, 0.3);
   }
 }
 
@@ -168,6 +175,7 @@ i:hover {
   box-shadow: 2px 2px 0px #b2b1f3;
 }
 
+html,
 body {
   background: linear-gradient(135deg, #ffffff 0%, #b2b1f3 100%);
   background-size: cover;
@@ -196,13 +204,20 @@ footer p {
   font-size: 2.5rem;
 }
 
-#app {
-  height: 88%;
+#main-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
+
+#app {
+  flex: 1;
+  overflow: auto;
+}
+
 .modal-dialog {
   width: 50%;
 }
-
 
 .modal-content {
   background: rgba(255, 255, 255, 0.25);

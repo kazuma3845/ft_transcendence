@@ -21,31 +21,30 @@
     <!-- Zone de chat active (gauche) -->
     <div
       id="chat_window"
-      class="col-9 bg-lightblue p-3"
-      style="display: none; height: 100%"
+      class="col-9 bg-lightblue p-3 d-flex flex-column d-none"
     >
       <div
         class="chat-header mb-3 d-flex justify-content-between align-items-center"
       >
-        <h5 id="chat_title">Chatting with</h5>
+        <h4 id="chat_title"></h4>
         <div id="interaction-chat">
-          <button
+          <span
             id="invite-user-btn"
-            type="button"
-            class="btn btn-primary"
+            class="icon"
             data-bs-toggle="modal"
             data-bs-target="#gameModal"
+            style="cursor: pointer; margin-right: 1rem"
           >
-            Play together
-          </button>
-          <button
+            <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+          </span>
+          <span
             id="block-user-btn"
-            class="btn btn-danger"
+            class="icon"
             onclick="toggleBlockUser()"
-            style="display: none"
+            style="cursor: pointer; display: inline-block"
           >
-            Block
-          </button>
+            <i id="muted-icon" class="fas fa-volume-high"></i>
+          </span>
         </div>
         <div id="interaction-tour">
           <button id="lobby-btn" class="btn btn-primary" onclick="goLobby()">
@@ -54,12 +53,12 @@
         </div>
       </div>
 
-      <div class="chat-messages" id="chat-messages">
+      <div class="chat-messages-div flex-grow-1" id="chat-messages-div">
         <!-- Messages échangés -->
       </div>
 
       <!-- Input pour écrire un nouveau message -->
-      <div class="chat-input">
+      <div class="chat-input mt-auto">
         <div class="input-group d-flex flex-row justify-content-between">
           <input
             type="text"
@@ -68,7 +67,12 @@
             id="message-input"
           />
           <div class="input-group-append">
-            <button class="btn btn-lg custom-btn btn-outline-light" id="send-message">Send</button>
+            <button
+              class="btn btn-lg custom-btn btn-outline-light"
+              id="send-message"
+            >
+              Send
+            </button>
           </div>
         </div>
       </div>
@@ -83,21 +87,11 @@
   aria-labelledby="gameModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="gameModalLabel">New Game Settings</h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
       <div class="modal-body">
-        <!-- Game form goes here -->
         <div
-          class="game-form-container p-5 d-flex flex-column justify-content-center align-items-center glassmorphism-block"
+          class="game-form-container d-flex p-2 flex-column justify-content-center align-items-center"
         >
           <form method="POST" id="game-form">
             <label class="form-label" for="move_speed_ball"

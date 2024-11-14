@@ -54,31 +54,30 @@ async function getTourByConversation(conversationId) {
     );
   }
 }
-function toggleBlockUser() {
-  const blockButton = document.getElementById("block-user-btn");
 
-  // Appeler l'API pour bloquer/débloquer l'utilisateur
+function toggleBlockUser() {
+  const blockButton = document.getElementById("muted-icon");
   fetch(`/api/messaging/conversations/${activeConversationId}/toggle-block/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken": getCSRFToken(), // Assure-toi de bien gérer le token CSRF
+      "X-CSRFToken": getCSRFToken(),
     },
     body: JSON.stringify({}),
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.blocked) {
-        blockButton.textContent = "Débloquer";
-        blockButton.classList.remove("btn-danger");
-        blockButton.classList.add("btn-secondary");
+        blockButton.classList.replace("fa-volume-xmark", "fa-volume-high");
+        loadModal(
+          "User muted",
+          "You'll no longer receive messages from this user."
+        );
       } else {
-        blockButton.textContent = "Bloquer";
-        blockButton.classList.remove("btn-secondary");
-        blockButton.classList.add("btn-danger");
+        blockButton.classList.replace("fa-volume-high", "fa-volume-xmark");
+        loadModal("User unmuted", "You'll receive messages from this user.");
       }
       updateBlockedUsers();
-      console.log(`Ils sont parmis ${blockedUsers}`);
     })
     .catch((error) =>
       console.error("Erreur lors du changement de l'état du blocage:", error)
@@ -299,8 +298,7 @@ function loadMessages(conversationId) {
   // console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
 
   if (activeConversationId === conversationId) {
-    chatWindow.style.display = "none";
-    activeConversationId = null;
+    activeConversationId == null;
     return;
   }
 
@@ -314,7 +312,7 @@ function loadMessages(conversationId) {
 
       // Transformer chaque nom en lien cliquable
       const participantsLinks = otherParticipants.map((participant) => {
-        return `<a href="/#profile/?username=${participant}" onclick="window.location.href='/#profile/?username=${participant}'; return false;">${participant}</a>`;
+        return `<a href="/#profile/?username=${participant}" class="participant-link" onclick="window.location.href='/#profile/?username=${participant}'; return false;">${participant}</a>`;
       });
 
       const participantsText = participantsLinks.join(", ");
@@ -334,14 +332,14 @@ function loadMessages(conversationId) {
       }
 
       // Rendre visible la fenêtre de chat
-      chatWindow.style.display = "block";
-      // pour le bouton d invite
+      chatWindow.classList.remove("d-none");
+
       attachGameFormSubmitListener(currentUser, otherParticipants[0], true);
       // Requête pour obtenir les messages
       fetch(`/api/messaging/conversations/${conversationId}/messages/`)
         .then((response) => response.json())
         .then((messages) => {
-          const messagesList = document.getElementById("chat-messages");
+          const messagesList = document.getElementById("chat-messages-div");
           messagesList.innerHTML = ""; // Réinitialiser la zone des messages
 
           messages.forEach((message) => {
@@ -350,7 +348,6 @@ function loadMessages(conversationId) {
             if (blockedUsers.includes(message.sender)) {
               return; // Ne pas traiter ce message
             }
-            // Ajout des classes pour alignement
             messageItem.classList.add(
               "d-flex",
               isUserMessage ? "justify-content-end" : "justify-content-start"
@@ -358,23 +355,22 @@ function loadMessages(conversationId) {
 
             const messageContent = document.createElement("div");
             messageContent.classList.add(
-              "p-2",
-              "mb-1",
-              "rounded-3",
-              isUserMessage ? "bg-success" : "bg-body-tertiary"
+              "chat-message",
+              isUserMessage ? "external-message" : "user-message"
             );
 
             if (message.invitation) {
+              messageContent.classList.replace("chat-message", "invitation-message")
               const invitationLink = document.createElement("a");
               invitationLink.href = `/#game?sessionid=${message.invitation}`; // Créer l'URL
-              invitationLink.textContent = "partie"; // Texte du lien
-
+              invitationLink.textContent = "Join the game"; // Texte du lien
+              invitationLink.style.textDecoration = "none";
+              invitationLink.style.color = "inherit";
               // Optionnel : Si tu ne veux pas utiliser href, tu peux utiliser un gestionnaire d'événement de clic.
               invitationLink.addEventListener("click", function (event) {
                 event.preventDefault(); // Empêche le comportement par défaut du lien
                 window.location.href = `/#game?sessionid=${message.invitation}`;
               });
-              messageContent.textContent = "Rejoindre la ";
               messageContent.appendChild(invitationLink);
             }
             if (message.content) {
@@ -398,17 +394,13 @@ function loadMessages(conversationId) {
       )
         .then((response) => response.json())
         .then((data) => {
-          const blockButton = document.getElementById("block-user-btn");
+          const blockButton = document.getElementById("muted-icon");
           if (data.blocked) {
-            blockButton.textContent = "Unmute";
-            blockButton.classList.remove("btn-danger");
-            blockButton.classList.add("btn-secondary");
+            blockButton.classList.replace("fa-volume-xmark", "fa-volume-high");
           } else {
-            blockButton.textContent = "Mute";
-            blockButton.classList.remove("btn-secondary");
-            blockButton.classList.add("btn-danger");
+            blockButton.classList.replace("fa-volume-high", "fa-volume-xmark");
           }
-          blockButton.style.display = "inline-block"; // Afficher le bouton
+          blockButton.style.display = "inline-block";
         })
         .catch((error) =>
           console.error(
@@ -423,7 +415,7 @@ function loadMessages(conversationId) {
 }
 
 function displayNewMessage(data) {
-  const messagesList = document.getElementById("chat-messages");
+  const messagesList = document.getElementById("chat-messages-div");
 
   const messageItem = document.createElement("div");
 
@@ -440,10 +432,8 @@ function displayNewMessage(data) {
 
   // Ajouter des styles en fonction de l'expéditeur (vert pour l'utilisateur, autre couleur pour les autres)
   messageContent.classList.add(
-    "p-2",
-    "mb-1",
-    "rounded-3",
-    isUserMessage ? "bg-success" : "bg-body-tertiary"
+    "chat-message",
+    isUserMessage ? "external-message" : "user-message"
   );
   messageContent.textContent = data.message;
 
@@ -455,7 +445,7 @@ function displayNewMessage(data) {
 }
 
 function displayInvitation(data) {
-  const messagesList = document.getElementById("chat-messages");
+  const messagesList = document.getElementById("chat-messages-div");
 
   const messageItem = document.createElement("div");
 
@@ -472,10 +462,8 @@ function displayInvitation(data) {
 
   // Ajouter des styles en fonction de l'expéditeur (vert pour l'utilisateur, autre couleur pour les autres)
   messageContent.classList.add(
-    "p-2",
-    "mb-1",
-    "rounded-3",
-    isUserMessage ? "bg-success" : "bg-body-tertiary"
+    "invitation-message",
+    isUserMessage ? "external-message" : "user-message"
   );
 
   // Vérifier si le message contient une invitation

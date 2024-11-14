@@ -29,7 +29,10 @@
     <link rel="stylesheet" href="{% static 'users/css/profile.css' %}" />
     <link rel="stylesheet" href="{% static 'game/css/game.css' %}" />
     <link rel="stylesheet" href="{% static 'messaging/css/chat.css' %}" />
-    <link rel="stylesheet" href="{% static 'tournaments/css/tournaments.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'tournaments/css/tournaments.css' %}"
+    />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -47,12 +50,15 @@
     >
       <h1 id="animated-title"></h1>
       <div id="button-container" class="hidden"></div>
+      <footer class="text-center fixed-bottom">
+        <p>By Kazuma, Neah & Martzoni</p>
+      </footer>
     </div>
 
     <!-- Navbar -->
-    <div id="main-page" class="d-none w-100 h-100">
+    <div id="main-page" class="d-none">
       <nav
-        class="navbar navbar-light w-100 h-10 border-bottom border-white p-2"
+        class="navbar navbar-light w-100 border-bottom border-white p-2"
       >
         <a class="navbar-brand title" href="#">Transcendence</a>
 
@@ -137,14 +143,10 @@
         id="app"
         class="d-flex justify-content-center align-items-center v-100"
       ></main>
-
-      <footer class="text-center fixed-bottom">
-        <p>By Kazuma, Neah & Martzoni</p>
-      </footer>
     </div>
 
     <script>
-      let currentUser = "{{ request.user.username }}";  // Injecter le nom d'utilisateur dans une variable JS
+      let currentUser = "{{ request.user.username }}"; // Injecter le nom d'utilisateur dans une variable JS
     </script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

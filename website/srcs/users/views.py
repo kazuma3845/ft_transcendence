@@ -26,7 +26,8 @@ from .serializers import UserProfileSerializer, UserSerializer
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
+from PIL import Image
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -44,6 +45,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         username = request.data.get("username")
         email = request.data.get("email")
         password = request.data.get("password")
+
+        if len(username) > 10:  # Pour ne pas tout péter l'affichage
+            return Response(
+                {"error": "Username must be 10 characters or fewer"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Vérifie si le nom d'utilisateur existe déjà
         if User.objects.filter(username=username).exists():
@@ -236,7 +243,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         friendship.delete()
         return Response({"message": "Friendship removed"}, status=status.HTTP_200_OK)
 
-
     @action(detail=False, methods=["get"], url_path="friend-requests")
     def get_friend_requests(self, request):
         user_profile = request.user.userprofile
@@ -268,15 +274,33 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["patch"], url_path="update-avatar-banner")
     def update_avatar_banner(self, request):
+        MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB max
+
         profile = get_object_or_404(UserProfile, user=request.user)
         file_type = request.data.get("type")
         uploaded_file = request.FILES.get("image")
 
         if not uploaded_file:
             return Response(
-                {"success": False, "message": "No file uploaded"},
+                {"success": False, "message": "No file uploaded."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        if uploaded_file.size > MAX_UPLOAD_SIZE:
+            return Response(
+                {"success": False, "message": "The image file is too large."},
+                status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            )
+
+        try:  # On utilise pillow qui va checker si c'est une image valide (et le type au passage)
+            img = Image.open(uploaded_file)
+            img.verify()
+        except (IOError, SyntaxError) as e:
+            return Response(
+                {"success": False, "message": "Invalid image file."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if file_type == "avatar":
             profile.avatar = uploaded_file
         if file_type == "banner":
@@ -287,15 +311,20 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             {"success": True, "profile": serializer.data}, status=status.HTTP_200_OK
         )
 
-    @action(detail=False, methods=['get'], url_path='search')
+    @action(detail=False, methods=["get"], url_path="search")
     def search(self, request):
-        query = request.query_params.get('query', None)
+        query = request.query_params.get("query", None)
         if query is not None:
             # Rechercher dans le modèle User
-            users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
-            serializer = UserSerializer(users, many=True)  # Utiliser le UserSerializer ici
+            users = User.objects.filter(username__icontains=query).exclude(
+                id=request.user.id
+            )
+            serializer = UserSerializer(
+                users, many=True
+            )  # Utiliser le UserSerializer ici
             return Response(serializer.data)
         return Response([])
+
 
 @login_required
 def index(request):
