@@ -127,9 +127,9 @@ class GameSessionViewSet(viewsets.ModelViewSet):
                 {
                     'type': 'start_game',
                     'message': 'The game has started!',
+                    'player': session.player2.username,
                 }
             )
-
 
         # Sauvegarder les informations de démarrage dans la base de données
         session.start_time = timezone.now()

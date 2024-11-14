@@ -127,6 +127,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         if message_type == 'start_game':
             message = text_data_json['message']
+            player = text_data_json['player']
             print(f"Received data: {text_data_json}")
             # Envoyer les données du score à la salle
             await self.channel_layer.group_send(
@@ -134,6 +135,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'start_game',
                     'message': message,
+                    'player': player,
                 }
             )
 
@@ -150,11 +152,13 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def start_game(self, event):
         message = event['message']
+        player = event['player']
 
         # Envoyer les scores aux clients WebSocket
         await self.send(text_data=json.dumps({
             'type': 'start_game',
             'message': message,
+            'player': player,
         }))
 
     async def player_joined(self, event):

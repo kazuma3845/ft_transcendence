@@ -136,7 +136,6 @@ export function showWinScreen(player, message, score1, score2, forfait) {
 
 function registerScores(forfeit, winner) {
     const url = `/api/blockchain/set_score/`;
-
     const gameData = {
         game_session_id: pong.id,
         players: [pong.playerLeft, pong.playerRight],
