@@ -386,7 +386,6 @@ function startWebSocket(sessionId) {
   };
 
   function displayForfaitMessage(Player_disconnect) {
-  function displayForfaitMessage(Player_disconnect) {
     fetch(`/static/game/html/victory.html`)
       .then((response) => response.text())
       .then((html) => {

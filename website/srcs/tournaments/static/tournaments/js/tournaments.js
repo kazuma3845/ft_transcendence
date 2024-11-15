@@ -33,11 +33,6 @@ async function createTourSession(data) {
     }
     return data_1;
 }
-function updateCheckboxValue(spanId, isChecked) {
-    document.getElementById(spanId).innerText = isChecked ? "On" : "Off";
-  }
-
-
 
 function attachTourFormSubmitListener(player1 = null) {
   document
