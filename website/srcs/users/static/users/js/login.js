@@ -32,14 +32,17 @@ function attachLoginFormSubmitListener() {
             document.getElementById("error-message").textContent = data.error;
             document.getElementById("error-message").style.display = "block";
           } else {
-            updateHeader();
-            window.location.hash = "#profile";
+            await fetchCurrentUserInfo();
+            console.log("Login , ", currentUserInfo.user.username)
+            currentUser = currentUserInfo.user.username;
             setTimeout(() => {
               loadModal(
                 "Logged In Successfully",
                 `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
               );
             }, 300); // Ajustez le délai au besoin
+            updateHeader();
+            window.location.hash = "#profile";
           }
         })
         .catch((error) => console.error("Erreur:", error));

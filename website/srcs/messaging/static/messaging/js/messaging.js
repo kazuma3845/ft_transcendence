@@ -522,7 +522,7 @@ function connectWebSocket() {
 
     // Vérifier le type du message reçu
     if (data.type === "updateTree") {
-      console.log("data.content.tour : ", data.content);
+      // console.log("data.content.tour : ", data.content);
       updateTree(data.content.tour);
     }
     if (data.type === "upload_message") {

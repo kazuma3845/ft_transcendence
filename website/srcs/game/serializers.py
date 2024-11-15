@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class GameSessionSerializer(serializers.ModelSerializer):
     player1 = serializers.CharField(required=False, allow_null=True)  # Accepter un username pour player1
     player2 = serializers.CharField(required=False, allow_null=True)  # Accepter un username pour player2
-    winner = serializers.StringRelatedField()
+    winner = serializers.SlugRelatedField(slug_field='username', read_only=True)
 
     move_speed_ball = serializers.IntegerField(
         default=6,

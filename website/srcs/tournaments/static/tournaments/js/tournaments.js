@@ -17,22 +17,23 @@ function loadTour(tourId) {
 }
 
 async function createTourSession(data) {
-  // Envoie les données à l'API pour créer une nouvelle session de jeu
-  const response = await fetch("/api/tournaments/tournament/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCSRFToken(), // Assure-toi que cette fonction est bien définie
-    },
-    body: JSON.stringify(data),
-  });
-  const data_1 = await response.json();
-  if (data_1.error) {
-    console.log("ca foir le createTourSession");
-    throw new Error(data_1.error);
-  }
-  return data_1;
+    // Envoie les données à l'API pour créer une nouvelle session de jeu
+    const response = await fetch('/api/tournaments/tournament/', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken(), // Assure-toi que cette fonction est bien définie
+        },
+        body: JSON.stringify(data),
+    });
+    const data_1 = await response.json();
+    if (data_1.error) {
+        console.log("ca foir le createTourSession")
+        throw new Error(data_1.error);
+    }
+    return data_1;
 }
+
 
 function attachTourFormSubmitListener(player1 = null) {
   document
@@ -249,22 +250,22 @@ async function getTour(tourId) {
 }
 
 async function updateTree(tourId) {
-  let tour = await getTour(tourId);
-  console.log("tour : ", tour);
-  let player111 = document.querySelector("#player111 text");
-  if (player111 && tour.participants[0])
-    player111.innerHTML = tour.participants[0]; // Remplacer le contenu du texte par le nom du joueur
-  let player112 = document.querySelector("#player112 text");
-  if (player112 && tour.participants[1])
-    player112.innerHTML = tour.participants[1]; // Remplacer le contenu du texte par le nom du joueur
-  let player121 = document.querySelector("#player121 text");
-  if (player121 && tour.participants[2])
-    player121.innerHTML = tour.participants[2]; // Remplacer le contenu du texte par le nom du joueur
-  let player122 = document.querySelector("#player122 text");
-  if (player122 && tour.participants[3])
-    player122.innerHTML = tour.participants[3]; // Remplacer le contenu du texte par le nom du joueur
-  game_1_1 = getGame(tour.game_1_1.id);
-  console.log("game_1_1 : ", game_1_1);
+    let tour = await getTour(tourId);
+    console.log("updateTree() called on tour ", tour);
+    let player111 = document.querySelector("#player111 text");
+    if (player111 && tour.participants[0])
+        player111.innerHTML = tour.participants[0]; // Remplacer le contenu du texte par le nom du joueur
+    let player112 = document.querySelector("#player112 text");
+    if (player112 && tour.participants[1])
+        player112.innerHTML = tour.participants[1]; // Remplacer le contenu du texte par le nom du joueur
+    let player121 = document.querySelector("#player121 text");
+    if (player121 && tour.participants[2])
+        player121.innerHTML = tour.participants[2]; // Remplacer le contenu du texte par le nom du joueur
+    let player122 = document.querySelector("#player122 text");
+    if (player122 && tour.participants[3])
+        player122.innerHTML = tour.participants[3]; // Remplacer le contenu du texte par le nom du joueur
+    game_1_1 = getGame(tour.game_1_1.id);
+    // console.log ("game_1_1 : ",game_1_1);
 
   if (tour.game_1_1.start_time) {
     let score111 = document.querySelector("#score111 text");
@@ -280,15 +281,17 @@ async function updateTree(tourId) {
     if (score122) score122.innerHTML = tour.game_1_2.player2_points; // Remplacer le contenu du texte par le nom du joueur
   }
 
-  if (tour.game_1_1.winner) {
-    let winner1 = document.querySelector("#winner1 text");
-    if (winner1) winner1.innerHTML = await getUsername(tour.game_1_1.winner);
-  }
+    if (tour.game_1_1.winner) {
+        let winner1 = document.querySelector("#winner1 text");
+        if (winner1)
+            winner1.innerHTML = tour.game_1_1.winner;
+    }
 
-  if (tour.game_1_2.winner) {
-    let winner2 = document.querySelector("#winner2 text");
-    if (winner2) winner2.innerHTML = await getUsername(tour.game_1_2.winner);
-  }
+    if (tour.game_1_2.winner) {
+        let winner2 = document.querySelector("#winner2 text");
+        if (winner2)
+            winner2.innerHTML = tour.game_1_2.winner;
+    }
 
   if (tour.game_2.start_time) {
     let score1 = document.querySelector("#score1 text");
@@ -297,14 +300,19 @@ async function updateTree(tourId) {
     if (score2) score2.innerHTML = tour.game_2.player2_points; // Remplacer le contenu du texte par le nom du joueur
   }
 
-  if (tour.game_2.winner) {
-    let winner = document.querySelector("#winner text");
-    if (winner) winner.innerHTML = tour.game_2.winner;
-    let winnerBox = document.getElementById("winnerbox");
-    if (winnerBox) {
-      winnerBox.style.display = "block"; // Rendre le groupe visible
+    if (tour.game_2.winner) {
+        let winner = document.querySelector("#winner text");
+        if (winner)
+            winner.innerHTML = tour.game_2.winner;
+        let winnerBox = document.getElementById("winnerbox");
+        if (winnerBox) {
+            winnerBox.style.display = "block";  // Rendre le groupe visible
+        }
+        let groupButton = document.getElementById("groupButton");
+        if (groupButton) {
+            groupButton.style.display = "none";  // Rendre le groupe visible
+        }
     }
-  }
 
   let playButton = document.getElementById("playButton");
   if (playButton) {
@@ -314,25 +322,26 @@ async function updateTree(tourId) {
 }
 
 // A corriger avec le user info de Francois
-async function playTour(tourId) {
-  let tour = await getTour(tourId);
-  let sessionId;
-  if (!tour.game_1_1.winner) {
-    if (
-      tour.participants[0] === currentUser ||
-      tour.participants[1] === currentUser
-    ) {
-      sessionId = tour.game_1_1.id;
-      return (window.location.href = `/#game?sessionid=${sessionId}`);
+async function playTour(tourId){
+    let tour = await getTour(tourId);
+    // console.log("--->  tour = ", tour)
+    let sessionId;
+    if(!tour.game_1_1.winner){
+        if (tour.participants[0] === currentUser || tour.participants[1] === currentUser){
+            sessionId = tour.game_1_1.id;
+            return window.location.href = `/#game?sessionid=${sessionId}`;
+        }
     }
-  }
-  if (!tour.game_1_2.winner) {
-    if (
-      tour.participants[2] === currentUser ||
-      tour.participants[3] === currentUser
-    ) {
-      sessionId = tour.game_1_2.id;
-      return (window.location.href = `/#game?sessionid=${sessionId}`);
+    if(!tour.game_1_2.winner){
+        if (tour.participants[2] === currentUser || tour.participants[3] === currentUser){
+            sessionId = tour.game_1_2.id;
+            return window.location.href = `/#game?sessionid=${sessionId}`;
+        }
     }
-  }
+    if(!tour.game_2.winner){
+        if (tour.game_1_1.winner === currentUser || tour.game_1_2.winner === currentUser){
+            sessionId = tour.game_2.id;
+            return window.location.href = `/#game?sessionid=${sessionId}`;
+        }
+    }
 }
