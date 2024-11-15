@@ -345,31 +345,22 @@ function startWebSocket(sessionId) {
   socket.onmessage = async function (e) {
     // console.log('Message received:', e.data);
     try {
-      const data = JSON.parse(e.data);
-      // console.log("F-E: client websocket parsed data:", data);
-      if (data.type === "game_score") {
-        point1 = data.player1_points;
-        point2 = data.player2_points;
-        updateScoreDisplay(
-          data.player1,
-          player2,
-          data.player1_points,
-          data.player2_points
-        );
-      }
-      if (data.type === "display_player") {
-        player2 = data.player2;
-        player1 = data.player1;
-        displayPlayer(data.player1, data.player2);
-      }
-      if (data.type === "disconnect_screen") {
-        if (
-          win_number !== point1 &&
-          win_number !== point2 &&
-          player2 !== "Bot" &&
-          player2 !== "LocalPlayer"
-        )
-          displayForfaitMessage(data.content == player1 ? player2 : player1);
+    const data = JSON.parse(e.data);
+    // console.log("F-E: client websocket parsed data:", data);
+    if (data.type === "game_score") {
+      point1 = data.player1_points;
+      point2 = data.player2_points;
+      updateScoreDisplay(data.player1, player2, data.player1_points, data.player2_points);
+    }
+    if (data.type === "display_player") {
+      player2 = data.player2;
+      player1 = data.player1;
+      displayPlayer(data.player1, data.player2);
+    }
+    if (data.type === "disconnect_screen") {
+      if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
+        displayForfaitMessage(data.content == player1 ? player2 : player1);
+        console.log("Call de setLobbyRedirect() depuis socket.onmessage :", sessionId);
         setLobbyRedirect(sessionId);
       }
     } catch (error) {
@@ -399,19 +390,14 @@ function startWebSocket(sessionId) {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 
-  async function checkWinCondition(
-    username,
-    username2,
-    player1Points,
-    player2Points
-  ) {
+  async function checkWinCondition(username, username2, player1Points, player2Points, sessionId) {
     if (player1Points >= win_number) {
       await sleep(0.2);
       fetch(`/static/game/html/victory.html`)
         .then((response) => response.text())
         .then((html) => {
           document.getElementById("app").innerHTML = html;
-          displayWinnerMessage(username);
+          displayWinnerMessage(username, sessionId);
         });
     } else if (player2Points >= win_number) {
       await sleep(0.2);
@@ -419,21 +405,22 @@ function startWebSocket(sessionId) {
         .then((response) => response.text())
         .then((html) => {
           document.getElementById("app").innerHTML = html;
-          displayWinnerMessage(username2);
+          displayWinnerMessage(username2, sessionId);
         });
     }
   }
 
-  function displayWinnerMessage(winner) {
+  function displayWinnerMessage(winner, sessionId) {
     // Sélectionner l'élément du message de victoire
     const winnerMessage = document.getElementById("winnerMessage");
     // Comparer les noms d'utilisateur et mettre à jour le message
     winnerMessage.textContent = `${winner} Win the game!`;
+    setLobbyRedirect(sessionId);
   }
 
   async function setLobbyRedirect(sessionId) {
     const gameSession = await getSession(sessionId);
-    console.log(gameSession);
+    console.log("Dans la fonction setLobbyRedirect", gameSession);
     const tourid = gameSession.tour;
     const redirectLink = document.getElementById("redirect");
 
@@ -463,8 +450,8 @@ function startWebSocket(sessionId) {
       player1Elem.textContent = username;
       player1ScoreElem.textContent = player1Points;
       player2ScoreElem.textContent = player2Points;
-      checkWinCondition(username, username2, player1Points, player2Points);
-      setLobbyRedirect(sessionId);
+      checkWinCondition(username, username2, player1Points, player2Points, sessionId);
+      // console.log("Call de setLobbyRedirect() depuis updateScoreDisplay() :", sessionId);
     }
   }
 

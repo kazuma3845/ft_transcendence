@@ -114,10 +114,12 @@
             </g>
         </g>
     </g>
-    <rect id="playButton" x="800" y="180" width="200" height="100" fill="rgb(92,98,183)" rx="10" ry="10" stroke="rgb(92,98,183)" stroke-width="2" cursor="pointer" onclick="playTour()"/>
+    <g id="groupButton" style="display: block;">
+        <rect id="playButton" x="800" y="180" width="200" height="100" fill="rgb(92,98,183)" rx="10" ry="10" stroke="rgb(92,98,183)" stroke-width="2" cursor="pointer" onclick="playTour()"/>
 
-    <!-- Texte sur le bouton -->
-    <text text-anchor="middle" x="900px" y="235px" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="Handjet" font-size="48" onclick="playTour()">
-        Play
-    </text>
+        <!-- Texte sur le bouton -->
+        <text id="playButton" text-anchor="middle" style="display: block;" x="900px" y="235px" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="Handjet" font-size="48">
+            Play
+        </text>
+    </g>
 </svg>
