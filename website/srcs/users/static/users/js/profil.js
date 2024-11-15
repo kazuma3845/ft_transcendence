@@ -2,6 +2,11 @@ let currentUserInfo = null;
 let requestedUserProfile = null;
 
 function loadEditProfileModal() {
+  var existingModal = document.getElementById("editProfileModal");
+  if (existingModal) {
+    existingModal.remove();
+  }
+
   fetch("/static/users/html/profil/editProfileModal.html")
     .then((response) => response.text())
     .then((html) => {
@@ -23,13 +28,21 @@ function loadEditProfileModal() {
           const bio = document.getElementById("edit-bio").value
             ? document.getElementById("edit-bio").value
             : null;
-
           updateUserInfo(email, password, bio);
         });
     })
     .catch((error) =>
       console.error("Erreur lors du chargement du modal:", error)
     );
+}
+
+function closeAndResetModal() {
+  var myModalElement = document.getElementById("editProfileModal");
+  var myModal = bootstrap.Modal.getInstance(myModalElement);
+  myModal.hide();
+  document.getElementById("edit-email").value = "";
+  document.getElementById("edit-password").value = "";
+  document.getElementById("edit-bio").value = "";
 }
 
 function uploadImage(file, type) {
@@ -96,7 +109,10 @@ function updateUserInfo(email, password, bio) {
       return response.json();
     })
     .then((updatedData) => {
-      window.location.reload();
+      if (email) document.getElementById("email").textContent = email;
+      if (bio) document.getElementById("bio").textContent = bio;
+      closeAndResetModal();
+      document.getElementById("edit-profile").focus(); //sinon lache une erreur
     })
     .catch((error) => {
       const errorMessageDiv = document.getElementById("error-message");
