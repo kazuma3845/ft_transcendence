@@ -286,6 +286,10 @@ async function updateTree(tourId) {
         if (winnerBox) {
             winnerBox.style.display = "block";  // Rendre le groupe visible
         }
+        let groupButton = document.getElementById("groupButton");
+        if (groupButton) {
+            groupButton.style.display = "none";  // Rendre le groupe visible
+        }
     }
 
     let playButton = document.getElementById("playButton");
