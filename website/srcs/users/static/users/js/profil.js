@@ -75,10 +75,17 @@ function uploadImage(file, type) {
     })
     .then((data) => {
       if (data.success) {
-        console.log(`${type} uploaded successfully.`);
-        window.location.reload();
+        //On reload le user actualisé et on recrée le profileBlock et LeaderBoard si c'est la pp
+        fetchCurrentUserInfo().then((currentUserInfo) => {
+          if (type === "avatar") {
+            document.getElementById("user-avatar").src = currentUserInfo.avatar;
+            createLeaderboard(currentUserInfo);
+          } else {
+            document.getElementById("user-banner").src = currentUserInfo.banner;
+          }
+        });
       } else {
-        console.error(`Failed to upload ${type}.`);
+        console.error("Failed to upload data.");
       }
     })
     .catch((error) => {
@@ -109,10 +116,15 @@ function updateUserInfo(email, password, bio) {
       return response.json();
     })
     .then((updatedData) => {
-      if (email) document.getElementById("email").textContent = email;
-      if (bio) document.getElementById("bio").textContent = bio;
+      if (email) {
+        currentUserInfo.user.email = email;
+        document.getElementById("email").textContent = email;
+      }
+      if (bio) {
+        currentUserInfo.bio = bio;
+        document.getElementById("bio").textContent = bio;
+      }
       closeAndResetModal();
-      document.getElementById("edit-profile").focus(); //sinon lache une erreur
     })
     .catch((error) => {
       const errorMessageDiv = document.getElementById("error-message");
