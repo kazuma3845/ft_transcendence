@@ -418,6 +418,8 @@ async function loadProfileFriendsButtons(data) {
         });
     } else {
       document.getElementById("remove-friend-btn").style.display = "none";
+      document.getElementById("send-friend-request-btn").style.display =
+        "block";
       document
         .getElementById("send-friend-request-btn")
         .addEventListener("click", () => {
@@ -445,7 +447,9 @@ async function removeFriend(friendship_id) {
 
     if (response.ok) {
       const result = await response.json();
-      loadModal("Friend deleted", "Bye loser ... 👋", true);
+      loadModal("Friend deleted", "Bye loser ... 👋");
+      await fetchCurrentUserInfo();
+      loadProfileFriendsButtons(requestedUserProfile);
     } else {
       const errorData = await response.json();
       loadModal("Error 🤕", `${errorData.error}`);
