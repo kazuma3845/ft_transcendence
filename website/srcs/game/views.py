@@ -164,11 +164,16 @@ class GameSessionViewSet(viewsets.ModelViewSet):
         winner = request.data.get('winner')
 
         if player1_points is not None:
-            session.player1_points = int(player1_points)
+            try:
+                session.player1_points = int(player1_points)
+            except ValueError:
+                logger.error(f"Invalid value for player1_points: {player1_points}")
 
         if player2_points is not None:
-            session.player2_points = int(player2_points)
-
+            try:
+                session.player1_points = int(player2_points)
+            except ValueError:
+                logger.error(f"Invalid value for player2_points: {player2_points}")
 
         # Vérifier si un joueur a atteint le nombre de points pour gagner
         # Sauvegarder la session mise à jour
