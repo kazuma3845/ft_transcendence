@@ -171,7 +171,7 @@ class GameSessionViewSet(viewsets.ModelViewSet):
 
         if player2_points is not None:
             try:
-                session.player1_points = int(player2_points)
+                session.player2_points = int(player2_points)
             except ValueError:
                 logger.error(f"Invalid value for player2_points: {player2_points}")
 
