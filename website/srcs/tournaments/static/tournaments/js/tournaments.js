@@ -334,23 +334,6 @@ async function updateTree(tourId) {
       playButton.setAttribute("onclick", `playTour(${tourId})`);
     }
   }
-    // // Affichage du bouton "Play" uniquement si le joueur est dans la prochaine partie et si elle n'est pas terminée
-    // let playButton = document.getElementById("playButton");
-    // if (playButton) {
-    //     playButton.style.display = "none"; // Par défaut, le bouton est masqué
-
-    //     // Vérifier si le joueur est impliqué dans la prochaine partie
-    //     if (!tour.game_1_1.winner && (tour.participants[0] === currentUser || tour.participants[1] === currentUser)) {
-    //         playButton.style.display = "block";
-    //         playButton.setAttribute("onclick", `playTour(${tourId})`);
-    //     } else if (!tour.game_1_2.winner && (tour.participants[2] === currentUser || tour.participants[3] === currentUser)) {
-    //         playButton.style.display = "block";
-    //         playButton.setAttribute("onclick", `playTour(${tourId})`);
-    //     } else if (!tour.game_2.winner && (tour.game_1_1.winner === currentUser || tour.game_1_2.winner === currentUser)) {
-    //         playButton.style.display = "block";
-    //         playButton.setAttribute("onclick", `playTour(${tourId})`);
-    //     }
-    // }
 }
 
 // A corriger avec le user info de Francois
