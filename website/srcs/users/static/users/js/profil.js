@@ -75,10 +75,17 @@ function uploadImage(file, type) {
     })
     .then((data) => {
       if (data.success) {
-        console.log(`${type} uploaded successfully.`);
-        window.location.reload();
+        //On reload le user actualisé et on recrée le profileBlock et LeaderBoard si c'est la pp
+        fetchCurrentUserInfo().then((currentUserInfo) => {
+          if (type === "avatar") {
+            document.getElementById("user-avatar").src = currentUserInfo.avatar;
+            createLeaderboard(currentUserInfo);
+          } else {
+            document.getElementById("user-banner").src = currentUserInfo.banner;
+          }
+        });
       } else {
-        console.error(`Failed to upload ${type}.`);
+        console.error("Failed to upload data.");
       }
     })
     .catch((error) => {
@@ -109,10 +116,15 @@ function updateUserInfo(email, password, bio) {
       return response.json();
     })
     .then((updatedData) => {
-      if (email) document.getElementById("email").textContent = email;
-      if (bio) document.getElementById("bio").textContent = bio;
+      if (email) {
+        currentUserInfo.user.email = email;
+        document.getElementById("email").textContent = email;
+      }
+      if (bio) {
+        currentUserInfo.bio = bio;
+        document.getElementById("bio").textContent = bio;
+      }
       closeAndResetModal();
-      document.getElementById("edit-profile").focus(); //sinon lache une erreur
     })
     .catch((error) => {
       const errorMessageDiv = document.getElementById("error-message");
@@ -406,6 +418,8 @@ async function loadProfileFriendsButtons(data) {
         });
     } else {
       document.getElementById("remove-friend-btn").style.display = "none";
+      document.getElementById("send-friend-request-btn").style.display =
+        "block";
       document
         .getElementById("send-friend-request-btn")
         .addEventListener("click", () => {
@@ -433,7 +447,9 @@ async function removeFriend(friendship_id) {
 
     if (response.ok) {
       const result = await response.json();
-      loadModal("Friend deleted", "Bye loser ... 👋", true);
+      loadModal("Friend deleted", "Bye loser ... 👋");
+      await fetchCurrentUserInfo();
+      loadProfileFriendsButtons(requestedUserProfile);
     } else {
       const errorData = await response.json();
       loadModal("Error 🤕", `${errorData.error}`);
@@ -485,7 +501,9 @@ async function rejectFriendRequest(requestId) {
 
     if (response.ok) {
       const result = await response.json();
-      loadModal("Who's that guy ? 🤷‍♂️", result.message, true);
+      loadModal("Who's that guy ? 🤷‍♂️", result.message);
+      await fetchCurrentUserInfo();
+      loadFriends();
     } else {
       const errorData = await response.json();
       loadModal("Error 🤕", `${errorData.error}`);
@@ -511,7 +529,9 @@ async function acceptFriendRequest(requestId) {
 
     if (response.ok) {
       const result = await response.json();
-      loadModal("The more, the merrier 👯", result.message, true);
+      loadModal("The more, the merrier 👯", result.message);
+      await fetchCurrentUserInfo();
+      loadFriends();
     } else {
       const errorData = await response.json();
       loadModal("Error 🤕", `${errorData.error}`);
@@ -773,14 +793,25 @@ async function loadFriends() {
     friendTitle.classList.remove("hidden");
     friendDivider.classList.remove("hidden");
 
-    const profileBlock = document.getElementById("profile-block");
-    const friendsListBlock = document.createElement("friends-div");
-    friendsListBlock.innerHTML = "";
+    const profileBlock = document.getElementById("bottom-profile");
+    let friendsListBlock = document.getElementById("friends-div");
 
-    friendsListBlock.className =
-      "friend-list-block position-relative d-inline-block ms-3 me-3 mb-2  ";
+    // Si le conteneur n'existe pas, crée-le et ajoute-le au profil
+    if (!friendsListBlock) {
+      friendsListBlock = document.createElement("div"); // Crée une nouvelle div pour les amis
+      friendsListBlock.id = "friends-div"; // Assigne un ID pour les utilisations futures
+      friendsListBlock.className =
+        "friend-list-block position-relative d-inline-block";
+      profileBlock.appendChild(friendsListBlock);
+    } else {
+      friendsListBlock.innerHTML = "";
+      if (currentUserInfo.friends.length === 0) {
+        friendTitle.classList.add("hidden");
+        friendDivider.classList.add("hidden");
+      }
+    }
 
-    currentUserInfo.friends.forEach(async (friend) => {
+    currentUserInfo.friends.forEach((friend) => {
       const friendLink = document.createElement("a");
       friendLink.href = `#profile/?username=${friend.username}`;
       const friendAvatar = document.createElement("img");
@@ -792,8 +823,6 @@ async function loadFriends() {
       friendLink.appendChild(friendAvatar);
       friendsListBlock.appendChild(friendLink);
     });
-
-    profileBlock.appendChild(friendsListBlock);
 
     if (currentUserInfo.friends_requests.length > 0) {
       loadFriendRequest(friendsListBlock);
@@ -850,7 +879,6 @@ async function loadFriendRequest(friendsListBlock) {
       friendRequestDiv.appendChild(rejectIcon);
 
       friendsListBlock.appendChild(friendRequestDiv);
-      initializeTooltips();
     });
   } catch (error) {
     console.error("Erreur lors de la récupération des demandes d'amis:", error);

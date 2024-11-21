@@ -35,9 +35,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = UserProfileSerializer
 
     def get_permissions(self):
-        if self.action in ['create', 'check_authentication', 'login_user']:
+        if self.action in ["create", "check_authentication", "login_user"]:
             return [AllowAny()]
-        elif self.action in ['list']:  # Remplacez par l'action spécifique
+        elif self.action in ["list"]:  # Remplacez par l'action spécifique
             return [IsAdminUser()]
         return [IsAuthenticated()]
 
@@ -131,13 +131,19 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         user_profile = user.userprofile
 
         email = request.data.get("email")
+        if email == "":
+            return Response(
+                {"message": "Email can not be empty"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if email:
             try:
                 EmailValidator()(email)
                 user.email = email
             except ValidationError:
                 return Response(
-                    {"message": "Email invalide"}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "Invalid email"}, status=status.HTTP_400_BAD_REQUEST
                 )
 
         password = request.data.get("password")
