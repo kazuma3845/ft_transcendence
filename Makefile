@@ -1,6 +1,9 @@
 COMPOSE_FILE=docker-compose.yml
 
 up:
+	copy ~/Desktop/secrets/.env .
+	copy ~/Desktop/secrets/mycert.crt ./website
+	copy ~/Desktop/secrets/mykey.key ./website
 	docker compose -f $(COMPOSE_FILE) up --build -d
 
 stop:
