@@ -345,22 +345,31 @@ function startWebSocket(sessionId) {
   socket.onmessage = async function (e) {
     // console.log('Message received:', e.data);
     try {
-    const data = JSON.parse(e.data);
-    // console.log("F-E: client websocket parsed data:", data);
-    if (data.type === "game_score") {
-      point1 = data.player1_points;
-      point2 = data.player2_points;
-      updateScoreDisplay(data.player1, player2, data.player1_points, data.player2_points);
-    }
-    if (data.type === "display_player") {
-      player2 = data.player2;
-      player1 = data.player1;
-      displayPlayer(data.player1, data.player2);
-    }
-    if (data.type === "disconnect_screen") {
-      if (win_number !== point1 && win_number !== point2 && player2 !== "Bot" && player2 !== "LocalPlayer")
-        displayForfaitMessage(data.content == player1 ? player2 : player1);
-        console.log("Call de setLobbyRedirect() depuis socket.onmessage :", sessionId);
+      const data = JSON.parse(e.data);
+      // console.log("F-E: client websocket parsed data:", data);
+      if (data.type === "game_score") {
+        point1 = data.player1_points;
+        point2 = data.player2_points;
+        updateScoreDisplay(
+          data.player1,
+          player2,
+          data.player1_points,
+          data.player2_points
+        );
+      }
+      if (data.type === "display_player") {
+        player2 = data.player2;
+        player1 = data.player1;
+        displayPlayer(data.player1, data.player2);
+      }
+      if (data.type === "disconnect_screen") {
+        if (
+          win_number !== point1 &&
+          win_number !== point2 &&
+          player2 !== "Bot" &&
+          player2 !== "LocalPlayer"
+        )
+          displayForfaitMessage(data.content == player1 ? player2 : player1);
         setLobbyRedirect(sessionId);
       }
     } catch (error) {
@@ -390,7 +399,12 @@ function startWebSocket(sessionId) {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
   }
 
-  async function checkWinCondition(username, username2, player1Points, player2Points, sessionId) {
+  async function checkWinCondition(
+    username,
+    username2,
+    player1Points,
+    player2Points
+  ) {
     if (player1Points >= win_number) {
       await sleep(0.2);
       fetch(`/static/game/html/victory.html`)
