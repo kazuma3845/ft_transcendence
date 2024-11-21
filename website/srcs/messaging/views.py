@@ -175,15 +175,15 @@ class ConversationViewSet(viewsets.ModelViewSet):
         except Conversation.DoesNotExist:
             return Response({'detail': 'Conversation non trouvée.'}, status=status.HTTP_404_NOT_FOUND)
 
-# ViewSet pour les messages
-class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all()
-    serializer_class = MessageSerializer
-    permission_classes = [IsAuthenticated]
+# # ViewSet pour les messages
+# class MessageViewSet(viewsets.ModelViewSet):
+#     queryset = Message.objects.all()
+#     serializer_class = MessageSerializer
+#     permission_classes = [IsAuthenticated]
 
 
-# ViewSet pour les utilisateurs bloqués
-class BlockedUserViewSet(viewsets.ModelViewSet):
-    queryset = BlockedUser.objects.all()
-    serializer_class = BlockedUserSerializer
-    permission_classes = [IsAuthenticated]
+# # ViewSet pour les utilisateurs bloqués
+# class BlockedUserViewSet(viewsets.ModelViewSet):
+#     queryset = BlockedUser.objects.all()
+#     serializer_class = BlockedUserSerializer
+#     permission_classes = [IsAuthenticated]
