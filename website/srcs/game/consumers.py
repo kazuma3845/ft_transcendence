@@ -12,17 +12,18 @@ calculators = {}
 class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self):
         super().__init__()
+        self.updated_content = None
 
     async def game_loop(self):
         try:
             while True:
-                updated_content = self.calculator.Calcul_loop()
+                self.updated_content = self.calculator.Calcul_loop()
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         'type': 'update_position',
-                        'content': updated_content,
+                        'content': self.updated_content,
                     }
                 )
 
@@ -107,8 +108,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         if message_type == 'game_score':
             sessionId = text_data_json['content']['id']
-            player1_points = text_data_json['content']['player1_points']
-            player2_points = text_data_json['content']['player2_points']
             print(f"Received data: {text_data_json}")
             # Envoyer les données du score à la salle
             await self.channel_layer.group_send(
@@ -116,8 +115,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'game_score',
                     'id': sessionId,
-                    'player1_points': player1_points,
-                    'player2_points': player2_points,
+                    'player1_points': self.updated_content.score[0],
+                    'player2_points': self.updated_content.score[1],
                 }
             )
 
