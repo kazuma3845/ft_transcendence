@@ -125,6 +125,16 @@
             />
             <br /><br />
 
+            <br /><br />
+
+            <label class="form-label" for="power">Power:</label>
+            <input
+              type="checkbox"
+              id="power"
+              name="power"
+              onchange="updateCheckboxValue('power_value', this.checked)"
+            />
+            <span id="power_value" class="form-label">Off</span><br /><br />
             <!-- <label class="form-label" for="bot_difficulty">Bot Difficulty: <span id="bot_difficulty_value">5</span></label><br />
 				  <input type="range" id="bot_difficulty" name="bot_difficulty" min="1" max="10" value="5" class="w-100" oninput="updateValue('bot_difficulty_value', this.value)" />
 				  <br /><br /> -->

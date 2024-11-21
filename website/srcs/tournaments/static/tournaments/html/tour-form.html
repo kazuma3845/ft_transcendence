@@ -67,6 +67,15 @@
             />
             <br /><br />
 
+            <label class="form-label" for="power">Power:</label>
+            <input
+              type="checkbox"
+              id="power"
+              name="power"
+              onchange="updateCheckboxValue('power_value', this.checked)"
+            />
+            <span id="power_value" class="form-label">Off</span><br /><br />
+
             <label class="form-label" for="actual_win_number"
               >Choose a winning number:
               <span id="actual_win_number_value">5</span></label

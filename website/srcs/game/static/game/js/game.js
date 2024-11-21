@@ -55,7 +55,7 @@ function attachGameFormSubmitListener(
 
       // Ajoute les valeurs de checkbox dans les données
       if (invited === true) {
-        data["power"] = false;
+        data["power"] = document.getElementById("power").checked;
         data["bot"] = false;
       } else {
         data["power"] = document.getElementById("power").checked;
