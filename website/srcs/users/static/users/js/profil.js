@@ -1,5 +1,6 @@
 let currentUserInfo = null;
 let requestedUserProfile = null;
+let reloadLeaderBoard = null;
 
 function loadEditProfileModal() {
   var existingModal = document.getElementById("editProfileModal");
@@ -79,7 +80,9 @@ function uploadImage(file, type) {
         fetchCurrentUserInfo().then((currentUserInfo) => {
           if (type === "avatar") {
             document.getElementById("user-avatar").src = currentUserInfo.avatar;
-            createLeaderboard(currentUserInfo);
+            if (reloadLeaderBoard) {
+              createLeaderboard(currentUserInfo);
+            }
           } else {
             document.getElementById("user-banner").src = currentUserInfo.banner;
           }
@@ -160,14 +163,7 @@ function fetchBlockchainResults(games) {
 }
 
 async function computeStats(results, username) {
-  // console.log("Current username:", username);
-
-  console.log("Not Filtered results:", results);
-  // Filter out matches with empty string winners
   const filteredResults = results.filter((result) => result.winner !== "");
-
-  console.log("Filtered results:", filteredResults);
-
   const gamePlayed = filteredResults.length;
   const matchWon = filteredResults.filter(
     (result) => result.winner === username
@@ -177,15 +173,11 @@ async function computeStats(results, username) {
     (result) => result.winner != username
   );
   const loseNumber = matchLost.length;
-  console.log("Match joués:", gamePlayed);
-  console.log("Match won:", winNumber);
   const winRate = Math.round((winNumber / gamePlayed) * 100);
-  console.log("winRate:", winRate);
   const allForfeitWon = matchWon.filter(
     (forfeitWon) => forfeitWon.forfeit === true
   );
   const forfeitWonNumber = allForfeitWon.length;
-  console.log("Win by forfeit:", forfeitWonNumber);
 
   let currentWinStreak = 0;
   for (let i = 0; i < filteredResults.length; i++) {
@@ -195,8 +187,6 @@ async function computeStats(results, username) {
       break;
     }
   }
-  console.log("Current win streak:", currentWinStreak);
-
   const lossCounter = {};
   filteredResults.forEach((result) => {
     if (result.winner !== username) {
@@ -216,7 +206,6 @@ async function computeStats(results, username) {
       nemesis = opponent;
     }
   }
-  console.log("Nemesis:", nemesis, "with losses:", maxLosses);
 
   return {
     total: gamePlayed || 0,
@@ -275,7 +264,6 @@ async function fetchUserProfileInfo(username) {
     return requestedUserProfile;
   } else {
     currentUserInfo.stats = await fetchUserStats(username);
-    console.log(currentUserInfo);
     return currentUserInfo;
   }
 }
@@ -319,7 +307,11 @@ function loadProfil(params) {
           createNemesisBlock(user);
           createMatchHistoryBlock(user);
           createLeaderboard(user);
-        } else displayNoGame();
+          reloadLeaderBoard = true;
+        } else {
+          reloadLeaderBoard = false;
+          displayNoGame();
+        }
       }
     })
     .catch((error) => {

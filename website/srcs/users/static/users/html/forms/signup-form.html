@@ -1,44 +1,48 @@
 <div class="col-12 col-md-8 col-lg-6 centered_container_white p-4">
   <form method="POST" id="signup-form">
     <div class="form-group mb-1">
-      <label class="form-label" for="username">Username :</label>
+      <label class="form-label" for="username-signup">Username :</label>
       <input
         type="text"
         id="username-signup"
         name="username"
         class="form-control login-input"
         required
+        autocomplete="off"
       />
     </div>
 
     <div class="form-group mb-1">
-      <label class="form-label" for="email">E-mail :</label>
+      <label class="form-label" for="email-signup">E-mail :</label>
       <input
         type="email"
         id="email-signup"
         name="email"
         class="form-control login-input"
         required
+        autocomplete="off"
       />
     </div>
 
     <div class="form-group mb-1">
-      <label class="form-label" for="password">Password :</label>
+      <label class="form-label" for="password-signup">Password :</label>
       <input
         type="password"
         id="password-signup"
         name="password"
         class="form-control login-input"
         required
+        autocomplete="off"
       />
     </div>
 
     <div class="form-group mb-1">
-      <label class="form-label" for="bio">My bio :</label>
+      <label class="form-label" for="bio-signup">My bio :</label>
       <textarea
         id="bio-signup"
         name="bio"
         class="form-control login-input"
+        autocomplete="off"
       ></textarea>
     </div>
     <div class="d-grid">
@@ -50,11 +54,7 @@
       </button>
     </div>
 
-    <div
-      id="error-message"
-      class="alert alert-danger d-none mt-2"
-    ></div>
-
+    <div id="error-message" class="alert alert-danger d-none mt-2"></div>
   </form>
   <div class="text-center mt-3">
     <a href="#login" class="form-label">I have an account</a>

@@ -20,33 +20,38 @@
       <div class="modal-body">
         <form id="editProfileForm">
           <div class="mb-3">
-            <label for="email" class="form-label">Update Email</label>
+            <label for="edit-email" class="form-label">Update Email</label>
             <input
               type="email"
               class="form-control edit-input"
               id="edit-email"
               name="email"
+              autocomplete="off"
             />
           </div>
           <div class="mb-3">
-            <label for="password" class="form-label">Update password</label>
+            <label for="edit-password" class="form-label"
+              >Update password</label
+            >
             <input
               type="password"
               class="form-control edit-input"
               id="edit-password"
               name="password"
+              autocomplete="off"
             />
           </div>
           <div class="mb-3">
-            <label for="bio" class="form-label">Update Bio</label>
+            <label for="edit-bio" class="form-label">Update Bio</label>
             <textarea
               class="form-control edit-input"
               id="edit-bio"
               name="bio"
               rows="3"
+              autocomplete="off"
             ></textarea>
           </div>
-		  
+
           <div
             id="error-message"
             class="alert alert-danger d-none"

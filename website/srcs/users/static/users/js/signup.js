@@ -50,7 +50,7 @@ function attachSignupFormSubmitListener() {
             );
             updateHeader();
             window.location.href = "#profile";
-            router();
+            // router();
           }
         });
     });
