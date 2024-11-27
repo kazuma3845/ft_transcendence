@@ -3,13 +3,12 @@ let blockedUsers = [];
 let activeConversationId = 0;
 
 async function updateBlockedUsers() {
-    let isAuthenticated = await checkAuthentication();
-    if (!isAuthenticated)
-        return
-    fetch(`/api/messaging/conversations/blocked-users/`)  // Endpoint pour récupérer les utilisateurs bloqués
-    .then(response => response.json())
-    .then(data => {
-        blockedUsers = data.blocked_users;  // Stocker les utilisateurs bloqués dans une variable
+  let isAuthenticated = await checkAuthentication();
+  if (!isAuthenticated) return;
+  fetch(`/api/messaging/conversations/blocked-users/`) // Endpoint pour récupérer les utilisateurs bloqués
+    .then((response) => response.json())
+    .then((data) => {
+      blockedUsers = data.blocked_users; // Stocker les utilisateurs bloqués dans une variable
     })
     .catch((error) =>
       console.error(
@@ -360,10 +359,13 @@ function loadMessages(conversationId) {
             );
 
             if (message.invitation) {
-              messageContent.classList.replace("chat-message", "invitation-message")
+              messageContent.classList.replace(
+                "chat-message",
+                "invitation-message"
+              );
               const invitationLink = document.createElement("a");
               invitationLink.href = `/#game?sessionid=${message.invitation}`; // Créer l'URL
-              invitationLink.textContent = "Join the game"; // Texte du lien
+              invitationLink.textContent = "Join Game"; // Texte du lien
               invitationLink.style.textDecoration = "none";
               invitationLink.style.color = "inherit";
               // Optionnel : Si tu ne veux pas utiliser href, tu peux utiliser un gestionnaire d'événement de clic.
@@ -470,15 +472,17 @@ function displayInvitation(data) {
   if (data.invitation) {
     const invitationLink = document.createElement("a");
     invitationLink.href = `/#game?sessionid=${data.invitation}`; // Créer l'URL de l'invitation
-    invitationLink.textContent = "Rejoindre la partie"; // Texte du lien
-
-    // Optionnel : Si vous souhaitez utiliser un gestionnaire de clic
     invitationLink.addEventListener("click", function (event) {
       event.preventDefault(); // Empêche le comportement par défaut du lien
       window.location.href = `/#game?sessionid=${data.invitation}`;
     });
 
-    messageContent.textContent = "Invitation à une ";
+    invitationLink.textContent = "Join Game";
+    invitationLink.classList.add(
+      isUserMessage ? "external-message" : "user-message"
+    );
+    invitationLink.style.textDecoration = "none";
+
     messageContent.appendChild(invitationLink);
   } else {
     // Si ce n'est pas une invitation, afficher le contenu comme un message normal

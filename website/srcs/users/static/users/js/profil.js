@@ -127,6 +127,9 @@ function updateUserInfo(email, password, bio) {
         currentUserInfo.bio = bio;
         document.getElementById("bio").textContent = bio;
       }
+      if (password) {
+        loginAfterPasswordChange(password);
+      }
       closeAndResetModal();
     })
     .catch((error) => {
@@ -134,6 +137,31 @@ function updateUserInfo(email, password, bio) {
       errorMessageDiv.textContent = error.message;
       errorMessageDiv.classList.remove("d-none");
     });
+}
+
+function loginAfterPasswordChange(password) {
+  const loginData = {
+    username: currentUserInfo.user.username,
+    password: password,
+  };
+
+  fetch("/api/users/profiles/login/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCSRFToken(),
+    },
+    body: JSON.stringify(loginData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        console.error("Erreur de connexion:", data.error);
+      } else {
+        console.log("Reconnected with new password");
+      }
+    })
+    .catch((error) => console.error("Erreur de reconnexion:", error));
 }
 
 function getRequestedUsername(params) {

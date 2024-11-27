@@ -33,14 +33,14 @@ function attachLoginFormSubmitListener() {
             document.getElementById("error-message").style.display = "block";
           } else {
             await fetchCurrentUserInfo();
-            console.log("Login , ", currentUserInfo.user.username)
+            console.log("Login , ", currentUserInfo.user.username);
             currentUser = currentUserInfo.user.username;
             setTimeout(() => {
               loadModal(
                 "Logged In Successfully",
                 `Welcome back ${currentUserInfo.user.username}, you've been missed 💜`
               );
-            }, 300); // Ajustez le délai au besoin
+            }, 300);
             updateHeader();
             window.location.hash = "#profile";
           }
@@ -74,7 +74,7 @@ function updateHeader() {
         menu_btn.style.display = "none";
         document.addEventListener("DOMContentLoaded", function () {
           attachLoginFormListener();
-        })
+        });
       }
     });
 }
