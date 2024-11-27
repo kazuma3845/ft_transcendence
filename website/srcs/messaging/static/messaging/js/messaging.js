@@ -296,10 +296,10 @@ function loadMessages(conversationId) {
   const chatWindow = document.getElementById("chat_window");
   // console.log(`activeConversationId: ${activeConversationId} | conversationId: ${conversationId}`);
 
-  if (activeConversationId === conversationId) {
-    activeConversationId == null;
-    return;
-  }
+  // if (activeConversationId === conversationId) {
+  //   activeConversationId == null;
+  //   return;
+  // }
 
   // Requête pour obtenir les participants de la conversation
   fetch(`/api/messaging/conversations/${conversationId}/`)
