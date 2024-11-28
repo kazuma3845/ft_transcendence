@@ -75,6 +75,8 @@ async function router() {
       case "#createTournament":
         loadCreatTournamentsForm();
         break;
+      case "#victory":
+          break;
       case "#profile":
         if (isAuthenticated) {
           loadProfil(params);

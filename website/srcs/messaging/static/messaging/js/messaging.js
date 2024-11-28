@@ -556,7 +556,7 @@ function connectWebSocket() {
         );
         return; // Ne pas traiter ce message
       }
-      if (activeConversationId === conversationId) {
+      if (activeConversationId === conversationId && messageSender != currentUserInfo.user.username) {
         displayInvitation(data.content);
       }
     } else {

@@ -369,8 +369,9 @@ function startWebSocket(sessionId) {
           player2 !== "Bot" &&
           player2 !== "LocalPlayer"
         )
-          displayForfaitMessage(data.content == player1 ? player2 : player1);
-        setLobbyRedirect(sessionId);
+          if (currentUserInfo.user.username === data.content) {
+            displayForfaitMessage(data.content == player1 ? player2 : player1);
+          } setLobbyRedirect(sessionId);
       }
     } catch (error) {
       console.error("Error parsing message:", error);
@@ -386,6 +387,7 @@ function startWebSocket(sessionId) {
   };
 
   function displayForfaitMessage(Player_disconnect) {
+    window.location.hash = '#victory'
     fetch(`/static/game/html/victory.html`)
       .then((response) => response.text())
       .then((html) => {
