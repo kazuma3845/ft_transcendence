@@ -180,16 +180,16 @@ async function joinTour(tourId) {
     if (convId) {
       connectWebSocket();
       socket.onopen = function () {
-        sendTourConv(convId, `${currentUser} a rejoint le tournoi`);
+        sendTourConv(convId, `${currentUser} joined the tournament`);
         if (tour.participantNum === 2)
           sendTourConv(
             convId,
-            `${tour.participants[0]} affronte ${tour.participants[1]}`
+            `${tour.participants[0]} play against ${tour.participants[1]}`
           );
         if (tour.participantNum === 4)
           sendTourConv(
             convId,
-            `${tour.participants[2]} affronte ${tour.participants[3]}`
+            `${tour.participants[2]} play against ${tour.participants[3]}`
           );
       };
     }

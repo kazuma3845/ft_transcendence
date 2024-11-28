@@ -109,7 +109,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
             if tour.game_1_1.player2 is not None:
                 return Response({"detail": "Le joueur 2 de la première partie est déjà défini."}, status=status.HTTP_400_BAD_REQUEST)
             tour.game_1_1.player2 = request.user
-            message = f"{tour.game_1_1.player1} affronte {tour.game_1_1.player2}"
+            message = f"{tour.game_1_1.player1} play against {tour.game_1_1.player2}"
 
         # Cas 2 : participantNum = 2 -> game_1_2.player1 = request.user
         elif tour.participantNum == 2:
@@ -122,7 +122,7 @@ class TournamentViewSet(viewsets.ModelViewSet):
             if tour.game_1_2.player2 is not None:
                 return Response({"detail": "Le joueur 2 de la deuxième partie est déjà défini."}, status=status.HTTP_400_BAD_REQUEST)
             tour.game_1_2.player2 = request.user
-            message = f"{tour.game_1_2.player1} affronte {tour.game_1_2.player2}"
+            message = f"{tour.game_1_2.player1} play against {tour.game_1_2.player2}"
 
         # Mettre à jour le nombre de participants
         tour.participantNum += 1
