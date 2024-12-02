@@ -28,7 +28,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from PIL import Image
-
+from transendence.permissions import IsAdminOrReadAndCreate
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -39,6 +39,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         elif self.action in ["list"]:  # Remplacez par l'action spécifique
             return [IsAdminUser()]
+        elif self.action in ["update", "partial_update", "destroy"]:  # Protection des modifications
+            return [IsAdminOrReadAndCreate()]
         return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):

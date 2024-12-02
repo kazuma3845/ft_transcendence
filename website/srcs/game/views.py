@@ -15,6 +15,7 @@ from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from messaging.models import Conversation
+from transendence.permissions import IsAdminOrReadAndCreate
 
 @login_required
 def index(request):
@@ -23,7 +24,7 @@ def index(request):
 class GameSessionViewSet(viewsets.ModelViewSet):
     queryset = GameSession.objects.all()
     serializer_class = GameSessionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrReadAndCreate]
     def create(self, request, *args, **kwargs):
         # Initialiser le serializer avec les données de la requête
         serializer = self.get_serializer(data=request.data)

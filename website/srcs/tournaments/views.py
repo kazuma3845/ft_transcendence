@@ -11,11 +11,12 @@ from rest_framework.decorators import action
 from channels.db import database_sync_to_async
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from transendence.permissions import IsAdminOrReadAndCreate
 
 class TournamentViewSet(viewsets.ModelViewSet):
     queryset = Tournament.objects.all()  # Tous les tournois
     serializer_class = TournamentSerializer  # Le serializer à utiliser pour le modèle
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrReadAndCreate]
 
     def create(self, request, *args, **kwargs):
 

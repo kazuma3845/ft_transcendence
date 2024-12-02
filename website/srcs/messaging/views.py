@@ -7,13 +7,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-
+from transendence.permissions import IsAdminOrReadAndCreate
 
 # ViewSet pour les conversations
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrReadAndCreate]
 
     def get_queryset(self):
         # Renvoyer les conversations où le currentUser est un participant
