@@ -26,18 +26,6 @@ chain_id = web3.eth.chain_id
 # --------------------------------------------------------- Interaction WEB3
 def set_game_session_scores(game_session_id, players, scores, winner, forfeit, date):
     try:
-        print(
-            f"Building transaction for game session ID: {game_session_id} with players: {players} and scores: {scores}"
-        )
-        print(f"Type of game_session_id: {type(game_session_id)}")
-        print(
-            f"Type of players: {type(players)} and type of first element if available: {type(players[0]) if players else 'Empty list'}"
-        )
-        print(
-            f"Type of scores: {type(scores)} and type of first element if available: {type(scores[0]) if scores else 'Empty list'}"
-        )
-        print(f"Current chain ID: {chain_id}")
-
         transaction = contract.functions.setGameSessionScores(
             game_session_id, players, scores, winner, forfeit, date
         ).build_transaction(
@@ -49,22 +37,14 @@ def set_game_session_scores(game_session_id, players, scores, winner, forfeit, d
                 "chainId": chain_id,
             }
         )
-        print("Transaction constructed successfully.")
-
         signed_txn = web3.eth.account.sign_transaction(
             transaction, private_key=private_key
         )
-        print("Transaction signed.")
-
         tx_hash = web3.eth.send_raw_transaction(signed_txn.raw_transaction)
-        print(f"Transaction sent. Hash: {web3.to_hex(tx_hash)}")
-
         tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-        print("Transaction confirmed.")
 
         return tx_receipt
     except Exception as e:
-        print(f"Error during transaction: {e}")
         return str(e)
 
 
@@ -117,16 +97,11 @@ def register_game_session_scores(request):
 def retrieve_game_session_scores(request):
     if request.method == "GET":
         game_session_id = request.GET.get("game_session_id")
-        game_session_id = int(game_session_id)
-        print(
-            "L'ID de session est :",
-            game_session_id,
-            "et est de type",
-            type(game_session_id),
-        )
 
-        if not game_session_id:
-            return JsonResponse({"error": "ID de session manquant"}, status=400)
+        if not game_session_id or game_session_id.isdigit() == False:
+            return JsonResponse({"error": "Invalid session ID"}, status=400)
+
+        game_session_id = int(game_session_id)
         player_scores, winner, forfeit, date = get_scores_by_game_session(
             game_session_id
         )
