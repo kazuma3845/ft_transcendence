@@ -46,7 +46,12 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         email = request.data.get("email")
         password = request.data.get("password")
 
-        if len(username) > 10:  # Pour ne pas tout péter l'affichage
+        if not username:
+            return Response(
+                {"error": "Username must be filled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if len(username) > 10:
             return Response(
                 {"error": "Username must be 10 characters or fewer"},
                 status=status.HTTP_400_BAD_REQUEST,
